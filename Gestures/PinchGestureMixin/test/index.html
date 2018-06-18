@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css" rel="stylesheet">
+
+    </style>
+    <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+    <script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
+    <script> TouchEmulator(); </script>
+</head>
+<body>
+
+<rotate-block id="rotate">
+    <h2 style="text-align: center; color: white;">Press Shift+Click<br>and rotate</h2>
+</rotate-block>
+
+
+<script type="module">
+  import {PinchGesture} from './PinchGestureMixin.js'; 
+  class RotateBlock extends PinchGesture(HTMLElement) { 
+  
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+      this.style.display = "block";
+      this.style.position = "fixed";
+      this.style.left = "100px";
+      this.style.top = "100px";
+      this.style.width = "300px";
+      this.style.height = "300px";
+      this.style.background = "red";
+    }
+
+    pinchGestureCallback(startDetail, moveDetail, endDetail){
+      this.style.transform =`rotate(${moveDetail.rotationStart}deg)`;
+    }
+  }
+  customElements.define("rotate-block", RotateBlock);
+
+</script>
+</body>
+</html>
