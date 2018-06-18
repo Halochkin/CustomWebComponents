@@ -1,4 +1,4 @@
-import {DragFlingGesture} from "../src/DragFlingMixin.js";
+import {DragFlingGestureMixin} from "../src/DragFlingMixin.js";
 
 describe('DragFlingGesture', function () {
 
