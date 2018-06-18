@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web component design patterns</title>
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script> /** Polyfill code **/
+//Setup: declare the function for loading script sync
+function loadScriptSync(url, onAsyncLoadAsString) {
+  var newScript = document.createElement('script');
+  newScript.src = url;
+  onAsyncLoadAsString && newScript.setAttribute("onload", onAsyncLoadAsString);
+  document.write(newScript.outerHTML);
+}
+
+//Setup: add methods for pausing customElements polyfill
+window.WebComponents = window.WebComponents || {};
+window.WebComponents.stopCEPolyfill = function () {
+  if (window.customElements && customElements.polyfillWrapFlushCallback) {
+    customElements.polyfillWrapFlushCallback(function () {
+    });
+  }
+};
+window.WebComponents.startCEPolyfill = function () {
+  if (window.customElements && customElements.polyfillWrapFlushCallback) {
+    customElements.polyfillWrapFlushCallback(function (flush) {
+      flush();
+    });
+    customElements.upgrade(document);
+  }
+};
+//step 1: feature detection
+var CE = window.customElements;
+var SD = 'attachShadow' in Element.prototype && 'getRootNode' in Element.prototype;
+var ES6 = window.Promise && Array.from && window.URL && window.Symbol;
+var TE = !(function () {
+  // no real <template> because no `content` property (IE and older browsers)
+  var t = document.createElement('template');
+  if (!('content' in t)) {
+    return true;
+  }
+  // broken doc fragment (older Edge)
+  if (!(t.content.cloneNode() instanceof DocumentFragment)) {
+    return true;
+  }
+  // broken <template> cloning (Edge up to at least version 17)
+  var t2 = document.createElement('template');
+  t2.content.appendChild(document.createElement('div'));
+  t.content.appendChild(t2);
+  var clone = t.cloneNode(true);
+  return clone.content.childNodes.length === 0 ||
+    clone.content.firstChild.content.childNodes.length === 0;
+})();
+//step 2: load polyfill async based on feature detection
+const base = "https://rawgit.com/webcomponents/webcomponentsjs/master/bundles/";
+if (CE && SD && TE && ES6) {                                                          //[1]
+} else if (!CE && SD && TE && ES6) {
+  loadScriptSync(base + "webcomponents-ce.js", "WebComponents.stopCEPolyfill();");
+} else if (!CE && !SD && TE && ES6) {
+  loadScriptSync(base + "webcomponents-sd-ce.js", "WebComponents.stopCEPolyfill();");
+} else { /*if (!CE && !SD && !TE && !ES6) {*/
+  loadScriptSync(base + "webcomponents-sd-ce-pf.js",
+    "HTMLTemplateElement.bootstrap(document); WebComponents.stopCEPolyfill();");
+}
+//step 3: restart the customElements polyfill on DOMContentLoaded
+window.addEventListener("DOMContentLoaded", function () {
+  WebComponents.startCEPolyfill();
+});
+</script>
+<script type="module">
+  import {MarkDown} from "./mark-down.js";
+  import {WcChapter, WcBook} from "./wc-book-chapter.js";
+
+  customElements.define("mark-down", MarkDown);
+  customElements.define("wc-book", WcBook);
+  customElements.define("wc-chapter", WcChapter);
+</script>
+
+<body style="margin: 0px">
+<wc-book>
+    <!--<h1>wc design patterns</h1>-->
+
+    <wc-chapter title="Chapter 1: Web components basics">
+        <wc-chapter title="1.1. Pattern1: CreateElement">
+            <mark-down
+                    src="https://raw.githubusercontent.com/orstavik/JoiComponents/master/book/chapter1/Pattern1_CreateElement.md">
+            </mark-down>
+    </wc-chapter>
+        <wc-chapter title="1.2. Pattern2_shadowDom">Pattern2_shadowDom</wc-chapter>
+        <wc-chapter title="1.3. Pattern6_AttributeReaction">Pattern6_AttributeReaction</wc-chapter>
+    </wc-chapter>
+    <wc-chapter title="Chapter 2: Isolated Functional mixins and life cycle hooks">
+        <wc-chapter title="2.1. Discussion_IsolatedFunctionalMixin">Discussion_IsolatedFunctionalMixin</wc-chapter>
+        <wc-chapter title="2.2. Mixin1_ChildrenChangedMixin">Mixin1_ChildrenChangedMixin</wc-chapter>
+        <wc-chapter title="2.3. Mixin2_SizeChangedMixin title">Mixin2_SizeChangedMixin</wc-chapter>
+        <wc-chapter title="2.4. Mixin4_FirstConnectedMixin title">Mixin4_FirstConnectedMixin</wc-chapter>
+        <wc-chapter title="2.5. Mixin5_EnterViewMixin title">Mixin5_EnterViewMixin</wc-chapter>
+        <wc-chapter title="2.6. Pattern1_ReactiveMethod title">Pattern1_ReactiveMethod</wc-chapter>
+        <wc-chapter title="2.7. Pattern2_FunctionalMixin title">Pattern2_FunctionalMixin</wc-chapter>
+    </wc-chapter>
+    <wc-chapter title="Chapter 3: ComposedEvents and Gestures in JS">
+        <wc-chapter title="3.1. Mixin1_DragFlingGesture.md">Mixin1_DragFlingGesture.md</wc-chapter>
+        <wc-chapter title="3.2. Mixin2_FlingEventMixin.md">Mixin2_FlingEventMixin.md</wc-chapter>
+        <wc-chapter title="3.3. Mixin3_PinchGesture.md title">Mixin3_PinchGesture.md</wc-chapter>
+        <wc-chapter title="3.4. Pattern1_ComposedEvents.md title">Pattern1_ComposedEvents.md</wc-chapter>
+        <wc-chapter title="3.5. Pattern2_InvadeAndRetreat.md title">Pattern2_InvadeAndRetreat.md</wc-chapter>
+        <wc-chapter title="3.6. Problem_conflicting_gestures.md title">Problem_conflicting_gestures.md</wc-chapter>
+    </wc-chapter>
+    <wc-chapter title="Chapter 4: Patterns for HTML Composition">
+        <wc-chapter title="4.1. Intro_HTML-Lists.md">Intro_HTML-Lists.md</wc-chapter>
+        <wc-chapter title="4.2. Pattern1_FosterParentChild.md">Pattern1_FosterParentChild.md</wc-chapter>
+        <wc-chapter title="4.3. Pattern2_HelicopterParentChild.md title">Pattern2_HelicopterParentChild.md</wc-chapter>
+        <wc-chapter title="4.4. Pattern3_CulDeSacElements.md title">Pattern3_CulDeSacElements.md</wc-chapter>
+        <wc-chapter title="4.5. Pattern4_KeepItLight.md title">Pattern4_KeepItLight.md</wc-chapter>
+    </wc-chapter>
+    <wc-chapter title="Chapter 5: Style">
+        <wc-chapter title="5.1. Discussion_mediaqueries_pseudoelements.md">Discussion_mediaqueries_pseudoelements.md
+        </wc-chapter>
+        <wc-chapter title="5.2. Intro_Style_in_web_comps.md">Intro_Style_in_web_comps.md</wc-chapter>
+        <wc-chapter title="5.3. Pattern1_this_style_rocks.md title">Pattern1_this_style_rocks.md</wc-chapter>
+        <wc-chapter title="5.4. Pattern2_host_with_style.md title">Pattern2_host_with_style.md</wc-chapter>
+        <wc-chapter title="5.5. Pattern3_css_variables.md title">Pattern3_css_variables.md</wc-chapter>
+        <wc-chapter title="5.6. Pattern4_css_pseudo_elements.md title">Pattern4_css_pseudo_elements.md</wc-chapter>
+        <wc-chapter title="5.7. Pattern5_ResponsiveLayout.md title">Pattern5_ResponsiveLayout.md</wc-chapter>
+    </wc-chapter>
+    <wc-chapter title="Chapter 6: How to polyfill web components?">
+        <wc-chapter title="6.1. Intro_Polyfills.md">Intro_Polyfills.md</wc-chapter>
+        <wc-chapter title="6.2. Pattern1_FeatureDetection.md">Pattern1_FeatureDetection.md</wc-chapter>
+        <wc-chapter title="6.3. Pattern2_LoadScript.md title">Pattern2_LoadScript.md</wc-chapter>
+        <wc-chapter title="6.4. Pattern3_FeatureDetectAndPolyfill.md">Pattern3_FeatureDetectAndPolyfill.md</wc-chapter>
+        <wc-chapter title="6.5. Pattern4_BatchCustomElementUpgrades.md">Pattern4_BatchCustomElementUpgrades.md</wc-chapter>
+        <wc-chapter title="6.6. Pattern5_QueAndRecallFunctions.md">Pattern5_QueAndRecallFunctions.md</wc-chapter>
+        <wc-chapter title="6.7. Pattern6_FeatureDetectAndPolyfillAsync.md">Pattern6_FeatureDetectAndPolyfillAsync.md</wc-chapter>
+    </wc-chapter>
+</wc-book>
+</body>
+</html>
