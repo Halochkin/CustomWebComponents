@@ -67,9 +67,9 @@ function flingAngle(x = 0, y = 0) {
  * !!! for Safari and older browsers use PEP: https://github.com/jquery/PEP !!!
  *
  * @param Base
- * @returns {DragFlingGestureMixin}
+ * @returns {DragFlingGesture}
  */
-export const DragFlingGestureMixin = function (Base) {
+export const DragFlingGesture = function (Base) {
   return class extends Base {
 
     constructor() {
@@ -124,7 +124,7 @@ export const DragFlingGestureMixin = function (Base) {
       detail.diagonalPx = Math.sqrt(detail.distX * detail.distX + detail.distY * detail.distY);
       detail.durationMs = e.timestamp - prevEvent.timestamp;
       detail.speedPxMs = detail.diagonalPx / detail.durationMs;
-      this.dragGestureCallback(detail);
+      this.dragGestureCallback(this[startDragDetail],detail);
     }
 
     [end](e) {
@@ -140,8 +140,8 @@ export const DragFlingGestureMixin = function (Base) {
     [fling](e) {
       let endTime = e.timeStamp;
       const stopEvent = this[cachedEvents][this[cachedEvents].length - 1];
-      const testTime = endTime - this.flingSettings.minDuration;
-      const startEvent = findLastEventOlderThan(this[cachedEvents], testTime);
+      const flingTime = endTime - this.flingSettings.minDuration;
+      const startEvent = findLastEventOlderThan(this[cachedEvents], flingTime);
       if (!startEvent)
         return;
       const x = stopEvent.x;
@@ -167,7 +167,9 @@ export const DragFlingGestureMixin = function (Base) {
         x,
         xSpeedPxMs,
         y,
-        ySpeedPxMs
+        ySpeedPxMs,
+        flingTime,
+        cashedEvent: this[cachedEvents]
       };
       this.flingGestureCallback(this[flingDetail]);
       this[flingDetail] = undefined;
