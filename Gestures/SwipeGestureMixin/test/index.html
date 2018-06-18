@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css" rel="stylesheet">
+
+        #viewport {
+            display: block;
+            width: 500px;
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            background-color: green;
+            margin-left: 100px;
+            margin-top: 50px;
+            border-radius: 10px;
+        }
+
+    </style>
+    <script src="../src/touch.js"></script>
+    <script> TouchEmulator(); </script>
+</head>
+<body>
+
+<div id="viewport">
+    <swipe-block id="picture"></swipe-block>
+</div>
+<script type="module">
+
+  import {SwipeGestureMixin} from "../src/Swipe.js";
+
+  class SwipeBlock extends SwipeGestureMixin(HTMLElement) {
+    constructor() {
+      super();
+    }
+
+    _color() {
+      return 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+      this.style.position = "absolute";
+      this.style.width = "500px";
+      this.style.height = "500px";
+      this.style.backgroundColor = this._color();
+    }
+
+
+    swipeGestureCallback(data1, data2, data3) {
+      if (!data2)
+        return;
+      let viewport = document.getElementById("viewport");
+      this.style.transitionDuration = "0.5s";
+      this.style.zIndex = "1";
+      this.style.transform = data2.distX < 0 ? "rotate(15deg)" : "rotate(-15deg)";
+      this.style.marginLeft = data2.distX < 0 ? "-650px" : "650px";
+      let el = document.createElement("swipe-block");
+      viewport.removeChild(viewport.childNodes[0]);
+      viewport.appendChild(el);
+    }
+  }
+
+  customElements.define("swipe-block", SwipeBlock);
+</script>
+</body>
+</html>
