@@ -12,9 +12,9 @@ const moveCachedEvents = Symbol("moveCachedEvents");
 const endCachedEvents = Symbol("endCachedEvents");
 
 /**
- * SwipeCallbackMixin adds a reactive lifecycle hook .swipeCallback(...) to its subclasses.
+ * SwipeGestureMixin adds a reactive lifecycle hook SwipeGestureCallback(...) to its subclasses.
  * This lifecycle hook is triggered every time a potentially assignable node for the element changes.
- * .swipeCallback(...) triggers manually every time the "swipe" event has been activated
+ * SwipeGestureCallback(...) triggers manually every time the "swipe" event has been activated
  ** The "swipe" event only occurs if the pointermove events have:
  *  - moved a minimum 50px
  *  - in one direction
@@ -24,7 +24,7 @@ const endCachedEvents = Symbol("endCachedEvents");
  *    .flingSettings.minDistance = 50;
  *    .flingSettings.minDuration = 200;
  *
- * swipe.contain 3 types of details:
+ * SwipeGestureCallback(startDetails, moveDetails, endDetails) contain:
  * 1 - startDetails:
  *    .startX,
  *    .startY,
