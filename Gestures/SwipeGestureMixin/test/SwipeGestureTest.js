@@ -22,7 +22,6 @@ describe('SwipeGesture', function () {
     return null;
   }
 
-
   it("flingAngle 0", function () {
     expect(flingAngle(0,1)).to.be.equal(0);
   });
