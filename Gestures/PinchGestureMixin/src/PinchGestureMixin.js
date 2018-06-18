@@ -17,7 +17,7 @@ function calcAngle(x, y) {
 
 /**
  * Two-finger mixin for pinch, expand, rotate and doubledragging gestures.
- * ThepinchGestureCallback(startDetail, moveDetail, endDetail) is fired when two fingers are pressed
+ * pinchGestureCallback(startDetail, moveDetail, endDetail) is fired when two fingers are pressed
  * and moved against the screen.
  * PinchGestureCallback(...) translates a sequence of touchstart, touchmove
  * and touchend events into a series of pinch events.
