@@ -67,9 +67,9 @@ function flingAngle(x = 0, y = 0) {
  * !!! for Safari and older browsers use PEP: https://github.com/jquery/PEP !!!
  *
  * @param Base
- * @returns {DragFlingGesture}
+ * @returns {DragFlingGestureMixin}
  */
-export const DragFlingGesture = function (Base) {
+export const DragFlingGestureMixin = function (Base) {
   return class extends Base {
 
     constructor() {
