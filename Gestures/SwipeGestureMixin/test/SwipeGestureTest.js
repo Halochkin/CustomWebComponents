@@ -92,19 +92,19 @@ describe('SwipeGesture', function () {
         // this.addEventListener("pointerup", function () {});
       }
 
-      swipeGestureCallback(data1, data2, data3) {
+      swipeGestureCallback(startCachedEvents, moveCachedEvents, endCachedEvents) {
         counter++;
-        const swipeStart = findLastEventOlderThan(data1.events, data2.event.timeStamp - 200);
+        const swipeStart = findLastEventOlderThan(startCachedEvents.events, moveCachedEvents.event.timeStamp - 200);
         if(counter === 1){
-        expect(data1).to.not.be.equal(undefined);
-        expect(data2).to.not.be.equal(undefined);
-        expect(data3).to.not.be.equal(undefined);
+        expect(startCachedEvents).to.not.be.equal(undefined);
+        expect(moveCachedEvents).to.not.be.equal(undefined);
+        expect(endCachedEvents).to.not.be.equal(undefined);
         arr.push(swipeStart);
         }
         if(counter === 2){
-          expect(data1).to.not.be.equal(undefined);
-          expect(data2).to.not.be.equal(undefined);
-          expect(data3).to.not.be.equal(undefined);
+          expect(startCachedEvents).to.not.be.equal(undefined);
+          expect(moveCachedEvents).to.not.be.equal(undefined);
+          expect(endCachedEvents).to.not.be.equal(undefined);
           arr.push(swipeStart);
           expect(arr[0].pageX).to.not.be.equal(arr[1].pageX); // findLastEventOlderThan() test
           done();
