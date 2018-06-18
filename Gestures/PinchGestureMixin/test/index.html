@@ -18,8 +18,9 @@
 
 
 <script type="module">
-  import {PinchGesture} from './PinchGestureMixin.js'; 
-  class RotateBlock extends PinchGesture(HTMLElement) { 
+  import {PinchGestureMixin} from '../src/PinchGestureMixin.js'; 
+
+  class RotateBlock extends PinchGestureMixin(HTMLElement) { 
   
     constructor() {
       super();
