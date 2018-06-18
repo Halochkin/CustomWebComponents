@@ -3,7 +3,6 @@ const id1 = Symbol("touchId1");
 const id2 = Symbol("touchId2");
 const cachedEventDetails = Symbol("cachedEventDetails");
 const cachedTouchAction = Symbol("cachedTouchAction");
-
 const startListener = Symbol("touchStartListener");
 const moveListener = Symbol("touchMoveListener");
 const endListener = Symbol("touchEndListener");
@@ -130,7 +129,6 @@ export const PinchGestureMixin = function (Base) {
       this[id1] = undefined;
       this[id2] = undefined;
       this[endCachedDetail] = {touchevent: e};
-      // this.dispatchEvent(new CustomEvent("pinchend", {bubbles: true, composed: true, detail: {touchevent: e}}));
     }
   }
 };
