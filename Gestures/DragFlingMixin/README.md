@@ -1,11 +1,10 @@
-#### DragFlingGestureMixin
+### DragFlingGestureMixin
  
-  Mixin that translates a sequence of mouse and touch events to reactive lifecycle hooks:
-  `dragGestureCallback(startDetail,dragDetail)` and `flingGestureCallback(flingDetail)`.
-     In order for mixin to support work with smartphones it was added touch events:
-     Touch and mouse events have different properties. To solve this problem, it was added `this[isTouchActive]`
- which equals true whenever the touchdown is fired.
-   Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.
+This mixin allows to translate a sequence of mouse and touch events to reactive lifecycle hooks:
+ * `dragGestureCallback(startDetail,dragDetail)`<br>
+ * `flingGestureCallback(flingDetail)`.<br>
+In order for mixin to support work with smartphones it was added touch events.<br>
+Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.
   Mixin contain 4 main function:
    `[start](e)` - which fired when a pointing device button is pressed on an element by `"mousedown"` event
              or touch points are placed on the touch surface (`"touchstart"` event).
@@ -43,8 +42,8 @@ The first `[end](e)` calls `[fling](e)` which triggered `flingGestureCallback(fl
 * xSpeedPxMs,
 *  y,
 * ySpeedPxMs.<br>
-
-  The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
+Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
+The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
   * up/north:     0
    * right/east:  90
    * down/south: 180
