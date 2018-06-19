@@ -16,14 +16,14 @@
               - distY
               - x  actual coordinates X (Y)
               - y
-              - pointerevent:  - different detail from move-event
-              - startDragging:  - startDragging detail
+              - pointerevent
+              - startDragging
 
-    `[end](e)` - can be triggered by four events:
+`[end](e)` - can be triggered by four events:
                 `"touchend"` - is fired when one or more touch points are removed from the touch surface;
                 `"touchcancel"` - is fired when one or more touch points have been disrupted in an implementation-specific manner (for example, too many touch points are created).
                 `"mouseup"` - is fired when a pointing device button is released over an element.
-                `"mouseout"` - is fired when a pointing device (usually a mouse) is moved off the element that has the listener attached or off one of its children.
+                `"mouseout"` - is fired when a pointing device (usually a mouse) is moved off the element that has the listener attached or off one of its children.`
 
     The first `[end](e)` calls `[fling](e)` which triggered `flingGestureCallback(flinfDetail)` only if the last dragging event moved
    minimum `50px` in one direction during the last `200ms`.
@@ -32,14 +32,15 @@
     .flingSettings.minDistance = 50;
     .flingSettings.minDuration = 200;
 ```
-          `flingGestureCallback(flinfDetail)` contain:
+`flingGestureCallback(flinfDetail)` contain:
      - angle: flingAngle(distX, distY),
      - distX - distanceX (Y)
      - distY,
      - diagonalPx,
      - durationMs,
-     - flingX  - fling value (use for `style.left = flingX + 'px';)
-     - flingY,
+     - flingX  
+     - fling value (use for `style.left = flingX + 'px'`)
+     - flingY
      - x,
      - xSpeedPxMs,
      - y,
