@@ -12,13 +12,12 @@
     `[move](e)` -  is fired when a pointing device (usually a mouse) is stert moving while over an element by
             "touchmove" or "mousemove" events.
         `[moved](e)` - trigger `dragGestureCallback(dragDetail)` which contain:
-              - distX - distanceX (Y)
-              - distY
-              - x  actual coordinates X (Y)
-              - y
-              - pointerevent
-              - startDragging
-
+1. distX - distanceX (Y)
+2. distY
+3. x  actual coordinates X (Y)
+4. y
+5. pointerevent
+6. startDragging<br>
 `[end](e)` - can be triggered by four events:
                 `"touchend"` - is fired when one or more touch points are removed from the touch surface;
                 `"touchcancel"` - is fired when one or more touch points have been disrupted in an implementation-specific manner (for example, too many touch points are created).
@@ -32,18 +31,18 @@ The first `[end](e)` calls `[fling](e)` which triggered `flingGestureCallback(fl
     .flingSettings.minDuration = 200;
 ```
 `flingGestureCallback(flinfDetail)` contain:
-     - angle: flingAngle(distX, distY),
-     - distX - distanceX (Y)
-     - distY,
-     - diagonalPx,
-     - durationMs,
-     - flingX  
-     - fling value (use for `style.left = flingX + 'px'`)
-     - flingY
-     - x,
-     - xSpeedPxMs,
-     - y,
-     - ySpeedPxMs.
+1. angle: flingAngle(distX, distY),
+2. distX - distanceX (Y)
+3. distY,
+4. diagonalPx,
+5. durationMs,
+6. flingX  
+7. fling value (use for `style.left = flingX + 'px'`)
+8. flingY
+9. x,
+10. xSpeedPxMs,
+11. y,
+12. ySpeedPxMs.<br>
 
   The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
    up/north:     0
