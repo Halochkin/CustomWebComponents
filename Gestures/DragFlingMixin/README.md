@@ -32,17 +32,17 @@ The first `[end](e)` calls `[fling](e)` which triggered `flingGestureCallback(fl
 `flingGestureCallback(flinfDetail)` contain:
 * angle: flingAngle(distX, distY),
 * distX - distanceX (Y)
-* distY,
-* diagonalPx,
-* durationMs,
+* distY
+* diagonalPx
+* durationMs
 * flingX  
 * fling value (use for `style.left = flingX + 'px'`)
 * flingY
-* x,
-* xSpeedPxMs,
-*  y,
-* ySpeedPxMs.<br>
-Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
+* x
+* xSpeedPxMs
+*  y
+* ySpeedPxMs<br>
+ Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
 The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
   * up/north:     0
    * right/east:  90
