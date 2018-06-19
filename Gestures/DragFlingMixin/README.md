@@ -1,7 +1,7 @@
 ### DragFlingGestureMixin
  
 This mixin allows to translate a sequence of mouse and touch events to reactive lifecycle hooks:
- * `dragGestureCallback(startDetail,dragDetail)`<br>
+ * `dragGestureCallback(startDetail, dragDetail)`<br>
  * `flingGestureCallback(flingDetail)`.<br>
 In order for mixin to support work with smartphones it was added touch events.<br>
 Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.
