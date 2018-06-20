@@ -26,6 +26,7 @@ const isTouchActive = Symbol("isTouchActive");
  * The minimum distance and duration can be changed using these properties on the element
  *    .flingSettings.minDistance = 50;
  *    .flingSettings.minDuration = 200;
+ *    .flingSettings. maxTouches: 1.
  *
  * SwipeGestureCallback(startDetails, moveDetails, endDetails) contain:
  * 1 - startDetails:
@@ -122,7 +123,7 @@ export const SwipeGestureMixin = function (Base) {
       this[startCachedEvents] = undefined;
       this[moveCachedEvents] = undefined;
       this[endCachedEvents] = undefined;
-      this.swipeSettings = {minDistance: 50, minDuration: 200};
+      this.swipeSettings = {minDistance: 50, minDuration: 200,  maxTouches: 1};
     }
 
     connectedCallback() {
@@ -158,7 +159,7 @@ export const SwipeGestureMixin = function (Base) {
     }
 
     [move](e) {
-      if(e.targetTouches.length > 2 )
+      if (this[isTouchActive] && e.targetTouches.length > this.flingSettings.maxTouches) //Added restriction on the number of fingers  //todo Should I add it or not?
         return;
       const swipeStart = findLastEventOlderThan(this[startCachedEvents].events, e.timeStamp - this.swipeSettings.minDuration);
       if (!swipeStart)
