@@ -54,6 +54,7 @@ The minimum distance and duration can be changed using these properties on the e
 ```javascript
     .flingSettings.minDistance = 50;
     .flingSettings.minDuration = 200;
+    .flingSettings.maxTouches: 3;
 ```
   `flingGestureCallback(flinfDetail)` contain:
   * angle: flingAngle(distX, distY),
@@ -90,7 +91,7 @@ export const DragFlingGesture = function (Base) {
       this[cachedEvents] = undefined;
       this[startDragDetail] = undefined;
       this[flingDetail] = undefined;
-      this.flingSettings = {minDistance: 50, minDuration: 200};
+      this.flingSettings = {minDistance: 50, minDuration: 200, maxTouches: 3};
     }
 
     connectedCallback() {
@@ -110,6 +111,7 @@ export const DragFlingGesture = function (Base) {
     [start](e) {
       this[cachedEvents] = [e];
       this[isTouchActive] = (e.type === "touchstart");
+
       if (this[isTouchActive]) {
         this.addEventListener("touchmove", this[moveListener]);
         this.addEventListener("touchend", this[stopListener]);
@@ -130,7 +132,7 @@ export const DragFlingGesture = function (Base) {
     }
 
     [move](e) {
-      if (this[isTouchActive] && e.targetTouches.length > 1) //Added restriction on the number of fingers  //todo Should I add it or not?
+      if (this[isTouchActive] && e.targetTouches.length > this.flingSettings.maxTouches) //Added restriction on the number of fingers  //todo Should I add it or not?
         return;
       const prevEvent = this[cachedEvents][this[cachedEvents].length - 1];
       this[cachedEvents].push(e);
@@ -149,6 +151,8 @@ export const DragFlingGesture = function (Base) {
     }
 
     [end](e) {
+      if (this[isTouchActive] && e.targetTouches.length > this.flingSettings.maxTouches) //Added restriction on the number of fingers  //todo Should I add it or not?
+        return;
       this[fling](e);
       this.removeEventListener("touchmove", this[moveListener]);
       this.removeEventListener("touchend", this[stopListener]);
@@ -198,5 +202,6 @@ export const DragFlingGesture = function (Base) {
       this.flingGestureCallback(this[flingDetail]);
       this[flingDetail] = undefined;
     };
+
   }
 };
