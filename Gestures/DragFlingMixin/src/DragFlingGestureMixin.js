@@ -110,7 +110,7 @@ export const DragFlingGesture = function (Base) {
     [start](e) {
       this[cachedEvents] = [e];
       this[isTouchActive] = (e.type === "touchstart");
-      if (this[isTouchActive] && e.targetTouches.length < 4) { //Added restriction on the number of fingers  //todo Should I add it or not?
+      if (this[isTouchActive]) {
         this.addEventListener("touchmove", this[moveListener]);
         this.addEventListener("touchend", this[stopListener]);
         this.addEventListener("touchcancel", this[stopListener]);
@@ -128,6 +128,8 @@ export const DragFlingGesture = function (Base) {
     }
 
     [move](e) {
+      if(e.targetTouches.length > 3 ) //Added restriction on the number of fingers  //todo Should I add it or not?
+        return;
       const prevEvent = this[cachedEvents][this[cachedEvents].length - 1];
       this[cachedEvents].push(e);
       let detail = {
