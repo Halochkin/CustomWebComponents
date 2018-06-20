@@ -23,7 +23,9 @@ function findLastEventOlderThan(events, timeTest) {
 function flingAngle(x = 0, y = 0) {
   return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
 }
+
 /*
+
 This mixin allows to translate a sequence of mouse and touch events to reactive lifecycle hooks:
 * `dragGestureCallback(startDetail, dragDetail)`<br>
 * `flingGestureCallback(flingDetail)`.<br>
@@ -43,13 +45,11 @@ or touch points are placed on the touch surface (`"touchstart"` event).
 * startDragging<br>
 `[end](e)` - can be triggered by four events:
 `"touchend"` - is fired when one or more touch points are removed from the touch surface;
-`"touchcancel"` - is fired when one or more touch points have been disrupted in an implementation-specific manner
-(for example, too many touch points are created).
+`"touchcancel"` - is fired when one or more touch points have been disrupted in an implementation-specific manner (for example, too many touch points are created).
 `"mouseup"` - is fired when a pointing device button is released over an element.
-`"mouseout"` - is fired when a pointing device (usually a mouse) is moved off the element that has the listener attached or 
-off one of its children.
-The first `[end](e)` calls `[fling](e)` which triggered `flingGestureCallback(flinfDetail)` only if the last dragging event 
-moved minimum `50px` in one direction during the last `200ms`.
+`"mouseout"` - is fired when a pointing device (usually a mouse) is moved off the element that has the listener attached or off one of its children.
+
+The first `[end](e)` calls `[fling](e)` which triggered `flingGestureCallback(flinfDetail)` only if the last dragging event moved minimum `50px` in one direction during the last `200ms`.
 The minimum distance and duration can be changed using these properties on the element
 ```javascript
     .flingSettings.minDistance = 50;
@@ -68,15 +68,15 @@ The minimum distance and duration can be changed using these properties on the e
 * xSpeedPxMs
 *  y
 * ySpeedPxMs<br>
-Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which 
-equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
+Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
   The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
 * up/north:     0
 * right/east:  90
 * down/south: 180
 * left/west:  270
-* @param Base * @returns {DragFlingGesture}
-*/
+ * @param Base
+ * @returns {DragFlingGesture}
+ */
 export const DragFlingGesture = function (Base) {
   return class extends Base {
 
@@ -110,16 +110,15 @@ export const DragFlingGesture = function (Base) {
     [start](e) {
       this[cachedEvents] = [e];
       this[isTouchActive] = (e.type === "touchstart");
-      if (this[isTouchActive]) {
+      if (this[isTouchActive] && e.targetTouches.length <= 3) { //Added restriction on the number of fingers  //todo Should I add it or not?
         this.addEventListener("touchmove", this[moveListener]);
         this.addEventListener("touchend", this[stopListener]);
         this.addEventListener("touchcancel", this[stopListener]);
       }
       if (!this[isTouchActive])
         this.addEventListener("mousemove", this[moveListener]);
-        this.addEventListener("mouseup", this[stopListener]);
-        this.addEventListener("mouseout", this[stopListener]);     //todo make sure that 'mouseOUT' is the best replacement to touchCANCEL (only for mouse events)
-
+      this.addEventListener("mouseup", this[stopListener]);
+      this.addEventListener("mouseout", this[stopListener]);     //todo make sure that 'mouseOUT' is the same as 'touchCANCEL' (only for mouse events)
       this[startDragDetail] = {
         touchevent: e,
         x: this[isTouchActive] ? e.targetTouches[0].pageX : e.x,
