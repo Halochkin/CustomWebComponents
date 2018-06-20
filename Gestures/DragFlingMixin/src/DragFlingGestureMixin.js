@@ -23,7 +23,6 @@ function findLastEventOlderThan(events, timeTest) {
 function flingAngle(x = 0, y = 0) {
   return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
 }
-
 /*
 
 This mixin allows to translate a sequence of mouse and touch events to reactive lifecycle hooks:
