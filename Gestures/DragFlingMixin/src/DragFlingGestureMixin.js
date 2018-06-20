@@ -23,12 +23,13 @@ function findLastEventOlderThan(events, timeTest) {
 function flingAngle(x = 0, y = 0) {
   return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
 }
+
 /*
 
 This mixin allows to translate a sequence of mouse and touch events to reactive lifecycle hooks:
 * `dragGestureCallback(startDetail, dragDetail)`<br>
 * `flingGestureCallback(flingDetail)`.<br>
-In order for mixin to support work with smartphones it was added touch events.<br>
+In order for mixin to support work with smartphones it was added touch events.
 Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.
   Mixin contain 4 main function:
 `[start](e)` - which fired when a pointing device button is pressed on an element by `"mousedown"` event
@@ -118,6 +119,8 @@ export const DragFlingGesture = function (Base) {
         this.addEventListener("mousemove", this[moveListener]);
       this.addEventListener("mouseup", this[stopListener]);
       this.addEventListener("mouseout", this[stopListener]);     //todo make sure that 'mouseOUT' is the same as 'touchCANCEL' (only for mouse events)
+
+
       this[startDragDetail] = {
         touchevent: e,
         x: this[isTouchActive] ? e.targetTouches[0].pageX : e.x,
@@ -127,7 +130,7 @@ export const DragFlingGesture = function (Base) {
     }
 
     [move](e) {
-      if(e.targetTouches.length > 3 ) //Added restriction on the number of fingers  //todo Should I add it or not?
+      if (this[isTouchActive] && e.targetTouches.length > 1) //Added restriction on the number of fingers  //todo Should I add it or not?
         return;
       const prevEvent = this[cachedEvents][this[cachedEvents].length - 1];
       this[cachedEvents].push(e);
