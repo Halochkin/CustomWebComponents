@@ -1,6 +1,7 @@
 const selectListener = Symbol("selectstartListener");
 const startListener = Symbol("pointerDownListener");
 const moveListener = Symbol("pointerMoveListener");
+const mouseStartListener = Symbol("mouseStartListener");
 const stopListener = Symbol("pointerUpListener");
 const start = Symbol("start");
 const move = Symbol("move");
@@ -10,10 +11,12 @@ const cachedEvents = Symbol("cachedEvents");
 const startCachedEvents = Symbol("startCachedEvents");
 const moveCachedEvents = Symbol("moveCachedEvents");
 const endCachedEvents = Symbol("endCachedEvents");
+const isTouchActive = Symbol("isTouchActive");
 
 /**
  * SwipeGestureMixin adds a reactive lifecycle hook SwipeGestureCallback(...) to its subclasses.
  * This lifecycle hook is triggered every time a potentially assignable node for the element changes.
+ * In order for mixin to support work with smartphones it was added both touch and mouse events.
  * SwipeGestureCallback(...) triggers manually every time the "swipe" event has been activated
  ** The "swipe" event only occurs if the pointermove events have:
  *  - moved a minimum 50px
@@ -58,7 +61,7 @@ const endCachedEvents = Symbol("endCachedEvents");
  */
 
 function flingAngle(x = 0, y = 0) {
-  return ((Math.atan2(y, -x) * 180 / Math.PI)+270)%360;
+  return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
 }
 
 function findLastEventOlderThan(events, timeTest) {
@@ -125,70 +128,78 @@ export const SwipeGestureMixin = function (Base) {
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
       this.addEventListener("selectstart", this[selectListener]);
-      this.addEventListener("pointerdown", this[startListener]);
+      this.addEventListener("touchstart", this[startListener]);
+      this.addEventListener("mousedown", this[startListener]);
     }
 
     disconnectedCallback() {
       if (super.disconnectedCallback) super.disconnectedCallback();
-      this.removeEventListener("selectstart", this[startListener]);
-      this.removeEventListener("pointerdown", this[startListener]);
+      this.removeEventListener("selectstart", this[selectListener]);
+      this.removeEventListener("touchstart", this[startListener]);
+      this.removeEventListener("mousedown", this[startListener]);
     }
 
     [start](e) {
-      this.setPointerCapture(e.pointerId);
-      this.addEventListener("pointermove", this[moveListener]);
-      this.addEventListener("pointerup", this[stopListener]);
-      this.addEventListener("pointercancel", this[stopListener]);
+      this[isTouchActive] = (e.type === "touchstart");
+      if (this[isTouchActive]) {
+        this.addEventListener("touchmove", this[moveListener]);
+        this.addEventListener("touchend", this[stopListener]);
+        this.addEventListener("touchcancel", this[stopListener]);
+      }
+      if (!this[isTouchActive])
+        this.addEventListener("mousemove", this[moveListener]);
+      this.addEventListener("mouseup", this[stopListener]);
+      this.addEventListener("mouseout", this[stopListener]);
       this[startCachedEvents] = {
-        startX: e.x,
-        startY: e.y,
+        x: this[isTouchActive] ? e.targetTouches[0].pageX : e.x,
+        y: this[isTouchActive] ? e.targetTouches[0].pageY : e.y,
         events: [e]
       };
     }
 
     [move](e) {
+      if(e.targetTouches.length > 2 )
+        return;
       const swipeStart = findLastEventOlderThan(this[startCachedEvents].events, e.timeStamp - this.swipeSettings.minDuration);
       if (!swipeStart)
         return;
-      const lastX = e.x;
-      const lastY = e.y;
-      const distX = lastX - swipeStart.x;
-      const distY = lastY - swipeStart.y;
+      const lastX = this[isTouchActive] ? e.targetTouches[0].pageX : e.x;
+      const lastY = this[isTouchActive] ? e.targetTouches[0].pageY : e.y;
+      const distX = this[isTouchActive] ? lastX - swipeStart.targetTouches[0].pageX : lastX - swipeStart.x;
+      const distY = this[isTouchActive] ? lastY - swipeStart.targetTouches[0].pageY : lastY - swipeStart.y;
       const diagonalPx = Math.sqrt(distX * distX + distY * distY);
       if (diagonalPx < this.swipeSettings.minDistance)
         return;
       const durationMs = e.timeStamp - swipeStart.timeStamp;
       this[moveCachedEvents] = {
-          lastX,
-          lastY,
-          distX,
-          distY,
-          diagonalPx,
-          durationMs,
-          speedPxMs: diagonalPx / durationMs,
-          xSpeedPxMs: (lastX - swipeStart.x) / durationMs,
-          ySpeedPxMs: distY / durationMs,
-          angle: flingAngle(lastX - swipeStart.x, distY),
-          event: e
-        };
+        lastX,
+        lastY,
+        distX,
+        distY,
+        diagonalPx,
+        durationMs,
+        speedPxMs: diagonalPx / durationMs,
+        xSpeedPxMs: (lastX - swipeStart.x) / durationMs,
+        ySpeedPxMs: distY / durationMs,
+        angle: flingAngle(lastX - swipeStart.x, distY),
+        event: e
+      };
     }
 
     [end](e) {
-      this.removeEventListener("pointermove", this[moveListener]);
-      this.removeEventListener("pointerup", this[stopListener]);
-      this.removeEventListener("pointercancel", this[stopListener]);
-      this.releasePointerCapture(e.pointerId);
-      this[endCachedEvents] = {
-        stopX: e.x,
-        stopY: e.y,
-        event: e
-      };
+      this.removeEventListener("touchmove", this[moveListener]);
+      this.removeEventListener("touchend", this[stopListener]);
+      this.removeEventListener("touchcancel", this[stopListener]);
+      this.removeEventListener("mousemove", this[moveListener]);
+      this.removeEventListener("mouseup", this[stopListener]);
+      this.removeEventListener("mouseout", this[stopListener]);
       if (!this[moveCachedEvents])
         return;
-      this.swipeGestureCallback(this[startCachedEvents], this[moveCachedEvents], this[endCachedEvents]);
+      this.swipeGestureCallback(this[startCachedEvents], this[moveCachedEvents]);
       this[startCachedEvents] = undefined;
       this[moveCachedEvents] = undefined;
       this[endCachedEvents] = undefined;
+      this[isTouchActive] = undefined;
     }
   }
 };
