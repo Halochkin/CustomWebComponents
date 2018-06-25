@@ -18,16 +18,24 @@
 
 
 <script type="module">
-  import {PinchGestureMixin} from '../src/PinchGestureMixin.js'; 
+  import {PinchGestureMixin} from '../src/PinchGestureMixin.js'; //test
 
-  class RotateBlock extends PinchGestureMixin(HTMLElement) { 
-  
+  class RotateBlock extends PinchGestureMixin(HTMLElement) { //[1]
+
     constructor() {
       super();
+      this._pinchStartListener = e => this._onPinchStart(e);
+      this._pinchListener = e => this._onPinch(e);
+      this._pinchEndListener = e => this._onPinchEnd(e);
+    }
+
+    static get dragFlingEventOrCallback() {
+      return 1;
     }
 
     connectedCallback() {
       super.connectedCallback();
+      this.addEventListener("pinchstart", this._pinchStartListener);
       this.style.display = "block";
       this.style.position = "fixed";
       this.style.left = "100px";
@@ -37,10 +45,31 @@
       this.style.background = "red";
     }
 
-    pinchGestureCallback(startDetail, moveDetail, endDetail){
-      this.style.transform =`rotate(${moveDetail.rotationStart}deg)`;
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this.removeEventListener("pinchstart", this._pinchListener);
+    }
+
+    _onPinchStart(e) {
+      this.addEventListener("pinch", this._pinchListener);
+    }
+
+    _onPinch(e) {
+      this.addEventListener("pinchend", this._pinchEndListener);
+      this.style.transform += `rotate(${e.detail.rotation}deg)`;
+    }
+
+    _onPinchEnd(e) {
+      this.removeEventListener("pinch", this._pinchStartListener);
+      this.removeEventListener("pinchend", this._pinchEndListener);
+    }
+
+    pinchCallback(pinchDetail) {
+      this.style.transform += `rotate(${pinchDetail.rotation}deg)`;
     }
   }
+
   customElements.define("rotate-block", RotateBlock);
 
 </script>
