@@ -109,11 +109,12 @@ export const PinchGestureMixin = function (Base) {
       const f1 = e.targetTouches[0];
       const f2 = e.targetTouches[1];
       const detail = this.makeDetail(f2.pageX, f1.pageX, f2.pageY, f1.pageY, e);
-      detail.distDiagonal = detail.diagonal - lastEventDetail.diagonal;
-      detail.distWidth = detail.width - lastEventDetail.width;
-      detail.distHeight = detail.height - lastEventDetail.height;
+      detail.distDiagonal = detail.diagonal / startEventDetail.diagonal;
+      detail.distWidth = detail.width / startEventDetail.width;
+      detail.distHeight = detail.height / startEventDetail.height;
       detail.rotation = lastEventDetail.angle - detail.angle;
       detail.rotationStart = startEventDetail.angle - detail.angle;
+
       this[cachedEventDetails].push(detail);
       this[eventAndOrCallback]("pinch", detail);
     }
@@ -141,12 +142,12 @@ export const PinchGestureMixin = function (Base) {
       window.removeEventListener("touchmove", this[moveListener]);
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
+      this[endCachedDetail] = {touchevent: e};
+      this[eventAndOrCallback]("pinchend", this[endCachedDetail]);
       this[cachedEventDetails] = undefined;
       this[id1] = undefined;
       this[id2] = undefined;
       this[activeEventOrCallback] = undefined;
-      this[endCachedDetail] = {touchevent: e};
-      this[eventAndOrCallback]("pinchend", this[endCachedDetail]);
     }
 
     [eventAndOrCallback](eventName, detail) {
