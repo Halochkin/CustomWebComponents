@@ -130,7 +130,7 @@ export const SwipeGestureMixin = function (Base) {
     [mouseStop](e) {
       const prevDetail = this[cachedEvents][this[cachedEvents].length - 1];
       const detail = makeDetail(event, e.x, e.y, prevDetail);
-      if (Math.abs(detail.distX) < this.constructor.swipeSettings.minDistance) {
+      if (Math.abs(detail.distDiag) < this.constructor.swipeSettings.minDistance) {
         return;
       }
       this[eventAndOrCallback]("swipeend", detail);
