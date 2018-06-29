@@ -29,10 +29,10 @@
 
 
 <script type="module">
-  import {PinchGesture} from '../src/PinchGestureMixin.js'; //test
+  import {PinchGesture} from '../src/PinchGestureMixin.js'; 
 
 
-  class SpinningTop extends PinchGesture(HTMLElement) { //[1]
+  class SpinningTop extends PinchGesture(HTMLElement) { 
 
     constructor() {
       super();
@@ -54,8 +54,8 @@
     }
 
     _onPinch(e) {
-      const width = e.detail.width / e.detail.startEvent.width;
-      const height = e.detail.height / e.detail.startEvent.height;
+//       const width = e.detail.width / e.detail.startEvent.width;
+//       const height = e.detail.height / e.detail.startEvent.height;
       const rotation = e.detail.angle - e.detail.startEvent.angle;
       const lastRotate = this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0;
       this.style.transform = `rotate(${lastRotate + rotation}deg)`;
