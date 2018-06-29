@@ -4,74 +4,82 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style type="text/css" rel="stylesheet">
+        spinning-top {
+            display: inline-block;
+            margin-left: 50px;
+            margin-top: 50px;
+            border-radius: 10%;
+            border-width: 80px;
+            border-style: solid;
+            border-bottom-color: red;
+            border-top-color: green;
+            border-left-color: yellow;
+            border-right-color: blue;
+            background-color: pink;
+        }
 
     </style>
     <script src="https://hammerjs.github.io/dist/hammer.js"></script>
     <script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
     <script> TouchEmulator(); </script>
 </head>
-<body>
+<body style="margin: 50px;">
 
-<rotate-block id="rotate">
-    <h2 style="text-align: center; color: white;">Press Shift+Click<br>and rotate</h2>
-</rotate-block>
+<spinning-top></spinning-top>
 
 
 <script type="module">
-  import {PinchGestureMixin} from '../src/PinchGestureMixin.js'; //test
+  import {PinchGesture} from '../src/PinchGestureMixin.js'; //test
 
-  class RotateBlock extends PinchGestureMixin(HTMLElement) { //[1]
+
+  class SpinningTop extends PinchGesture(HTMLElement) { //[1]
 
     constructor() {
       super();
-      this._pinchStartListener = e => this._onPinchStart(e);
       this._pinchListener = e => this._onPinch(e);
-      this._pinchEndListener = e => this._onPinchEnd(e);
     }
 
-    static get dragFlingEventOrCallback() {
-      return 1;
+    static get pinchEvent() {
+      return true;
     }
 
     connectedCallback() {
       super.connectedCallback();
-      this.addEventListener("pinchstart", this._pinchStartListener);
-      this.style.display = "block";
-      this.style.position = "fixed";
-      this.style.left = "100px";
-      this.style.top = "100px";
-      this.style.width = "300px";
-      this.style.height = "300px";
-      this.style.background = "red";
-    }
-
-
-    disconnectedCallback() {
-      super.disconnectedCallback();
-      this.removeEventListener("pinchstart", this._pinchListener);
-    }
-
-    _onPinchStart(e) {
       this.addEventListener("pinch", this._pinchListener);
     }
 
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this.removeEventListener("pinch", this._pinchListener);
+    }
+
     _onPinch(e) {
-      this.addEventListener("pinchend", this._pinchEndListener);
-      this.style.transform += `rotate(${e.detail.rotation}deg)`;
+      const width = e.detail.width / e.detail.startEvent.width;
+      const height = e.detail.height / e.detail.startEvent.height;
+      const rotation = e.detail.angle - e.detail.startEvent.angle;
+      const lastRotate = this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0;
+      this.style.transform = `rotate(${lastRotate + rotation}deg)`;
     }
+      
 
-    _onPinchEnd(e) {
-      this.removeEventListener("pinch", this._pinchStartListener);
-      this.removeEventListener("pinchend", this._pinchEndListener);
-    }
-
-    pinchCallback(pinchDetail) {
-      this.style.transform += `rotate(${pinchDetail.rotation}deg)`;
+    spinCallback(detail) {
+      this.style.transition = "1s";
+      this.style.transform = `rotate(-${detail.angle * 5}deg)`;
+      this.innerText = `Spin: ${detail.angle.toFixed(3)}deg`;
+      const lastRotate = this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0;
+      this.style.transform = `rotate(${lastRotate + detail.angle}deg)`;
+      
     }
   }
 
-  customElements.define("rotate-block", RotateBlock);
+  customElements.define("spinning-top", SpinningTop);
 
+  // const spinner = document.querySelector("spinning-top");
+  // spinner.addEventListener("pinch", () => spinner.style.transform = `rotate(${angle}deg)`);
+  // spinner.addEventListener("spin", () => {
+  //   spinner.style.transitionDuration = `5s`;
+  //   spinner.style.transform = `rotate(${angle}deg)`;
+  // });
 </script>
 </body>
 </html>
