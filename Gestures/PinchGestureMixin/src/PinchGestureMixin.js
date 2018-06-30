@@ -5,6 +5,7 @@ const start = Symbol("touchStart");
 const move = Symbol("touchMove");
 const end = Symbol("touchEnd");
 const spin = Symbol("spin");
+
 const recordedEventDetails = Symbol("recordedEventDetails");
 const cachedTouchAction = Symbol("cachedTouchAction");
 const oneHit = Symbol("firstTouchIsAHit");
@@ -22,8 +23,8 @@ function findLastEventOlderThan(events, timeTest) {
 }
 
 function makeDetail(touchevent) {
-  const f1 = touchevent.targetTouches.length === 0 ? touchevent.changedTouches[0] : touchevent.targetTouches[0];
-  const f2 = touchevent.targetTouches.length === 0 ? touchevent.changedTouches[1] : touchevent.targetTouches[1];
+  const f1 = touchevent.targetTouches[0];
+  const f2 = touchevent.targetTouches[1];
   const x1 = f1.pageX;
   const y1 = f1.pageY;
   const x2 = f2.pageX;
@@ -66,6 +67,9 @@ function makeDetail(touchevent) {
  *
  * [1] pinchend coordinates are copied from the last successful pinch.
  *
+ * `PinchGesture` implement an extensive [InvadeAndRetreat!] strategy
+ * to block default actions in the browsers such as "pinch-to-zoom".
+ *
  * @param Base
  * @returns {PinchGesture}
  */
@@ -74,7 +78,7 @@ export const PinchGesture = function (Base) {
     constructor() {
       super();
       this[recordedEventDetails] = undefined;
-      this[cachedTouchAction] = undefined;
+      this[cachedTouchAction] = undefined;                      //block touchAction
       this[oneHit] = false;
 
       this[startListener] = (e) => this[start](e);
@@ -90,18 +94,13 @@ export const PinchGesture = function (Base) {
     //   return false;
     // }
 
-    // static get spinDuration() {
-    //   return 50;    //to max: we need probably a smaller number here than on fling..
-    // }
-
     static get spinSettings() {
       return {spinMotion: 50, spinDuration: 100};
     }
 
-
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
-      // this.style.touchAction = "none"; //todo study this
+      this.style.touchAction = "none";                          //block touchAction
       this.addEventListener("touchstart", this[startListener]);
     }
 
@@ -125,11 +124,7 @@ export const PinchGesture = function (Base) {
       e.preventDefault();                                       //block defaultAction
       const body = document.querySelector("body");              //block touchAction
       this[cachedTouchAction] = body.style.touchAction;         //block touchAction
-      body.style.touchAction = "none";
-      e.preventDefault();
-      // const body = document.querySelector("body");
-      // this[cachedTouchAction] = body.style.touchAction;
-      // body.style.touchAction = "none";                       //max1
+      body.style.touchAction = "none";                          //block touchAction
       window.addEventListener("touchmove", this[moveListener]);
       window.addEventListener("touchend", this[endListener]);
       window.addEventListener("touchcancel", this[endListener]);
@@ -139,26 +134,16 @@ export const PinchGesture = function (Base) {
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchstart", {bubbles: true, detail}));
     }
 
-
     [move](e) {
       e.preventDefault();
-      const detail = makeDetail(e);
-      detail.startEvent = this[recordedEventDetails][0];
+      const detail = makeDetail(e);                             //block defaultAction
       this[recordedEventDetails].push(detail);
       this.pinchCallback && this.pinchCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinch", {bubbles: true, detail}));
     }
 
-
-    /**
-     * This is only called when one of the events triggered when the pinch is active.
-     * You can add more fingers (accidentally touch the screen with more fingers while you rotate or pinch),
-     * but you cannot take one of the two original target fingers off the screen.
-     */
     [end](e) {
-      e.preventDefault();
-      //todo add the fling calculations for spin both rotation, pinch and doubledrag
-      //todo we use this[recordedEventDetails] to calculate spin on rotation and scalefling for scaling
+      e.preventDefault();                                       //block defaultAction
       window.removeEventListener("touchmove", this[moveListener]);
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
@@ -180,13 +165,18 @@ export const PinchGesture = function (Base) {
       const spinStart = findLastEventOlderThan(this[recordedEventDetails], spinTime);
       if (!spinStart)
         return;
-      const detail = makeDetail(event);
-      detail.duration = spinTime;
-      let lastspinMotion = Math.abs(detail.x1 - spinStart.x1)+(detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
-      if (lastspinMotion >= settings.spinMotion) {
-        this.spinCallback && this.spinCallback(detail);
-        this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("spin", {bubbles: true, detail}));
-      }
+      const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
+      detail.touchevent = event;
+      detail.duration = settings.spinDuration;
+      detail.xFactor = Math.abs(spinStart.width / detail.width);
+      detail.yFactor = Math.abs(spinStart.height / detail.height);
+      detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
+      detail.rotation = Math.abs(spinStart.angle - detail.angle);
+      let lastspinMotion = Math.abs(detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
+      if (lastspinMotion < settings.spinMotion)
+        return;
+      this.spinCallback && this.spinCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("spin", {bubbles: true, detail}));
     }
   }
 };
