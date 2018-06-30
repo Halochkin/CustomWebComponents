@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
+<script> TouchEmulator(); </script>
+
+<style>
+    body {
+        padding: 10px;
+    }
+
+    pinch-one,
+    pinch-two,
+    pinch-three {
+        display: inline-block;
+        width: 200px;
+        height: 200px;
+        background-color: #4cd2e4;
+        border-radius: 10%;
+        text-align: center;
+        line-height: 12;
+        margin-left: 100px;
+        border: 1px solid #6da9ff;
+    }
+</style>
+
+<pinch-one>free Callback() scale</pinch-one>
+<pinch-two>symmetric Callback() scale</pinch-two>
+<pinch-three>symmetric Event scale</pinch-three>
+
+<script type="module">
+  import {PinchGesture} from "../src/PinchGestureMixin.js";
+
+  class PinchOne extends PinchGesture(HTMLElement) { //[1]
+
+    static get pinchEvent() {
+      return true;
+    }
+
+    pinchstartCallback(detail) {
+      this.startHeight = detail.height;
+      this.startWidth = detail.width;
+      this.style.backgroundColor = "#52cc9c";
+    }
+
+    pinchCallback(detail) {
+      this.style.transition = "0s";
+      const distY = (detail.height / this.startHeight);
+      const distX = (detail.width / this.startWidth);
+      this.style.transform = `scaleY(${distY}) scaleX(${distX})`;
+    }
+
+    pinchendCallback(detail) {
+      this.style.transition = "3s";
+      this.style.transform = `scaleY(1) scaleX(1)`;
+      this.style.backgroundColor = "#58bf21";
+    }
+  }
+
+  class PinchTwo extends PinchGesture(HTMLElement) { //[1]
+
+    static get pinchEvent() {
+      return true;
+    }
+
+    pinchstartCallback(detail) {
+      this.startDiagonal = detail.diagonal;
+    }
+
+    pinchCallback(detail) {
+      this.style.transition = "0s";
+      this.style.backgroundColor = "orange";
+      this.style.transform = `scale(${detail.diagonal / this.startDiagonal})`;
+    }
+
+    pinchendCallback(detail) {
+      this.style.transition = "3s";
+      this.style.transform = `scale(1)`;
+      this.style.backgroundColor = "#58bf21";
+    }
+  }
+
+  class PinchThree extends PinchGesture(HTMLElement) { //[1]
+
+    static get pinchEvent() {
+      return true;
+    }
+  }
+
+  const pinch = document.querySelector("pinch-three");
+  let startDiagonal = undefined;
+  pinch.addEventListener("pinchstart", (e) => {
+    pinch.style.backgroundColor = "#ff5939";
+    startDiagonal = e.detail.diagonal;
+  });
+  pinch.addEventListener("pinch", (e) => {
+    pinch.style.transition = "0s";
+    pinch.style.transform = `scale(${e.detail.diagonal / startDiagonal})`;
+  });
+  pinch.addEventListener("pinchend", (e) => {
+    pinch.style.transition = "3s";
+    pinch.style.transform = `scaleY(1) scaleX(1)`;
+    pinch.style.backgroundColor = "#58bf21";
+  });
+  customElements.define("pinch-one", PinchOne);
+  customElements.define("pinch-two", PinchTwo);
+  customElements.define("pinch-three", PinchThree);
+</script>
+</body>
+</html>
