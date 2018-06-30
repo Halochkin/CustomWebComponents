@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
+<script> TouchEmulator(); </script>
+
+<style>
+    body {
+        padding: 10px;
+    }
+
+    rotate-one,
+    rotate-two,
+    rotate-three {
+        display: inline-block;
+        width: 200px;
+        height: 200px;
+        background-color: #83ccc9;
+        text-align: center;
+        line-height: 12;
+        margin-left: 100px;
+        border: 2px solid #6da9ff;
+        border-radius: 0 50% 50% 50%;
+    }
+</style>
+
+<rotate-one>Callback() rubber-rotation</rotate-one>
+<rotate-two>Event rotation</rotate-two>
+<rotate-three>symmetric Event scale</rotate-three>
+
+<script type="module">
+  import {PinchGesture} from "../src/PinchGestureMixin.js";
+
+  class RotateOne extends PinchGesture(HTMLElement) { //[1]
+
+    static get pinchEvent() {
+      return true;
+    }
+
+    pinchstartCallback(detail) {
+      this.style.backgroundColor = "#52cc9c";
+      const lastRotate = this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0;
+      this._startAngleEvent = lastRotate + detail.angle;
+    }
+
+    pinchCallback(detail) {
+      this.style.transition = "0s";
+      this.style.transform = `rotate(${this._startAngleEvent - detail.angle}deg)`;
+      this.moveangle = detail.angle;
+    }
+
+    pinchendCallback(detail) {
+      this.style.transition = "3s";
+      this.style.transform = `rotate(${detail.angle - this.moveangle }deg)`;
+      this.style.backgroundColor = "#58bf21";
+    }
+  }
+
+  class RotateTwo extends PinchGesture(HTMLElement) {
+
+    static get pinchEvent() {
+      return true;
+    }
+
+    pinchstartCallback(pinchDetail) {
+      const lastRotate = this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0;
+      this._startAngle = lastRotate + pinchDetail.angle;
+    }
+
+    pinchCallback(pinchDetail) {
+      this.style.transform = `rotate(${this._startAngle - pinchDetail.angle}deg)`;
+      this.style.backgroundColor = "orange";
+    }
+
+    pinchendCallback(pinchDetail) {
+      this.style.backgroundColor = "#58bf21";
+    }
+  }
+
+  class RotateThree extends PinchGesture(HTMLElement) {
+
+    static get pinchEvent() {
+      return true;
+    }
+  }
+
+  const rotate = document.querySelector("rotate-three");
+  let startAngle = undefined;
+  rotate.addEventListener("pinchstart", (e) => {
+    const lastRotate = rotate.style.transform ? parseFloat(rotate.style.transform.substring(7)) : 0;
+    startAngle = lastRotate + e.detail.angle;
+    rotate.style.backgroundColor = "#ff5939";
+  });
+  rotate.addEventListener("pinch", (e) => {
+    rotate.style.transform = `rotate(${startAngle - e.detail.angle}deg)`;
+  });
+  rotate.addEventListener("pinchend", (e) => {
+    rotate.style.backgroundColor = "#58bf21";
+  });
+  customElements.define("rotate-one", RotateOne);
+  customElements.define("rotate-two", RotateTwo);
+  customElements.define("rotate-three", RotateThree);
+</script>
+</body>
+</html>
