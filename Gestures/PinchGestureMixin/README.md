@@ -2,7 +2,7 @@
   The spin gesture is a continuous gesture that occurs when two fingers that touch the screen move around each other and
   used to control objects on the screen.
 For example, you can use them to rotate or change the scale of an element.<br>
-The benefit of `spin` before a simple `pinch` is that the spin callback is only triggered under certain conditions: 
+The benefit of `spin` over a simple `pinch` is that the spin callback is only triggered under certain conditions: 
 one or both fingers have moved more than a minimum `spinMotion`(px) for more than minimum `spinDuration`(ms) this allows 
 prevent accidental calls.
 Both `spinMotion` and `spinDuration` are implemented as [StaticSettings](../chapter2/Pattern_StaticSettings.md).
