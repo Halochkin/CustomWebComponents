@@ -71,7 +71,7 @@ spinCallback(`detail`{
   });
 </script>
  ```
- Try it on [codepen.io](https://codepen.io/Halochkin/full/PaVPNV)
+ [Try it](https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/test/SpinBlock.html)
   ### Reference
   * [Zingtouch](https://zingchart.github.io/zingtouch/)
  
