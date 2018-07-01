@@ -37,18 +37,10 @@
       return true;
     }
 
-    pinchstartCallback(detail) {
-      this.style.backgroundColor = "#ccbc1d";
-    }
-
     spinCallback(detail) {
       this.style.transition = "1s";
       this.style.transform = `rotate(-${detail.rotation * 5}deg)`;
       this.style.backgroundColor = "orange";
-    }
-
-    pinchendCallback(detail) {
-      this.style.backgroundColor = "#58bf21";
     }
   }
 
@@ -62,7 +54,7 @@
   const spin = document.querySelector("spin-two");
   spin.addEventListener("spin", (e) => {
     spin.style.transition = "1s";
-    spin.style.transform = `rotate(-${e.detail.rotation * 5}deg)`;
+    spin.style.transform = `rotate(-${e.detail.rotation * 3}deg)`;
   });
 
   customElements.define("spin-one", SpinOne);
