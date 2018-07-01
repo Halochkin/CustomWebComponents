@@ -15,17 +15,17 @@ finger 1 and 2, where start position was the position of finger 1 and 2 at pinch
 
 The `spin` can `only` be triggered by an `spinCallback(detail)` or a `spin` event.
 
-spinCallback(`detail`{
-- touchevent - event detail
-- diagonal - diagonal between fingers (px)
-- width - distance(X) between fingers (px)
-- height - distance(Y) (px)
-- angle - the angle of the diagonal(deg)
-- duration - spinEvent duration
-- xFactor - the scale factor(X) for asymmetrical zoom in / zoom out
-- yFactor - the scale factor(Y)
-- diagonalFactor - scale factor for symmetrical zoom in / zoom out 
-- rotation - the difference between start and end spin events <br>
+spinCallback(detail{
+- `touchevent` - event detail
+- `diagonal` - diagonal between fingers (px)
+- `width` - distance(X) between fingers (px)
+- `height` - distance(Y) (px)
+- `angle` - the angle of the diagonal(deg)
+- `duration` - spinEvent duration
+- `xFactor` - the scale factor(X) for asymmetrical zoom in / zoom out
+- `yFactor` - the scale factor(Y)
+- `diagonalFactor` - scale factor for symmetrical zoom in / zoom out 
+- `rotation` - the difference between start and end spin angles <br>
 });
 
  ### Example: swipeGesture
