@@ -71,7 +71,7 @@ spinCallback(`detail`{
   });
 </script>
  ```
- Try on [codepen.io](https://codepen.io/Halochkin/full/PaVPNV)
+ Try it on [codepen.io](https://codepen.io/Halochkin/full/PaVPNV)
   ### Reference
   * [Zingtouch](https://zingchart.github.io/zingtouch/)
  
