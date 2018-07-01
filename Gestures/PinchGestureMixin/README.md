@@ -22,9 +22,9 @@ spinCallback(`detail`{
 - height - distance(Y) (px)
 - angle - the angle of the diagonal(deg)
 - duration - spinEvent duration
-- xFactor - the scale factor(X) for asymmetrical element zoom in / zoom out
+- xFactor - the scale factor(X) for asymmetrical zoom in / zoom out
 - yFactor - the scale factor(Y)
-- diagonalFactor - scale factor for symmetrical element zoom in / zoom out 
+- diagonalFactor - scale factor for symmetrical zoom in / zoom out 
 - rotation - the difference between start and end events
 });
 
@@ -49,22 +49,22 @@ spinCallback(`detail`{
 <script type="module">
   import {PinchGesture} from "../../src/gestures/PinchSpin.js";
 
-  class SpinningBlock extends PinchGesture(HTMLElement) { //[1]
+  class SpinningBlock extends PinchGesture(HTMLElement) {  //[1]
 
     static get pinchEvent() {
       return true;
     }
 
-    spinCallback(detail) {
+    spinCallback(detail) {                              
       this.style.transition = "1s";
       this.style.transform = `rotate(-${detail.rotation * 5}deg)`;  // 5 - acceleration factor and can be changed
       this.style.backgroundColor = "orange";
     }
   }
 
-  customElements.define("spinning-block", SpinningBlock);
+  customElements.define("spinning-block", SpinningBlock); 
 
-  const spinner = document.querySelector("spinning-block");
+  const spinner = document.querySelector("spinning-block"); 
   spinner.addEventListener("spin", (e) => {
     spinner.style.transition = "3s";
     spinner.style.transform = `rotate(${e.detail.rotation * 3}deg)`; 
