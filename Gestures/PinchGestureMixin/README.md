@@ -66,8 +66,8 @@ spinCallback(`detail`{
 
   const spinner = document.querySelector("spinning-block"); 
   spinner.addEventListener("spin", (e) => {
-    spinner.style.transition = "3s";
-    spinner.style.transform = `rotate(${e.detail.rotation * 3}deg)`; 
+    spin.style.transition = "1s";
+    spin.style.transform = `rotate(-${e.detail.rotation * 3}deg)`;
   });
 </script>
  ```
