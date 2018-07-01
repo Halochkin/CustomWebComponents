@@ -25,7 +25,7 @@ spinCallback(`detail`{
 - xFactor - the scale factor(X) for asymmetrical zoom in / zoom out
 - yFactor - the scale factor(Y)
 - diagonalFactor - scale factor for symmetrical zoom in / zoom out 
-- rotation - the difference between start and end events
+- rotation - the difference between start and end events <br>
 });
 
  ### Example: swipeGesture
