@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
+<script> TouchEmulator(); </script>
+
+<style>
+    body {
+        padding: 10px;
+    }
+
+    spin-one {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        background-color: #ff5348;
+        text-align: center;
+        margin: 20px;
+        /*border: 2px solid #ff16d7;*/
+        border-radius: 0 50% 50% 50%;
+    }
+
+    #a {
+        background-color: blue;
+    }
+
+</style>
+
+<spin-one id="a"></spin-one>
+
+<script type="module">
+
+  for (let i = 1; i < 16; i++) {
+    let a = document.createElement("spin-one");
+    a.id = `spinner${i}`;
+    document.body.appendChild(a);
+  }
+  import {PinchGesture} from "../src/PinchGestureMixin.js";
+
+  class SpinOne extends PinchGesture(HTMLElement) { //[1]
+
+    static get pinchEvent() {
+      return true;
+    }
+      
+    spinCallback(detail) {
+      this.style.transition = "1s";
+      this.style.transform = `rotate(-${detail.rotation * 5}deg)`;
+
+      for (let i = 1; i < 16; i++) {
+        let a = document.getElementById('spinner' + i);
+
+        a.style.transition = `3s`;
+        a.innerText = `rotation: ${detail.rotation * i}deg, duration: ${detail.duration} `;
+        a.style.transform = `rotate(-${detail.rotation * i}deg)`;
+      }
+    }
+  }
+  customElements.define("spin-one", SpinOne);
+</script>
+</body>
+</html>
