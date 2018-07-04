@@ -34,6 +34,7 @@ function makeDetail(touchevent) {
   const diagonal = Math.sqrt(width * width + height * height);
   const angle = calcAngle(x1 - x2, y1 - y2);
   return {touchevent, x1, y1, x2, y2, diagonal, width, height, angle};
+
 }
 
 /**
@@ -95,7 +96,7 @@ export const PinchGesture = function (Base) {
     // }
 
     static get spinSettings() {
-      return {spinMotion: 50, spinDuration: 100};
+      return {spinMotion: 50, spinDuration: 400};
     }
 
     connectedCallback() {
@@ -137,6 +138,8 @@ export const PinchGesture = function (Base) {
     [move](e) {
       e.preventDefault();
       const detail = makeDetail(e);                             //block defaultAction
+      const pinchStart = this[recordedEventDetails][this[recordedEventDetails].length-1];
+      detail.rotation = pinchStart.angle - detail.angle;
       this[recordedEventDetails].push(detail);
       this.pinchCallback && this.pinchCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinch", {bubbles: true, detail}));
@@ -167,16 +170,17 @@ export const PinchGesture = function (Base) {
         return;
       const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
       detail.touchevent = event;
-      detail.duration = settings.spinDuration;
+      detail.duration = event.timeStamp - settings.minDuration;
       detail.xFactor = Math.abs(spinStart.width / detail.width);
       detail.yFactor = Math.abs(spinStart.height / detail.height);
       detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
-      detail.rotation = Math.abs(spinStart.angle - detail.angle);
+      detail.rotation = spinStart.angle - detail.angle;
       let lastspinMotion = Math.abs(detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
       if (lastspinMotion < settings.spinMotion)
         return;
       this.spinCallback && this.spinCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("spin", {bubbles: true, detail}));
+
     }
   }
 };
