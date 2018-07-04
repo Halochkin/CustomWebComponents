@@ -247,7 +247,6 @@ Main Controller
     a.style.transition = "0s";
     prevSpinAngle = (a.style.transform ? parseFloat(a.style.transform.substring(7)) : 0);
     a.style.transform = `rotate(${prevSpinAngle + e.detail.rotation}deg)`;
-    a.innerText = "PINCH";
   });
 
 
@@ -266,7 +265,6 @@ Main Controller
     twelwe(e);
     a.style.transition = "1s";
     a.style.transform = `rotate(${prevSpinAngle + e.detail.rotation * 10}deg)`;
-    a.innerText = "SPIN";
   });
 </script>
 </body>
