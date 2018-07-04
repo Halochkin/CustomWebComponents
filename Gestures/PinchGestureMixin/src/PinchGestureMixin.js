@@ -5,6 +5,7 @@ const start = Symbol("touchStart");
 const move = Symbol("touchMove");
 const end = Symbol("touchEnd");
 const spin = Symbol("spin");
+
 const recordedEventDetails = Symbol("recordedEventDetails");
 const cachedTouchAction = Symbol("cachedTouchAction");
 const oneHit = Symbol("firstTouchIsAHit");
@@ -95,7 +96,7 @@ export const PinchGesture = function (Base) {
     // }
 
     static get spinSettings() {
-      return {spinMotion: 50, spinDuration: 400};
+      return {spinMotion: 50, spinDuration: 300};
     }
 
     connectedCallback() {
@@ -137,7 +138,7 @@ export const PinchGesture = function (Base) {
     [move](e) {
       e.preventDefault();
       const detail = makeDetail(e);                             //block defaultAction
-      const pinchStart = this[recordedEventDetails][this[recordedEventDetails].length-1];
+      const pinchStart = this[recordedEventDetails][this[recordedEventDetails].length - 1];
       detail.rotation = pinchStart.angle - detail.angle;
       this[recordedEventDetails].push(detail);
       this.pinchCallback && this.pinchCallback(detail);
@@ -155,6 +156,7 @@ export const PinchGesture = function (Base) {
       this[cachedTouchAction] = undefined;                      //retreat touchAction
       const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
       detail.touchevent = e;
+      detail.duration = Math.abs(this[recordedEventDetails][0].touchevent.timeStamp - e.timeStamp);
       this[spin](e);
       this[recordedEventDetails] = undefined;
       this.pinchendCallback && this.pinchendCallback(detail);
@@ -169,7 +171,7 @@ export const PinchGesture = function (Base) {
         return;
       const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
       detail.touchevent = event;
-      detail.duration = event.timeStamp - settings.minDuration;
+      detail.duration = event.timeStamp - settings.spinDuration;
       detail.xFactor = Math.abs(spinStart.width / detail.width);
       detail.yFactor = Math.abs(spinStart.height / detail.height);
       detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
@@ -179,7 +181,6 @@ export const PinchGesture = function (Base) {
         return;
       this.spinCallback && this.spinCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("spin", {bubbles: true, detail}));
-
     }
   }
 };
