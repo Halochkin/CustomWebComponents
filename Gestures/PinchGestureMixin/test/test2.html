@@ -1,263 +1,186 @@
-<!DOCTYPE html>
-<html lang="en">
-<body>
+const startListener = Symbol("touchStartListener");
+const moveListener = Symbol("touchMoveListener");
+const endListener = Symbol("touchEndListener");
+const start = Symbol("touchStart");
+const move = Symbol("touchMove");
+const end = Symbol("touchEnd");
+const spin = Symbol("spin");
 
-<script src="https://hammerjs.github.io/dist/hammer.js"></script>
-<script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
-<script> TouchEmulator(); </script>
+const recordedEventDetails = Symbol("recordedEventDetails");
+const cachedTouchAction = Symbol("cachedTouchAction");
+const oneHit = Symbol("firstTouchIsAHit");
 
-<style>
-    body {
-        padding: 10px;
+function calcAngle(x, y) {
+  return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
+}
+
+function findLastEventOlderThan(events, timeTest) {
+  for (let i = events.length - 1; i >= 0; i--) {
+    if (events[i].touchevent.timeStamp < timeTest)
+      return events[i];
+  }
+  return null;
+}
+
+function makeDetail(touchevent) {
+  const f1 = touchevent.targetTouches[0];
+  const f2 = touchevent.targetTouches[1];
+  const x1 = f1.pageX;
+  const y1 = f1.pageY;
+  const x2 = f2.pageX;
+  const y2 = f2.pageY;
+  const width = Math.abs(x2 - x1);
+  const height = Math.abs(y2 - y1);
+  const diagonal = Math.sqrt(width * width + height * height);
+  const angle = calcAngle(x1 - x2, y1 - y2);
+  return {touchevent, x1, y1, x2, y2, diagonal, width, height, angle};
+
+}
+
+/**
+ * PinchGesture mixin.
+ * PinchGesture records a sequence of two-finger touchstart, touchmove
+ * and touchend events into a series of pinch and spin events.
+ * The PinchGesture mixin only reacts when only two fingers are used.
+ * If three fingers touches the screen, the EventRecording is cancelled.
+ *
+ * PinchGesture can be used for two finger gestures such as:
+ *  - pinch
+ *  - expand
+ *  - rotate
+ *  - two-finger drag
+ *
+ * If both the two fingers are removed from the screen while in motion,
+ * a spin-event is triggered. The spin event resembles the fling event.
+ *
+ * PinchGesture has the following *optional* reactive callback methods:
+ *  - pinchstartCallback({touchevent, x1, y1, x2, y2, diagonal, width, height, angle})
+ *  - pinchCallback({touchevent, x1, y1, x2, y2, diagonal, width, height, angle})
+ *  - pinchendCallback({touchevent, x1, y1, x2, y2, diagonal, width, height, angle}) [1]
+ *  - spinCallback({touchevent, diagonal, width, height, angle, duration})
+ *
+ * PinchGesture has the following StaticSettings:
+ *  - pinchEvent: true => mixin will also dispatch the following events
+ *     - pinchstart:  {touchevent, x1, y1, x2, y2, diagonal, width, height, angle}
+ *     - pinch:       {touchevent, x1, y1, x2, y2, diagonal, width, height, angle}
+ *     - pinchend:    {touchevent, x1, y1, x2, y2, diagonal, width, height, angle} [1]
+ *     - spin:        {touchevent, diagonal, width, height, angle, duration}
+ *
+ * [1] pinchend coordinates are copied from the last successful pinch.
+ *
+ * `PinchGesture` implement an extensive [InvadeAndRetreat!] strategy
+ * to block default actions in the browsers such as "pinch-to-zoom".
+ *
+ * @param Base
+ * @returns {PinchGesture}
+ */
+export const PinchGesture = function (Base) {
+  return class extends Base {
+    constructor() {
+      super();
+      this[recordedEventDetails] = undefined;
+      this[cachedTouchAction] = undefined;                      //block touchAction
+      this[oneHit] = false;
+
+      this[startListener] = (e) => this[start](e);
+      this[moveListener] = (e) => this[move](e);
+      this[endListener] = (e) => this[end](e);
     }
 
-    spin-one {
-        display: inline-block;
-        width: 100px;
-        height: 100px;
-        background-color: #ff5348;
-        text-align: center;
-        margin: 30px;
-        /*border: 2px solid #ff16d7;*/
-        border-radius: 10% 50% 50% 50%;
-        border: 30px solid;
-        border-bottom-color: red;
-        border-top-color: green;
-        border-left-color: yellow;
-        border-right-color: blue;
+    /**
+     * By default it is only callback, if this staticSetting is true, dispatch event too
+     * @returns {boolean} true => di
+     */
+    // static get pinchEvent() {
+    //   return false;
+    // }
+
+    static get spinSettings() {
+      return {spinMotion: 50, spinDuration: 300};
     }
 
-    #a {
-        background-color: #507aff;
-        display: block;
-
+    connectedCallback() {
+      if (super.connectedCallback) super.connectedCallback();
+      this.style.touchAction = "none";                          //block touchAction
+      this.addEventListener("touchstart", this[startListener]);
     }
 
-    div {
-        height: 168px;
-        width: 150px;
-        border: 2px solid black;
-        display: inline-block;
+    disconnectedCallback() {
+      if (super.disconnectedCallback) super.disconnectedCallback();
+      this.removeEventListener("touchstart", this[startListener]);
     }
 
-    .panel {
-        height: 90px;
-        width: 160px;
-        background-color: white;
-        display: inline-block;
-        margin: 5px;
+    [start](e) {
+      const length = e.targetTouches.length;
+      if (length > 2)
+        return this[end](e);
+      if (length === 1) {
+        this[oneHit] = true;
+        return;
+      }
+      if (length !== 2)
+        throw new Error("omg?! how many fingers??");
+      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
+        return;
+      e.preventDefault();                                       //block defaultAction
+      const body = document.querySelector("body");              //block touchAction
+      this[cachedTouchAction] = body.style.touchAction;         //block touchAction
+      body.style.touchAction = "none";                          //block touchAction
+      window.addEventListener("touchmove", this[moveListener]);
+      window.addEventListener("touchend", this[endListener]);
+      window.addEventListener("touchcancel", this[endListener]);
+      const detail = makeDetail(e);
+      this[recordedEventDetails] = [detail];
+      this.pinchstartCallback && this.pinchstartCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchstart", {bubbles: true, detail}));
     }
 
-    .border {
-        height: 150px;
-        width: auto;
-        border: 2px solid black;
-        display: inline-table;
+    [move](e) {
+      e.preventDefault();
+      const detail = makeDetail(e);                             //block defaultAction
+      const pinchStart = this[recordedEventDetails][this[recordedEventDetails].length - 1];
+      detail.rotation = pinchStart.angle - detail.angle;
+      this[recordedEventDetails].push(detail);
+      this.pinchCallback && this.pinchCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinch", {bubbles: true, detail}));
     }
-</style>
-Main Controller
-<spin-one id="a"></spin-one>
 
+    [end](e) {
+      e.preventDefault();                                       //block defaultAction
+      window.removeEventListener("touchmove", this[moveListener]);
+      window.removeEventListener("touchend", this[endListener]);
+      window.removeEventListener("touchcancel", this[endListener]);
+      this[oneHit] = false;
+      const body = document.querySelector("body");              //retreat touchAction
+      body.style.touchAction = this[cachedTouchAction];         //retreat touchAction
+      this[cachedTouchAction] = undefined;                      //retreat touchAction
+      const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
+      detail.touchevent = e;
+      detail.duration = Math.abs(this[recordedEventDetails][0].touchevent.timeStamp - e.timeStamp);
+      this[spin](e);
+      this[recordedEventDetails] = undefined;
+      this.pinchendCallback && this.pinchendCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchend", {bubbles: true, detail}));
+    }
 
-<script type="module">
-
-  for (let i = 1; i < 13; i++) {
-    let a = document.createElement("spin-one");
-    let b = document.createElement("div");
-    let c = document.createElement("div");
-    c.className = "border";
-    b.id = `panel${i}`;
-    b.className = "panel";
-    a.id = `spinner${i}`;
-
-    c.appendChild(a);
-    c.appendChild(b);
-    document.body.appendChild(c);
-
-  }
-  import {PinchGesture} from "../src/PinchGestureMixin.js";
-
-  class SpinOne extends PinchGesture(HTMLElement) { //[1]
-
-
-    static get pinchEvent() {
-      return true;
+    [spin](event) {
+      const settings = this.constructor.spinSettings;
+      const spinTime = event.timeStamp - settings.spinDuration;
+      const spinStart = findLastEventOlderThan(this[recordedEventDetails], spinTime);
+      if (!spinStart)
+        return;
+      const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
+      detail.touchevent = event;
+      detail.duration = event.timeStamp - settings.spinDuration;
+      detail.xFactor = Math.abs(spinStart.width / detail.width);
+      detail.yFactor = Math.abs(spinStart.height / detail.height);
+      detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
+      detail.rotation = spinStart.angle - detail.angle;
+      let lastspinMotion = Math.abs(detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
+      if (lastspinMotion < settings.spinMotion)
+        return;
+      this.spinCallback && this.spinCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("spin", {bubbles: true, detail}));
     }
   }
-
-
-  customElements.define("spin-one", SpinOne);
-
-  function one(e) {
-    let spin = document.getElementById("spinner1");
-    let panel = document.getElementById("panel1");
-    spin.style.transition = `3s`;
-    spin.style.transform = `rotate(-${e.detail.rotation}deg)`;
-    panel.innerText =
-      `Simple rotation
-       Rotation:${(e.detail.rotation).toFixed(2)} deg,
-       Transition: ${3}sec
-       `;
-  }
-
-  function two(e) {
-    let spin = document.getElementById("spinner2");
-    let panel = document.getElementById("panel2");
-    spin.style.transition = `3s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 5}deg)`;
-    panel.innerText =
-      `Accelerated rotation(x5)
-       Rotation:${(e.detail.rotation * 5).toFixed(2)} deg,
-       Transition: 3 sec
-       `;
-  }
-
-  function three(e) {
-    let spin = document.getElementById("spinner3");
-    let panel = document.getElementById("panel3");
-    spin.style.transition = `6s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 10}deg)`;
-    panel.innerText =
-      `Rotation(x10)
-       Rotation:${(e.detail.rotation * 10).toFixed(2)} deg,
-       Transition: 6 sec
-       `;
-  }
-
-  function four(e) {
-    let spin = document.getElementById("spinner4");
-    let panel = document.getElementById("panel4");
-    spin.style.transition = `9s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 25}deg)`;
-    panel.innerText =
-      `Rotation (x25)
-       Rotation:${(e.detail.rotation * 25).toFixed(2)} deg,
-       Transition: 9 sec
-       `;
-  }
-
-  function five(e) {
-    let spin = document.getElementById("spinner5");
-    let panel = document.getElementById("panel5");
-    spin.style.transition = `5s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 25}deg) scaleX(${e.detail.xFactor}) scaleY(${e.detail.yFactor})`;
-    panel.innerText =
-      `Async Scaling + rotation
-       Y: ${(e.detail.yFactor).toFixed(2)} X: ${(e.detail.xFactor).toFixed(2)},
-       Rotation: ${(e.detail.rotation).toFixed(2)}deg
-       `;
-
-  }
-
-  function six(e) {
-    let spin = document.getElementById("spinner6");
-    let panel = document.getElementById("panel6");
-    spin.style.transition = `5s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 25}deg) scale(${e.detail.diagonalFactor})`;
-    panel.innerText =
-      `Sync Scaling + rotation
-       Sync-scale: ${(e.detail.diagonalFactor).toFixed(2)},
-       Rotation: ${(e.detail.rotation).toFixed(2)}deg
-       `;
-
-
-  }
-
-  function seven(e) {
-    let spin = document.getElementById("spinner7");
-    let panel = document.getElementById("panel7");
-    spin.style.transition = `2s`;
-    spin.style.transform = `scale(${e.detail.diagonalFactor})`;
-    panel.innerText =
-      `Sync-scaling
-       Sync-scale: ${(e.detail.diagonalFactor).toFixed(2)},
-       Transition: 2 sec
-       `;
-
-
-  }
-
-  function eight(e) {
-    let spin = document.getElementById("spinner8");
-    let pane = document.getElementById("panel8");
-    spin.style.transition = `3s`;
-    spin.style.transform = `scaleY(${e.detail.yFactor})`;
-    pane.innerText =
-      `Async Y-scaling
-       ScaleX: ${(e.detail.yFactor).toFixed(2)},
-       Transition: 3 sec
-       `;
-  }
-
-  function nine(e) {
-    let spin = document.getElementById("spinner9");
-    let panel = document.getElementById("panel9");
-    spin.style.transition = `1s`;
-    spin.style.transform = `scaleX(${e.detail.xFactor}) scaleY(${e.detail.yFactor})`;
-    panel.innerText =
-      `Async X,Y-scaling
-       Transition: 1 sec,
-       Scale Y: ${(e.detail.yFactor).toFixed(2)}; X: ${(e.detail.xFactor).toFixed(2)}
-       `;
-  }
-
-  function ten(e) {
-    let spin = document.getElementById("spinner10");
-    let panel = document.getElementById("panel10");
-    spin.style.transition = `3s`;
-    spin.style.transform = `scaleX(${e.detail.xFactor})`;
-    panel.innerText =
-      `Async X-scaling
-       ScaleX: ${(e.detail.xFactor).toFixed(2)},
-       Transition: 3 sec
-       `;
-  }
-
-  function eleven(e) {
-    let spin = document.getElementById("spinner11");
-    let panel = document.getElementById("panel11");
-    if (e.detail.duration < 100) {
-      spin.style.display = "none";
-      spin.style.transition = `3s`;
-
-    }
-    panel.innerText =
-      `Duration-test (should be longer than 100 ms)
-       Duration: ${e.detail.duration}ms,
-       `;
-  }
-
-  function twelwe(e) {
-    let spin = document.getElementById("spinner12");
-    let panel = document.getElementById("panel12");
-    spin.style.transition = `9s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 50}deg)`;
-    panel.innerText =
-      `Rotation (x50)
-       Rotation:${(e.detail.rotation * 25).toFixed(2)} deg,
-       Transition: 9 sec
-       `;
-  }
-
-  const a = document.getElementById("a");
-
-  a.addEventListener("spin", (e) => {
-
-    one(e);
-    two(e);
-    three(e);
-    four(e);
-    five(e);
-    six(e);
-    seven(e);
-    eight(e);
-    nine(e);
-    ten(e);
-    eleven(e);
-    twelwe(e);
-    a.style.transition = 1 + "s";
-    a.style.transform = `rotate(-${e.detail.rotation}deg)`;
-  });
-</script>
-</body>
-</html>
+};
