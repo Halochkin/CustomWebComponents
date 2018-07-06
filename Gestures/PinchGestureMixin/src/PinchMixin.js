@@ -96,12 +96,12 @@ export const PinchGesture = function (Base) {
     // }
 
     static get spinSettings() {
-      return {spinMotion: 50, spinDuration: 300};
+      return {spinMotion: 50, spinDuration: 100};
     }
 
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
-      this.style.touchAction = "none";                          //block touchAction
+      // this.style.touchAction = "none";                          //block touchAction
       this.addEventListener("touchstart", this[startListener]);
     }
 
@@ -177,8 +177,8 @@ export const PinchGesture = function (Base) {
       detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
       detail.rotation = spinStart.angle - detail.angle;
       let lastspinMotion = Math.abs(detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
-//       if (lastspinMotion < settings.spinMotion)  //todo change this conditions!!! (speedPx/Ms for example or something else)
-//         return;
+      if (lastspinMotion < settings.spinMotion)
+        return;
       this.spinCallback && this.spinCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("spin", {bubbles: true, detail}));
     }
