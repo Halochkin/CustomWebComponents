@@ -1,5 +1,5 @@
-export {autoSpin};
-function autoSpin() {
+export {eventSimulator};
+function eventSimulator() {
   const myElement = document.getElementById('controller');
   let eventType = "touch";
   let interval = 100;  // to perform certain conditions
