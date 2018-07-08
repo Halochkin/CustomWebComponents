@@ -169,14 +169,14 @@ export const PinchGesture = function (Base) {
       const spinStart = findLastEventOlderThan(this[recordedEventDetails], spinTime);
       if (!spinStart)
         return;
-      const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
+      const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 2]);
       detail.touchevent = event;
       detail.duration = event.timeStamp - settings.spinDuration;
       detail.xFactor = Math.abs(spinStart.width / detail.width);
       detail.yFactor = Math.abs(spinStart.height / detail.height);
       detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
       detail.rotation = spinStart.angle - detail.angle;
-      let lastspinMotion = Math.abs(detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
+      let lastspinMotion = (detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
       if (lastspinMotion < settings.spinMotion)
         return;
       this.spinCallback && this.spinCallback(detail);
