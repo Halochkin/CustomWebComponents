@@ -33,7 +33,6 @@ function makeDetail(touchevent) {
   const diagonal = Math.sqrt(width * width + height * height);
   const angle = calcAngle(x1 - x2, y1 - y2);
   return {touchevent, x1, y1, x2, y2, diagonal, width, height, angle};
-
 }
 
 /**
