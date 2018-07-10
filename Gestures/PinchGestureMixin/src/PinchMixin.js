@@ -5,6 +5,7 @@ const start = Symbol("touchStart");
 const move = Symbol("touchMove");
 const end = Symbol("touchEnd");
 const spin = Symbol("spin");
+
 const recordedEventDetails = Symbol("recordedEventDetails");
 const cachedTouchAction = Symbol("cachedTouchAction");
 const oneHit = Symbol("firstTouchIsAHit");
@@ -33,6 +34,7 @@ function makeDetail(touchevent) {
   const diagonal = Math.sqrt(width * width + height * height);
   const angle = calcAngle(x1 - x2, y1 - y2);
   return {touchevent, x1, y1, x2, y2, diagonal, width, height, angle};
+
 }
 
 /**
@@ -99,7 +101,7 @@ export const PinchGesture = function (Base) {
 
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
-      // this.style.touchAction = "none";                          //block touchAction
+
       this.addEventListener("touchstart", this[startListener]);
     }
 
