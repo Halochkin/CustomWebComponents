@@ -1,20 +1,27 @@
 const selectListener = Symbol("selectstartListener");
-const startListener = Symbol("downListener");
-const moveListener = Symbol("moveListener");
+const touchStartListener = Symbol("downListener");
+const touchMoveListener = Symbol("touchMoveListener");
+const touchStopListener = Symbol("touchStopListener");
 const mouseStartListener = Symbol("mouseStartListener");
-const stopListener = Symbol("pointerUpListener");
-const start = Symbol("start");
-const move = Symbol("move");
-const end = Symbol("end");
+const mouseMoveListener = Symbol("mouseMoveListener");
+const mouseStopListener = Symbol("mouseStopListener");
+const touchStart = Symbol("touchStart");
+const touchMove = Symbol("touchMove");
+const touchStop = Symbol("touchStop");
+const mouseStart = Symbol("mouseStart");
+const mouseMove = Symbol("mouseMove");
+const mouseStop = Symbol("mouseStop");
 const fling = Symbol("fling");
+const move = Symbol("move");
+
 const cachedEvents = Symbol("cachedEvents");
-const startDragDetail = Symbol("startDragDetail");
-const flingDetail = Symbol("flingDetail");
-const isTouchActive = Symbol("isTouchActive");
+const active = Symbol("active");
+const activeEventOrCallback = Symbol("activeEventOrCallback");
+const eventAndOrCallback = Symbol("callbackAndOrEvent");
 
 function findLastEventOlderThan(events, timeTest) {
   for (let i = events.length - 1; i >= 0; i--) {
-    if (events[i].timeStamp < timeTest)
+    if (events[i].event.timeStamp < timeTest)
       return events[i];
   }
   return null;
@@ -22,6 +29,14 @@ function findLastEventOlderThan(events, timeTest) {
 
 function flingAngle(x = 0, y = 0) {
   return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
+}
+
+function makeDetail(event, x, y, startDetail) {
+  const distX = x - startDetail.x;
+  const distY = y - startDetail.y;
+  const distDiag = Math.sqrt(distX * distX + distY * distY);
+  const durationMs = event.timeStamp - startDetail.event.timeStamp;
+  return {event, x, y, distX, distY, distDiag, durationMs};
 }
 
 /*
@@ -84,124 +99,148 @@ export const DragFlingGesture = function (Base) {
     constructor() {
       super();
       this[selectListener] = e => e.preventDefault() && false;
-      this[startListener] = e => this[start](e);
-      this[mouseStartListener] = e => this[start](e);
-      this[moveListener] = e => this[move](e);
-      this[stopListener] = e => this[end](e);
+
+      this[touchStartListener] = e => this[touchStart](e);
+      this[touchMoveListener] = e => this[touchMove](e);
+      this[touchStopListener] = e => this[touchStop](e);
+
+      this[mouseStartListener] = e => this[mouseStart](e);
+      this[mouseMoveListener] = e => this[mouseMove](e);
+      this[mouseStopListener] = e => this[mouseStop](e);
+
       this[cachedEvents] = undefined;
-      this[startDragDetail] = undefined;
-      this[flingDetail] = undefined;
-      this.flingSettings = {minDistance: 50, minDuration: 200, maxTouches: 3};
+      this[active] = 0;       //0 = inactive, 1 = mouse, 2 = touch
+      this[activeEventOrCallback] = 0; //caches the result of static get swipeEventOrCallback() for each event sequence
+    }
+
+    /**
+     * Default values are minDistance: 50, minDuration: 200
+     * distance is px, duration ms.
+     * @returns {{minDistance: number, minDuration: number}}
+     */
+    static get flingSettings() {
+      return {minDistance: 50, minDuration: 200};
+    }
+
+    /**
+     * By default it is only event
+     * @returns {number} 0 = event+callback, 1 = only event, -1 = only callback
+     */
+    static get dragFlingEventOrCallback() {
+      return 0;
     }
 
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
       this.addEventListener("selectstart", this[selectListener]);
-      this.addEventListener("touchstart", this[startListener]);
+      this.addEventListener("touchstart", this[touchStartListener]);
       this.addEventListener("mousedown", this[mouseStartListener]);
     }
 
     disconnectedCallback() {
       if (super.disconnectedCallback) super.disconnectedCallback();
       this.removeEventListener("selectstart", this[selectListener]);
-      this.removeEventListener("touchstart", this[startListener]);
-      this.removeEventListener("mousedown", this[startListener]);
+      this.removeEventListener("touchstart", this[touchStartListener]);
+      this.removeEventListener("mousedown", this[touchStartListener]);
     }
 
-    [start](e) {
-      this[cachedEvents] = [e];
-      this[isTouchActive] = (e.type === "touchstart");
-
-      if (this[isTouchActive]) {
-        this.addEventListener("touchmove", this[moveListener]);
-        this.addEventListener("touchend", this[stopListener]);
-        this.addEventListener("touchcancel", this[stopListener]);
-      }
-      if (!this[isTouchActive])
-        this.addEventListener("mousemove", this[moveListener]);
-      this.addEventListener("mouseup", this[stopListener]);
-      this.addEventListener("mouseout", this[stopListener]);     //todo make sure that 'mouseOUT' is the same as 'touchCANCEL' (only for mouse events)
-
-
-      this[startDragDetail] = {
-        touchevent: e,
-        x: this[isTouchActive] ? e.targetTouches[0].pageX : e.x,
-        y: this[isTouchActive] ? e.targetTouches[0].pageY : e.y,
-        startDragTime: e.timeStamp
-      };
-    }
-
-    [move](e) {
-      if (this[isTouchActive] && e.targetTouches.length > this.flingSettings.maxTouches) //Added restriction on the number of fingers  //todo Should I add it or not?
+    [mouseStart](e) {
+      if (this[active] === 2)
         return;
-      const prevEvent = this[cachedEvents][this[cachedEvents].length - 1];
-      this[cachedEvents].push(e);
-      let detail = {
-        distX: this[isTouchActive] ? e.targetTouches[0].pageX - prevEvent.targetTouches[0].pageX : e.x - prevEvent.x,
-        distY: this[isTouchActive] ? e.targetTouches[0].pageY - prevEvent.targetTouches[0].pageY : e.y - prevEvent.y,
-        x: this[isTouchActive] ? e.targetTouches[0].pageX : e.x,
-        y: this[isTouchActive] ? e.targetTouches[0].pageY : e.y,
-        pointerevent: e,
-        startDragging: this[startDragDetail]
-      };
-      detail.diagonalPx = Math.sqrt(detail.distX * detail.distX + detail.distY * detail.distY);
-      detail.durationMs = e.timeStamp - prevEvent.timeStamp;
-      detail.speedPxMs = detail.diagonalPx / detail.durationMs;
-      this.dragGestureCallback(this[startDragDetail], detail);
+      this[active] = 1;
+      this[activeEventOrCallback] = this.constructor.dragFlingEventOrCallback;
+      window.addEventListener("mousemove", this[mouseMoveListener]);
+      window.addEventListener("mouseup", this[mouseStopListener]);
+
+      const detail = {event: e, x: e.x, y: e.y};
+      this[cachedEvents] = [detail];
+      this[eventAndOrCallback]("draggingstart", detail);
     }
 
-    [end](e) {
-      if (this[isTouchActive] && e.targetTouches.length > this.flingSettings.maxTouches) //Added restriction on the number of fingers  //todo Should I add it or not?
+    [touchStart](e) {
+      if (this[active] === 1)
         return;
-      this[fling](e);
-      this.removeEventListener("touchmove", this[moveListener]);
-      this.removeEventListener("touchend", this[stopListener]);
-      this.removeEventListener("touchcancel", this[stopListener]);
-      this.removeEventListener("mousemove", this[moveListener]);
-      this.removeEventListener("mouseup", this[stopListener]);
-      this.removeEventListener("mouseout", this[stopListener]);
+      if (this[active] === 2)   //this will be a second touch
+        return this[touchStopListener]();
+      this[active] = 2;
+      this[activeEventOrCallback] = this.constructor.dragFlingEventOrCallback;
+      window.addEventListener("touchmove", this[touchMoveListener]);
+      window.addEventListener("touchend", this[touchStopListener]);
+      window.addEventListener("touchcancel", this[touchStopListener]);
+      const detail = {event: e, x: e.targetTouches[0].pageX, y: e.targetTouches[0].pageY};
+      this[cachedEvents] = [detail];
+      this.draggingStartCallback && this.draggingStartCallback(detail);
+      this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
+    }
+
+    [mouseStop](e) {
+      this[fling](e, e.x, e.y);
+      const detail = {event: e, x: e.pageX, y: e.pageY};
+      window.removeEventListener("mousemove", this[mouseMoveListener]);
+      window.removeEventListener("mouseup", this[mouseStopListener]);
       this[cachedEvents] = undefined;
-      this[startDragDetail] = undefined;
-      this[isTouchActive] = undefined;
+      this[active] = 0;
+      this.draggingEndCallback && this.draggingEndCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
     }
 
-    [fling](e) {
-      let endTime = e.timeStamp;
-      const stopEvent = this[cachedEvents][this[cachedEvents].length - 1];
-      const flingTime = endTime - this.flingSettings.minDuration;
-      const startEvent = findLastEventOlderThan(this[cachedEvents], flingTime);
-      if (!startEvent)
-        return;
-      const x = this[isTouchActive] ? stopEvent.targetTouches[0].pageX : stopEvent.x;
-      const y = this[isTouchActive] ? stopEvent.targetTouches[0].pageY : stopEvent.y;
-      const distX = this[isTouchActive] ? x - startEvent.targetTouches[0].pageX : x - startEvent.x;
-      const distY = this[isTouchActive] ? y - startEvent.targetTouches[0].pageY : y - startEvent.y;
-      const diagonalPx = Math.sqrt(distX * distX + distY * distY);
-      const durationMs = endTime - startEvent.timeStamp;
-      const xSpeedPxMs = distX / durationMs;
-      const ySpeedPxMs = distY / durationMs;
-      const flingX = xSpeedPxMs * durationMs;
-      const flingY = ySpeedPxMs * durationMs;
-      if (diagonalPx < this.flingSettings.minDistance)
-        return;
-      this[flingDetail] = {
-        angle: flingAngle(distX, distY),
-        distX,
-        distY,
-        diagonalPx,
-        durationMs,
-        flingX,
-        flingY,
-        x,
-        xSpeedPxMs,
-        y,
-        ySpeedPxMs,
-        flingTime,
-        cashedEvent: this[cachedEvents]
-      };
-      this.flingGestureCallback(this[flingDetail]);
-      this[flingDetail] = undefined;
-    };
+    // [touchStop](e) {
+    // this[fling](e, e.targetTouches[0].pageX, e.targetTouches[0].pageY);
+    // this[eventAndOrCallback]("draggingend", {event: e, x: e.targetTouches[0].pageX, y: e.targetTouches[0].pageY});
 
+    [touchStop](e) {
+      const lastMoveDetail = this[cachedEvents][this[cachedEvents].length - 1];
+      const detail = {event: e, x: lastMoveDetail.x, y: lastMoveDetail.y};
+      this[fling](detail.event, detail.x, detail.y);
+
+      window.removeEventListener("touchmove", this[touchMoveListener]);
+      window.removeEventListener("touchend", this[touchStopListener]);
+      window.removeEventListener("touchcancel", this[touchStopListener]);
+      this[cachedEvents] = undefined;
+      this[active] = 0;
+      this[activeEventOrCallback] = undefined;
+      this.draggingendCallback && this.draggingendCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
+    }
+
+    [mouseMove](e) {
+      this[move](e, e.x, e.y);
+    }
+
+    [touchMove](e) {
+      this[move](e, e.targetTouches[0].pageX, e.targetTouches[0].pageY);
+    }
+
+    [move](event, x, y) {
+      const prevDetail = this[cachedEvents][this[cachedEvents].length - 1];
+      const detail = makeDetail(event, x, y, prevDetail);
+      this[cachedEvents].push(detail);
+      this.draggingCallback && this.draggingCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("dragging", {bubbles: true, detail}));
+    }
+
+    [fling](e, x, y) {
+      const settings = this.constructor.flingSettings;
+      let endTime = e.timeStamp;
+      const flingTime = endTime - settings.minDuration;
+      const flingStart = findLastEventOlderThan(this[cachedEvents], flingTime);
+      if (!flingStart)
+        return;
+      const detail = makeDetail(e, x, y, flingStart);
+      if (detail.distDiag >= settings.minDistance) {
+        detail.angle = flingAngle(detail.distX, detail.distY);
+        this.flingCallback && this.flingCallback(detail);
+        this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("fling", {bubbles: true, detail}));
+      }
+    }
+
+    // [eventAndOrCallback](eventName, detail) {
+    //   if (this[activeEventOrCallback] <= 0) {
+    //     let cbName = eventName + "Callback";
+    //     this[cbName] && this[cbName](detail);
+    //   }
+    //   if (this[activeEventOrCallback] >= 0)
+    //     this.dispatchEvent(new CustomEvent(eventName, {bubbles: true, detail}));
+    // }
   }
 };
