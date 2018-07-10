@@ -28,7 +28,7 @@ const eventAndOrCallback = Symbol("callbackAndOrEvent");
  *  down/south: 180
  *  left/west:  270
  *
- * @returns {SwipeGestureMixin} class that extends HTMLElement
+ * @returns {SwipeGesture} class that extends HTMLElement
  * @param event
  * @param x
  * @param y
@@ -44,7 +44,7 @@ function makeDetail(event, x, y, startDetail) {
   return {event, x, y, distX, distY, distDiag, durationMs};
 }
 
-export const SwipeGestureMixin = function (Base) {
+export const SwipeGesture = function (Base) {
   return class extends Base {
     constructor() {
       super();
@@ -56,8 +56,6 @@ export const SwipeGestureMixin = function (Base) {
       this[mouseMoveListener] = e => this[mouseMove](e);
       this[mouseStopListener] = e => this[mouseStop](e);
       this[cachedEvents] = undefined;
-      this[active] = 0;       //0 = inactive, 1 = mouse, 2 = touch
-      this[activeEventOrCallback] = 0; //caches the result of static get swipeEventOrCallback() for each event sequence
     }
 
     static get swipeSettings() {
@@ -98,7 +96,8 @@ export const SwipeGestureMixin = function (Base) {
       window.addEventListener("touchcancel", this[touchStopListener]);
       const detail = {event: e, x: e.targetTouches[0].pageX, y: e.targetTouches[0].pageY};
       this[cachedEvents] = [detail];
-      this[eventAndOrCallback]("swipestart", detail);
+      this.swipeStartCallback && this.swipeStartCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("swipestart", {bubbles: true, detail}));
     }
 
     [mouseStart](e) {
@@ -110,7 +109,8 @@ export const SwipeGestureMixin = function (Base) {
       window.addEventListener("mouseup", this[mouseStopListener]);
       const detail = {event: e, x: e.x, y: e.y};
       this[cachedEvents] = [detail];
-      this[eventAndOrCallback]("swipestart", detail);
+      this.swipeStartCallback && this.swipeStartCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("swipestart", {bubbles: true, detail}));
     }
 
     [mouseMove](e) {
@@ -124,7 +124,8 @@ export const SwipeGestureMixin = function (Base) {
     [move](event, x, y) {
       const prevDetail = this[cachedEvents][this[cachedEvents].length - 1];
       const detail = makeDetail(event, x, y, prevDetail);
-      this[eventAndOrCallback]("swipe", detail);
+      this.swipeCallback && this.swipeCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("swipe", {bubbles: true, detail}));
     }
 
     [mouseStop](e) {
@@ -133,7 +134,8 @@ export const SwipeGestureMixin = function (Base) {
       if (Math.abs(detail.distDiag) < this.constructor.swipeSettings.minDistance) {
         return;
       }
-      this[eventAndOrCallback]("swipeend", detail);
+      this.swipeEndCallback && this.swipeEndCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("swipeend", {bubbles: true, detail}));
       window.removeEventListener("mousemove", this[mouseMoveListener]);
       window.removeEventListener("mouseup", this[mouseStopListener]);
       this[cachedEvents] = undefined;
@@ -144,22 +146,14 @@ export const SwipeGestureMixin = function (Base) {
     [touchStop](e) {
       const prevDetail = this[cachedEvents][this[cachedEvents].length - 1];
       const detail = makeDetail(event, e.changedTouches[0].clientX, e.changedTouches[0].clientY, prevDetail);
-      this[eventAndOrCallback]("swipeend", detail);
+      this.swipeEndCallback && this.swipeEndCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("swipeend", {bubbles: true, detail}));
       window.removeEventListener("touchmove", this[touchMoveListener]);
       window.removeEventListener("touchend", this[touchStopListener]);
       window.removeEventListener("touchcancel", this[touchStopListener]);
       this[cachedEvents] = undefined;
       this[active] = 0;
       this[activeEventOrCallback] = undefined;
-    }
-
-    [eventAndOrCallback](eventName, detail) {
-      if (this[activeEventOrCallback] <= 0) {
-        let cbName = eventName + "Callback";
-        this[cbName] && this[cbName](detail);
-      }
-      if (this[activeEventOrCallback] >= 0)
-        this.dispatchEvent(new CustomEvent(eventName, {bubbles: true, detail}));
     }
   }
 };
