@@ -1,18 +1,20 @@
-export {eventSimulator};
-function eventSimulator() {
-  const myElement = document.getElementById('controller');
-  let eventType = "touch";
-  let interval = 100;  // to perform certain conditions
-  sendTouchEvent(125, 225, 275, 75, myElement, eventType + "start", 0);
-  sendTouchEvent(125, 255, 285, 95, myElement, eventType + "start", 1);
-  sendTouchEvent(30, 230, 20, 100, myElement, eventType + "move", 2);
-  setTimeout(function () {
-    sendTouchEvent(300, 400, 450, 250, myElement, eventType + "end", 4)
-  }, interval);
+export {simulateEventSequence};
+
+function simulateEventSequence(arrayIn) {
+  for (let i = 0; i < arrayIn.length; i++) {
+    if (arrayIn[i][1] === "start") {
+      sendTouchEvent(125, 255, 275, 75, arrayIn[i][0], "touchstart", i, arrayIn[i][2]);
+    }
+    if (arrayIn[i][1] === "move") {
+      sendTouchEvent(30, 200, 20, 100, arrayIn[i][0], "touchmove", i, arrayIn[i][2]);
+    }
+    if (arrayIn[i][1] === "end") {
+      sendTouchEvent(300, 400, 450, 250, arrayIn[i][0], "touchend", i, arrayIn[i][2]);
+    }
+  }
 }
 
-
-function sendTouchEvent(x1, y1, x2, y2, element, eventType, id) {
+function sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers, delay) {
   const touchObj = new Touch({
     identifier: id,
     target: element,
@@ -37,19 +39,20 @@ function sendTouchEvent(x1, y1, x2, y2, element, eventType, id) {
     rotationAngle: 20,
     force: 0.5,
   });
-  const touchEvent = new TouchEvent(eventType, {
+  const twoFingersEvent = new TouchEvent(eventType, {
     cancelable: true,
     bubbles: true,
     touches: [touchObj, touchObj2],
     targetTouches: [touchObj, touchObj2],
     changedTouches: [touchObj, touchObj2],
   });
-  const touchStartBaseEvent = new TouchEvent(eventType, { // it is necessary for [oneHit] when first finger was not pressed on the element, so this second touch is part of something bigger.
+  const oneFingerEvent = new TouchEvent(eventType, { // it is necessary for [oneHit] when first finger was not pressed on the element, so this second touch is part of something bigger.
     cancelable: true,                                     // 'touchstart' begins from one finger - then function defined [oneHit] as true - then 'touchstart' begins one more time with two fingers
     bubbles: true,                                        // without one-finger touch start PinchMixin will not works
     touches: [touchObj],
     targetTouches: [touchObj],
     changedTouches: [touchObj],
   });
-  id === 0 ? element.dispatchEvent(touchStartBaseEvent) : element.dispatchEvent(touchEvent);
+  fingers === 1 ? element.dispatchEvent(oneFingerEvent) : element.dispatchEvent(twoFingersEvent);
 }
+
