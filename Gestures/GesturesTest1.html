@@ -70,8 +70,12 @@
       this.style.marginTop = "175px";
       this.style.marginLeft = "175px";
       this.style.font = "Arial";
-
       document.getElementById("buttons").addEventListener("buttons-select", this._switcherListener);
+    }
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      document.getElementById("buttons").removeEventListener("buttons-select", this._switcherListener);
     }
 
     onSwitch(event) {
@@ -133,7 +137,6 @@
           this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
           break;
       }
-
     }
 
     onPinch(e) {
