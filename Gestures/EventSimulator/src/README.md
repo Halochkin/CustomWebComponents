@@ -79,5 +79,5 @@ function simulateEventSequence(arrayIn) {
   fingers === 1 ? element.dispatchEvent(oneFingerEvent) : element.dispatchEvent(twoFingersEvent);
   ```
   ### References
-  * [`Custom event`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent)
-  * [`Touch event`](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
+  * [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent)
+  * [`Touch events`](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
