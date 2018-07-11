@@ -30,7 +30,7 @@ Depending on the sequence of event values in the array, the `simulateEventSequen
 `sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers)`.
 The first four parameters of the sendTouchEvent are coordinates '(x1, y1, x2, y2)' have been defined, but can be changed if necessary.
 For example, for `start` event, they are (125, 255, 275, 75)px.
-These values were chosen to satisfy the conditions `spin` and `fling` of the event
+These values were chosen to satisfy the conditions `spin` and `fling` events.
 ```javascript
 function simulateEventSequence(arrayIn) {
   for (let i = 0; i < arrayIn.length; i++) {
