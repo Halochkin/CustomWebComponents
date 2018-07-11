@@ -110,7 +110,9 @@
           ]);
           setTimeout(function () {
             simulateEventSequence([[myElement, "end", 2]])
-          }, 120);          // If you have some time limits - you can add a delay. For example, to meet the 'spin' conditions, the delay between the 'move' and 'end' must be longer than 100ms.
+          }, 120);          // If you have some time limits - you can add a delay.
+                            // For example, to meet the 'spin' conditions, the delay between the 'move' and 'end'
+                            // must be longer than 100ms.
           break;
         case "dragging":
           this.addEventListener("dragging", this._dragListener);
@@ -170,6 +172,7 @@
       this.style.border = "10px solid pink";
       this.style.transition = "0s";
       this.innerText = "DRAG";
+      this.checkFunc();
     }
 
     onFling(e) {
@@ -182,6 +185,20 @@
       this.style.borderRadius = "50%";
       this.style.transition = "0.3s";
       this.innerText = "FLING";
+      this.checkFunc();
+
+    }
+
+
+    //To ensure that the block does not leave the window border, this simple function is added,
+    // which is called every time after onDrag(e) and onFling(e).
+    checkFunc() {
+      if (parseFloat(this.style.marginTop )< 10) {
+        this.style.marginTop = "0px";
+      }
+      if (parseFloat(this.style.marginLeft) < 10) {
+        this.style.marginLeft = "0px";
+      }
     }
   }
 
