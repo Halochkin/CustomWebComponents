@@ -17,7 +17,7 @@
         switch-button {
             display: inline-flex;
             margin: 100px;
-            margin-left: 200px;
+            margin-left: 185px;
             width: 60px;
         }
 
@@ -27,7 +27,7 @@
             border: 2px solid black;
             border-radius: 10px;
             margin: 50px;
-            box-shadow: 5px 5px;
+            box-shadow: 3px 3px;
         }
 
     </style>
@@ -45,7 +45,7 @@
   import {SwipeGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/SwipeGestureMixin/src/SwipeGesture.js";
   import {simulateEventSequence} from "https://rawgit.com/Halochkin/Components/master/Gestures/EventSimulator/src/EventSimulator.js";
 
-  class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
+   class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
 
     constructor() {
       super();
@@ -69,72 +69,71 @@
       super.connectedCallback();
       this.style.marginTop = "175px";
       this.style.marginLeft = "175px";
-      this.style.font ="Arial";
-      this.style.transition = "1s";
+      this.style.font = "Arial";
+
       document.getElementById("buttons").addEventListener("buttons-select", this._switcherListener);
     }
 
     onSwitch(event) {
       const myElement = document.getElementById('controller');
-      if (event.detail === "pinch") {
-        this.addEventListener("pinch", this._onPinchListener);
-        this.lastListener.push([event.detail, this._onPinchListener]);
-        simulateEventSequence([
-          [myElement, "start", 1],
-          [myElement, "start", 2],
-          [myElement, "move", 2],
-          [myElement, "end", 2]
-        ]);
-        this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
-      }
-
-      if (event.detail === "spin") {
-        this.addEventListener("spin", this._onSpinListener);
-        this.lastListener.push([event.detail, this._onSpinListener]);
-        simulateEventSequence([
-          [myElement, "start", 1],
-          [myElement, "start", 2],
-          [myElement, "move", 2]
-        ]);
-        setTimeout(function () {
-          simulateEventSequence([[myElement, "end", 2]])
-        }, 120);
-      }
-
-      if (event.detail === "dragging") {
-        this.addEventListener("dragging", this._dragListener);
-        this.lastListener.push([event.detail, this._dragListener]);
-        simulateEventSequence([
-          [myElement, "start", 1],
-          [myElement, "move", 1],
-          [myElement, "end", 1]
-        ]);
-        this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
-      }
-
-      if (event.detail === "fling") {
-        this.addEventListener("fling", this._flingListener);
-        this.lastListener.push([event.detail, this._flingListener]);
-        simulateEventSequence([[myElement, "start", 1],
+      switch (event.detail) {
+        case "pinch":
+          this.addEventListener("pinch", this._onPinchListener);
+          this.lastListener.push([event.detail, this._onPinchListener]);
+          simulateEventSequence([
+            [myElement, "start", 1],
+            [myElement, "start", 2],
+            [myElement, "move", 2],
+            [myElement, "end", 2]
+          ]);
+          this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
+          break;
+        case "spin":
+          this.addEventListener("spin", this._onSpinListener);
+          this.lastListener.push([event.detail, this._onSpinListener]);
+          simulateEventSequence([
+            [myElement, "start", 1],
+            [myElement, "start", 2],
+            [myElement, "move", 2]
+          ]);
           setTimeout(function () {
-            simulateEventSequence([[myElement, "move", 1]])
-          }, 100)]);
-        setTimeout(function () {
-          simulateEventSequence([[myElement, "end", 1]])
-        }, 250);
-        this.removeEventListener(this.lastListener[this.lastListener.length - 2][0], this.lastListener[this.lastListener.length - 2][1]);
+            simulateEventSequence([[myElement, "end", 2]])
+          }, 120);
+          break;
+        case "dragging":
+          this.addEventListener("dragging", this._dragListener);
+          this.lastListener.push([event.detail, this._dragListener]);
+          simulateEventSequence([
+            [myElement, "start", 1],
+            [myElement, "move", 1],
+            [myElement, "end", 1]
+          ]);
+          this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
+          break;
+        case "fling":
+          this.addEventListener("fling", this._flingListener);
+          this.lastListener.push([event.detail, this._flingListener]);
+          simulateEventSequence([[myElement, "start", 1],
+            setTimeout(function () {
+              simulateEventSequence([[myElement, "move", 1]])
+            }, 100)]);
+          setTimeout(function () {
+            simulateEventSequence([[myElement, "end", 1]])
+          }, 250);
+          this.removeEventListener(this.lastListener[this.lastListener.length - 2][0], this.lastListener[this.lastListener.length - 2][1]);
+          break;
+        case "swipe":
+          this.addEventListener("swipeend", this._swipeListener);
+          this.lastListener.push([event.detail, this._swipeListener]);
+          simulateEventSequence([
+            [myElement, "start", 2],
+            [myElement, "move", 2],
+            [myElement, "end", 2]
+          ]);
+          this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
+          break;
       }
 
-      if (event.detail === "swipe") {
-        this.addEventListener("swipeend", this._swipeListener);
-        this.lastListener.push([event.detail, this._swipeListener]);
-        simulateEventSequence([
-          [myElement, "start", 2],
-          [myElement, "move", 2],
-          [myElement, "end", 2]
-        ]);
-        this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
-      }
     }
 
     onPinch(e) {
@@ -160,9 +159,9 @@
       this.style.marginTop = (parseFloat(this.style.marginTop) + e.detail.distY) + "px";
       this.style.marginLeft = (parseFloat(this.style.marginLeft) + e.detail.distX) + "px";
       this.style.backgroundColor = "rgba(13, 129, 195, 0.58)";
-      this.style.transition = "1s";
       this.style.borderRadius = "50%";
       this.style.border = "10px solid pink";
+      this.style.transition = "1s";
       this.innerText = "DRAG";
     }
 
