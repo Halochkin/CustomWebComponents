@@ -1,6 +1,6 @@
 ### Event Simulator
 [`Event Simulator`](https://github.com/Halochkin/Components/blob/master/Gestures/EventSimulator/src/EventSimulator.js) allows to simulate custom events based on a sequence of events whose parameters can be set.
-As an import function is used simulateEventSequence (arrayIn) which uses an array as an input parameter.
+As an import function is used `simulateEventSequence(arrayIn)` which uses an array as an input parameter.
 Where 
 ```html
     arrayIn = [
@@ -8,7 +8,7 @@ Where
     ...
     ]
 ```
-The sequence of event calls depends on the 'event' value and it order in the array.
+The sequence of event calls depends on the `event` value and it order in the array.
 If your event requires some temporary conditions, you can add a delay for any event by using the `setTimeout()`.
 #### Example
 
@@ -26,11 +26,11 @@ If your event requires some temporary conditions, you can add a delay for any ev
           }, 120); 
 </script>
 ```
-Depending on the sequence of event values in the array, the 'simulateEventSequence()' function calls
-'sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers)'
+Depending on the sequence of event values in the array, the `simulateEventSequence()` function calls
+`sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers)`.
 The first four parameters of the sendTouchEvent are coordinates '(x1, y1, x2, y2)' have been defined, but can be changed if necessary.
-For example, for 'start' event, they are (125, 255, 275, 75)px.
-These values were chosen to satisfy the conditions 'spin' and 'fling' of the event
+For example, for `start` event, they are (125, 255, 275, 75)px.
+These values were chosen to satisfy the conditions `spin` and `fling` of the event
 ```javascript
 function simulateEventSequence(arrayIn) {
   for (let i = 0; i < arrayIn.length; i++) {
@@ -60,7 +60,7 @@ function simulateEventSequence(arrayIn) {
     force: 0.5,
   });
   ```
-  Depending on the number of touch points ``sendTouchEvent()` defines single or multiple event.
+  Depending on the number of touch points `sendTouchEvent()` defines single or multiple event.
   ```javascript
   const twoFingersEvent = new TouchEvent(eventType, {
     cancelable: true,
