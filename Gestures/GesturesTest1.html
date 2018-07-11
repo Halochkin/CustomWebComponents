@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Demo</title>
-    <style>
+        <style>
         test-block {
             height: 250px;
             width: 250px;
@@ -12,12 +12,15 @@
             text-align: center;
             line-height: 15;
             color: white;
+            border-radius: 10px;
         }
 
         switch-button {
             display: inline-flex;
             margin: 100px;
-            margin-left: 185px;
+            margin-left: 240px;
+            margin-top: -100px;
+            position: absolute;
             width: 60px;
         }
 
@@ -28,16 +31,19 @@
             border-radius: 10px;
             margin: 50px;
             box-shadow: 3px 3px;
+            text-align: center;
+            font-family: 'Baskerville Old Face', sans-serif;
         }
-
     </style>
 </head>
 <body>
-<div id="viewport">
+<div id="borD">
+   <span>Activate gestures using the radio buttons.
+        The first time the event is activated, it will be simulated programmatically.
+        Once activated, you can use the mouse or sensor.</span>
     <test-block id="controller"></test-block>
 </div>
 <switch-button id="buttons"></switch-button>
-
 <script type="module">
 
   import {DragFlingGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/DragFlingMixin/src/DragFlingGestureMixin.js";
@@ -45,7 +51,7 @@
   import {SwipeGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/SwipeGestureMixin/src/SwipeGesture.js";
   import {simulateEventSequence} from "https://rawgit.com/Halochkin/Components/master/Gestures/EventSimulator/src/EventSimulator.js";
 
-   class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
+ class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
 
     constructor() {
       super();
@@ -54,7 +60,7 @@
       this._switcherListener = e => this.onSwitch(e);
       this._dragListener = e => this.onDrag(e);
       this._flingListener = e => this.onFling(e);
-      this.lastListener = [""];
+      this.lastListener = [""]; // value of the last eventListener.
     }
 
     static get pinchEvent() {
@@ -80,21 +86,23 @@
 
     onSwitch(event) {
       const myElement = document.getElementById('controller');
-      switch (event.detail) {
+      switch (event.detail) {    // the switch value of radio buttons
         case "pinch":
           this.addEventListener("pinch", this._onPinchListener);
-          this.lastListener.push([event.detail, this._onPinchListener]);
-          simulateEventSequence([
-            [myElement, "start", 1],
-            [myElement, "start", 2],
+          simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
+            [myElement, "start", 1],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
+            [myElement, "start", 2],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
             [myElement, "move", 2],
             [myElement, "end", 2]
           ]);
-          this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
+          //Remove the last value from the array. This is to avoid conflicts when changing an event.
+          // For example, the fling event is a continuation of the drag event.
+          // "Fling" event always activates the "drag" event and if the necessary conditions are met - "fling".
+          // To do this, you need to delete the previous event listeners. If you do not do this, several events
+          // will be triggered at the same time.
           break;
         case "spin":
           this.addEventListener("spin", this._onSpinListener);
-          this.lastListener.push([event.detail, this._onSpinListener]);
           simulateEventSequence([
             [myElement, "start", 1],
             [myElement, "start", 2],
@@ -102,21 +110,18 @@
           ]);
           setTimeout(function () {
             simulateEventSequence([[myElement, "end", 2]])
-          }, 120);
+          }, 120);          // If you have some time limits - you can add a delay. For example, to meet the 'spin' conditions, the delay between the 'move' and 'end' must be longer than 100ms.
           break;
         case "dragging":
           this.addEventListener("dragging", this._dragListener);
-          this.lastListener.push([event.detail, this._dragListener]);
           simulateEventSequence([
             [myElement, "start", 1],
             [myElement, "move", 1],
             [myElement, "end", 1]
           ]);
-          this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
           break;
         case "fling":
           this.addEventListener("fling", this._flingListener);
-          this.lastListener.push([event.detail, this._flingListener]);
           simulateEventSequence([[myElement, "start", 1],
             setTimeout(function () {
               simulateEventSequence([[myElement, "move", 1]])
@@ -124,7 +129,6 @@
           setTimeout(function () {
             simulateEventSequence([[myElement, "end", 1]])
           }, 250);
-          this.removeEventListener(this.lastListener[this.lastListener.length - 2][0], this.lastListener[this.lastListener.length - 2][1]);
           break;
         case "swipe":
           this.addEventListener("swipeend", this._swipeListener);
@@ -164,14 +168,14 @@
       this.style.backgroundColor = "rgba(13, 129, 195, 0.58)";
       this.style.borderRadius = "50%";
       this.style.border = "10px solid pink";
-      this.style.transition = "1s";
+      this.style.transition = "0s";
       this.innerText = "DRAG";
     }
 
     onFling(e) {
       const totalTime = e.detail.durationMs;
       this.style.marginTop = (parseFloat(this.style.marginTop) + e.detail.distY * 2) + "px";
-      this.style.marginLeft = (parseFloat(this.style.marginLeft) - e.detail.distX * 2) + "px";
+      this.style.marginLeft = (parseFloat(this.style.marginLeft) + e.detail.distX * 2) + "px";
       this.style.transition = "all " + totalTime + "ms cubic-bezier(0.39, 0.58, 0.57, 1)";
       this.style.backgroundColor = "#3fc352b0";
       this.style.border = "10px solid red";
