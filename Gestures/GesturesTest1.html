@@ -36,7 +36,7 @@
   import {SwipeGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/SwipeGestureMixin/src/SwipeGesture.js";
   import {simulateEventSequence} from "https://rawgit.com/Halochkin/Components/master/Gestures/EventSimulator/src/EventSimulator.js";
 
- class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
+  class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
 
     constructor() {
       super();
@@ -58,8 +58,10 @@
 
     connectedCallback() {
       super.connectedCallback();
-      this.style.marginTop = "250px";
-      this.style.marginLeft = "200px";
+      this.style.marginTop = "175px";
+      this.style.marginLeft = "175px";
+      this.style.font ="Arial";
+      this.style.transition = "1s";
       document.getElementById("buttons").addEventListener("buttons-select", this._switcherListener);
     }
 
@@ -110,7 +112,7 @@
           }, 100)]);
         setTimeout(function () {
           simulateEventSequence([[myElement, "end", 1]])
-        }, 220);
+        }, 250);
         this.removeEventListener(this.lastListener[this.lastListener.length - 2][0], this.lastListener[this.lastListener.length - 2][1]);
       }
 
@@ -127,31 +129,43 @@
     }
 
     onPinch(e) {
-      this.style.transition = "2s";
       let prevSpinAngle = (this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0);
       this.style.transform = `rotate(${prevSpinAngle + e.detail.rotation}deg)`;
+      this.style.backgroundColor = "green";
+      this.style.border = "1px solid black";
+      this.style.borderRadius = '60px 60px';
+      this.style.transition = "2s";
       this.innerText = "PINCH";
     }
 
     onSpin(e) {
-      this.style.transition = "1s";
       let prevSpinAngle = (this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0);
       this.style.transform = `rotate(${prevSpinAngle + e.detail.rotation * 5}deg)`;
+      this.style.backgroundColor = "yellow";
+      this.style.borderRadius = '155px 25px';
+      this.style.transition = "1s";
       this.innerText = "SPIN";
     }
 
     onDrag(e) {
-      this.style.transition = "0.7s";
-      this.style.borderRadius = "10%";
       this.style.marginTop = (parseFloat(this.style.marginTop) + e.detail.distY) + "px";
       this.style.marginLeft = (parseFloat(this.style.marginLeft) + e.detail.distX) + "px";
+      this.style.backgroundColor = "rgba(13, 129, 195, 0.58)";
+      this.style.transition = "1s";
+      this.style.borderRadius = "50%";
+      this.style.border = "10px solid pink";
       this.innerText = "DRAG";
     }
 
     onFling(e) {
-      this.style.transition = "all 1s cubic-bezier(0.39, 0.58, 0.57, 1)";
+      const totalTime = e.detail.durationMs;
       this.style.marginTop = (parseFloat(this.style.marginTop) + e.detail.distY * 2) + "px";
-      this.style.marginLeft = (parseFloat(this.style.marginLeft) + e.detail.distX * 2) + "px";
+      this.style.marginLeft = (parseFloat(this.style.marginLeft) - e.detail.distX * 2) + "px";
+      this.style.transition = "all " + totalTime + "ms cubic-bezier(0.39, 0.58, 0.57, 1)";
+      this.style.backgroundColor = "#3fc352b0";
+      this.style.border = "10px solid red";
+      this.style.borderRadius = "50%";
+      this.style.transition = "0.3s";
       this.innerText = "FLING";
     }
   }
@@ -160,7 +174,7 @@
     constructor() {
       super();
       this.innerHTML = `
-    <input type="radio" id="pinch" name="check" ><label>Pinch</label>
+    <input type="radio" id="pinch" name="check"><label>Pinch</label>
     <input type="radio" id="spin" name="check" ><label>Spin</label>
     <input type="radio" id="dragging" name="check"><label>Drag</label><br>
     <input type="radio" id="fling" name="check"><label>Fling</label>`;
