@@ -51,7 +51,7 @@
   import {SwipeGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/SwipeGestureMixin/src/SwipeGesture.js";
   import {simulateEventSequence} from "https://rawgit.com/Halochkin/Components/master/Gestures/EventSimulator/src/EventSimulator.js";
 
- class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
+class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
 
     constructor() {
       super();
@@ -86,30 +86,32 @@
 
     onSwitch(event) {
       const myElement = document.getElementById('controller');
+      const typeEvent = "touch";
       switch (event.detail) {    // the switch value of radio buttons
         case "pinch":
           this.addEventListener("pinch", this._onPinchListener);
           simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
-            [myElement, "start", 1],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
-            [myElement, "start", 2],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
-            [myElement, "move", 2],
-            [myElement, "end", 2]
+            [myElement, typeEvent, "start", 1],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
+            [myElement, typeEvent, "start", 2],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
+            [myElement, typeEvent, "move", 2],
+            [myElement, typeEvent, "end", 2]
           ]);
-          //Remove the last value from the array. This is to avoid conflicts when changing an event.
+          // Remove the last value from the array. This is to avoid conflicts when changing an event.
           // For example, the fling event is a continuation of the drag event.
           // "Fling" event always activates the "drag" event and if the necessary conditions are met - "fling".
           // To do this, you need to delete the previous event listeners. If you do not do this, several events
           // will be triggered at the same time.
+          //todo read about this
           break;
         case "spin":
           this.addEventListener("spin", this._onSpinListener);
           simulateEventSequence([
-            [myElement, "start", 1],
-            [myElement, "start", 2],
-            [myElement, "move", 2]
+            [myElement, typeEvent, "start", 1],
+            [myElement, typeEvent, "start", 2],
+            [myElement, typeEvent, "move", 2]
           ]);
           setTimeout(function () {
-            simulateEventSequence([[myElement, "end", 2]])
+            simulateEventSequence([[myElement, typeEvent, "end", 2]])
           }, 120);          // If you have some time limits - you can add a delay.
                             // For example, to meet the 'spin' conditions, the delay between the 'move' and 'end'
                             // must be longer than 100ms.
@@ -117,28 +119,28 @@
         case "dragging":
           this.addEventListener("dragging", this._dragListener);
           simulateEventSequence([
-            [myElement, "start", 1],
-            [myElement, "move", 1],
-            [myElement, "end", 1]
+            [myElement, typeEvent, "start", 1],
+            [myElement, typeEvent, "move", 1],
+            [myElement, typeEvent, "end", 1]
           ]);
           break;
         case "fling":
           this.addEventListener("fling", this._flingListener);
-          simulateEventSequence([[myElement, "start", 1],
+          simulateEventSequence([[myElement, typeEvent, "start", 1],
             setTimeout(function () {
-              simulateEventSequence([[myElement, "move", 1]])
+              simulateEventSequence([[myElement, typeEvent, "move", 1]])
             }, 100)]);
           setTimeout(function () {
-            simulateEventSequence([[myElement, "end", 1]])
+            simulateEventSequence([[myElement, typeEvent, "end", 1]])
           }, 250);
           break;
         case "swipe":
           this.addEventListener("swipeend", this._swipeListener);
           this.lastListener.push([event.detail, this._swipeListener]);
           simulateEventSequence([
-            [myElement, "start", 2],
-            [myElement, "move", 2],
-            [myElement, "end", 2]
+            [myElement, typeEvent, "start", 2],
+            [myElement, typeEvent, "move", 2],
+            [myElement, typeEvent, "end", 2]
           ]);
           this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
           break;
@@ -193,7 +195,7 @@
     //To ensure that the block does not leave the window border, this simple function is added,
     // which is called every time after onDrag(e) and onFling(e).
     checkFunc() {
-      if (parseFloat(this.style.marginTop )< 10) {
+      if (parseFloat(this.style.marginTop) < 10) {
         this.style.marginTop = "0px";
       }
       if (parseFloat(this.style.marginLeft) < 10) {
