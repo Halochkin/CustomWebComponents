@@ -2,19 +2,19 @@ export {simulateEventSequence};
 
 function simulateEventSequence(arrayIn) {
   for (let i = 0; i < arrayIn.length; i++) {
-    if (arrayIn[i][1] === "start") {
-      sendTouchEvent(125, 255, 275, 75, arrayIn[i][0], "touchstart", i, arrayIn[i][2]);
+    if (arrayIn[i][2] === "start") {
+      sendTouchEvent(125, 255, 275, 75, arrayIn[i][0], arrayIn[i][1] + "start", i, arrayIn[i][3]);
     }
-    if (arrayIn[i][1] === "move") {
-      sendTouchEvent(30, 200, 20, 100, arrayIn[i][0], "touchmove", i, arrayIn[i][2]);
+    if (arrayIn[i][2] === "move") {
+      sendTouchEvent(30, 200, 20, 100, arrayIn[i][0], arrayIn[i][1] + "move", i, arrayIn[i][3]);
     }
-    if (arrayIn[i][1] === "end") {
-      sendTouchEvent(300, 400, 450, 250, arrayIn[i][0], "touchend", i, arrayIn[i][2]);
+    if (arrayIn[i][2] === "end") {
+      sendTouchEvent(300, 400, 450, 250, arrayIn[i][0], arrayIn[i][1] + "end", i, arrayIn[i][3]);
     }
   }
 }
 
-function sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers, delay) {
+function sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers) {
   const touchObj = new Touch({
     identifier: id,
     target: element,
