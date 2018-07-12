@@ -154,7 +154,8 @@ export const DragFlingGesture = function (Base) {
 
       const detail = {event: e, x: e.x, y: e.y};
       this[cachedEvents] = [detail];
-      this[eventAndOrCallback]("draggingstart", detail);
+      this.draggingStartCallback && this.draggingStartCallback(detail);
+      this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
     }
 
     [touchStart](e) {
@@ -171,6 +172,23 @@ export const DragFlingGesture = function (Base) {
       this[cachedEvents] = [detail];
       this.draggingStartCallback && this.draggingStartCallback(detail);
       this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
+    }
+
+
+    [mouseMove](e) {
+      this[move](e, e.x, e.y);
+    }
+
+    [touchMove](e) {
+      this[move](e, e.targetTouches[0].pageX, e.targetTouches[0].pageY);
+    }
+
+    [move](event, x, y) {
+      const prevDetail = this[cachedEvents][this[cachedEvents].length - 1];
+      const detail = makeDetail(event, x, y, prevDetail);
+      this[cachedEvents].push(detail);
+      this.draggingCallback && this.draggingCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("dragging", {bubbles: true, detail}));
     }
 
     [mouseStop](e) {
@@ -203,24 +221,10 @@ export const DragFlingGesture = function (Base) {
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
     }
 
-    [mouseMove](e) {
-      this[move](e, e.x, e.y);
-    }
-
-    [touchMove](e) {
-      this[move](e, e.targetTouches[0].pageX, e.targetTouches[0].pageY);
-    }
-
-    [move](event, x, y) {
-      const prevDetail = this[cachedEvents][this[cachedEvents].length - 1];
-      const detail = makeDetail(event, x, y, prevDetail);
-      this[cachedEvents].push(detail);
-      this.draggingCallback && this.draggingCallback(detail);
-      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("dragging", {bubbles: true, detail}));
-    }
-
     [fling](e, x, y) {
       const settings = this.constructor.flingSettings;
+      if (e === undefined)
+        return;
       let endTime = e.timeStamp;
       const flingTime = endTime - settings.minDuration;
       const flingStart = findLastEventOlderThan(this[cachedEvents], flingTime);
