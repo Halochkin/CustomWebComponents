@@ -50,5 +50,11 @@ The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
    * right/east:  90
    * down/south: 180
    * left/west:  270
+   
 [`Try the difference between `drag` and `fling` gestures here`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
+### Reference
+* [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
+* [DragEvent](https://developer.mozilla.org/en-US/docs/Web/API/DragEvent)
+* [Touch events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
+
 
