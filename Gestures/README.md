@@ -1,4 +1,5 @@
 # Gestures
+### Description of the most common gestures
   Our hands are a great tool for communication with people and the environment. With our hands we can create something beautiful, 
 show our emotions (raised thumb up), and even decide the fate of other people (lowered thumb down, in the Roman Empire or on Facebook).
 Some time ago, technology allowed us to manipulate information with our hands. 
@@ -18,3 +19,16 @@ the finger is removed from the screen while in motion, the dragging ends abruptl
   - rotate (used to... rotate)<br>
   - two-finger-drag (used to move a subselection of a page, when single-finger-drag is used to navigate the page as a whole)<br>
   - spin (used to trigger animations)<br>
+
+
+### Pros and cons of gestures
+Pros and cons of gestures
+Gestures offer significant opportunities for managing mobile devices. You can create a huge number of different combinations that will cause different actions. This allows you to get rid of unnecessary buttons in the interface and add interactivity.
+The most basic drawback of gestures is their unintuitiveness. You can expect people to be familiar with the gestures listed above, but they are completely unfamiliar with the rest of the gestures.<br>
+If you decide to add additional gestures to your app to control it, users will have to learn how to use the new gesture. This will require the creation of a special training unit or additional tips.
+People don't like to learn something new, especially in applications. A lot of new information leads to misunderstanding and refusal of the application. Therefore, it makes sense to enter gestures into the interface gradually, one at a time.
+Also, there is a high risk of misunderstanding how your application works if you hide the buttons of the main actions and replace them with gestures.
+Therefore, if you plan to add your gestures to the application, you need to solve the following:
+- How much demand for additional gestures to your users
+- They do not conflict with the gestures of the operating system
+- How will you teach new user gestures
