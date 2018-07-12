@@ -1,4 +1,4 @@
- ## Spin Gesture
+ ## PinchSpinMixin
   The spin gesture is a continuous gesture that occurs when two fingers that touch the screen move around each other and
   used to control objects on the screen.
 For example, you can use them to rotate or change the scale of an element.<br>
