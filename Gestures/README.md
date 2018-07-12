@@ -14,6 +14,7 @@ This mixin support for one-finger gesture for `drag` on the screen, commonly use
 `Fling` gesture is analogous to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) which is familiar to everyone on desktop computers. A long press on a moving object activates the ability to move it by dragging.
 It occurs periodically on all platforms (for example, to change the location of the icon on the desktop, change the order and location of elements, etc.). and triggered when the finger is removed from the screen while in motion, the dragging ends abruptly.
 * ### [`PinchSpinMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/PinchGestureMixin) 
+ This mixin records a sequence of two-finger `"touchstart"`, `"touchmove"` and `"touchend"` to callback/event.
 Adds support for for two finger gestures such as:
   - pinch (used to for example zoom-out or shrink)<br>
   - expand (used to for example zoom-in or grow)<br>
