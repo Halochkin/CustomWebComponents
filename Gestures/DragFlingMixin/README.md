@@ -1,11 +1,8 @@
 ### DragFlingGestureMixin
  
-This mixin allows to translate a sequence of mouse and touch events to reactive lifecycle hooks:
- * `dragGestureCallback(startDetail, dragDetail)`<br>
- * `flingGestureCallback(flingDetail)`.<br>
+This mixin allows to translate a sequence of mouse or touch events to callback/event.
  In order for mixin to support work with smartphones it was added touch events.<br>
-Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.<br>
-This mixin allows to translate a sequence of mouse and touch events to callback/event.
+Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.
  Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
 ```javascript
 draggingStartCallback(detail) / "draggingstart"
@@ -30,6 +27,7 @@ function makeDetail(event, x, y, startDetail) {
   return {event, x, y, distX, distY, distDiag, durationMs};
 }
 ```
+`Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported.
 
 `Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) and the difference between fling and drag gestures is that `flingCallback()` / "flinging" must meet the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. Other gesture-mixins work on the same principle.
    The `minDistance` and `minDuration` can be changed using these properties on the element
