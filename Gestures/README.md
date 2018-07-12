@@ -10,18 +10,18 @@ And it is quite simple: gestures.
 
 This repository contains all the basic gestures used on mobile devices: and combined into functional mixins:
 * ### [`DragFlingMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/DragFlingMixin)
-adds support for one-finger gesture for `drag` on the screen, commonly used to move and/or scroll elements on the screen and a`fling` gesture which is triggered when 
-the finger is removed from the screen while in motion, the dragging ends abruptly (Similar to the 
-[`Drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) event).
+- adds support for one-finger gesture for `drag` on the screen, commonly used to move and/or scroll elements on the screen.
+`Fling` gesture is analogous to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) function, which is familiar to everyone on desktop computers. A long press on a moving object activates the ability to move it by dragging.
+It occurs periodically on all platforms (for example, to change the location of the icon on the desktop, change the order and location of elements, etc.). and triggered when the finger is removed from the screen while in motion, the dragging ends abruptly.
 * ### [`PinchSpinMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/PinchGestureMixin) 
-adds support for for two finger gestures such as:
+- adds support for for two finger gestures such as:
   - pinch (used to for example zoom-out or shrink)<br>
   - expand (used to for example zoom-in or grow)<br>
   - rotate (used to... rotate)<br>
   - two-finger-drag (used to move a subselection of a page, when single-finger-drag is used to navigate the page as a whole)<br>
   - spin (used to trigger animations)<br>
- [`Play with gestures`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
-
+  These gesture are mainly used to zoom in/out images, zoom in/out maps, zoom in/out web pages. A pinch gesture reports changes to the distance between two fingers touching the screen. Pinch gestures are continuous, so action method is called each time the distance between the fingers changes. <br>
+ [`You can test these gestures yourself`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 
 ### Pros and cons of gestures
 Gestures offer significant opportunities for managing mobile devices. You can create a huge number of different combinations that will cause different actions. This allows you to get rid of unnecessary buttons in the interface and add interactivity.
@@ -33,3 +33,6 @@ Therefore, if you plan to add your gestures to the application, you need to solv
 - How much demand for additional gestures to your users
 - They do not conflict with the gestures of the operating system
 - How will you teach new user gestures
+### Reference
+* [Pinch-zoom-gesture](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Pinch_zoom_gestures)
+* [Touch events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
