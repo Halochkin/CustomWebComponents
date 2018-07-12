@@ -20,8 +20,8 @@ Adds support for for two finger gestures such as:
   - expand (used to for example zoom-in or grow)<br>
   - rotate (used to... rotation)<br>
   - two-finger-drag (used to move a subselection of a page, when single-finger-drag is used to navigate the page as a whole)<br>
-  - spin (used to trigger animations)<br>
-  These gesture are mainly used to zoom in/out images, zoom in/out maps, zoom in/out web pages. A pinch gesture reports changes to the distance between two fingers touching the screen. Pinch gestures are continuous, so action method is called each time the distance between the fingers changes. <br>
+  - spin (used to trigger animations).<br>
+ 
  [`You can test these gestures yourself`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 
 ### Pros and cons of gestures
