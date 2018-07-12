@@ -9,9 +9,9 @@ But to show the maximum potential of mobile devices with touch screens, we need 
 And it is quite simple: gestures.
 
 This repository contains all the basic gestures used on mobile devices: and combined into functional mixins:
-* ### [`DragFlingMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/DragFlingMixin)
+* ### [`DragFlingMixin`]https://github.com/Halochkin/Components/blob/master/Gestures/DragFlingMixin/README.md)
 Adds support for one-finger gesture for `drag` on the screen, commonly used to move and/or scroll elements on the screen.
-`Fling` gesture is analogous to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) function, which is familiar to everyone on desktop computers. A long press on a moving object activates the ability to move it by dragging.
+`Fling` gesture is analogous to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) which is familiar to everyone on desktop computers. A long press on a moving object activates the ability to move it by dragging.
 It occurs periodically on all platforms (for example, to change the location of the icon on the desktop, change the order and location of elements, etc.). and triggered when the finger is removed from the screen while in motion, the dragging ends abruptly.
 * ### [`PinchSpinMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/PinchGestureMixin) 
 Adds support for for two finger gestures such as:
