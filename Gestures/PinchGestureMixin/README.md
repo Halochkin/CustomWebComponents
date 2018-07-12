@@ -46,7 +46,7 @@ prevent accidental calls.
 ```
 Both `spinMotion` and `spinDuration` are implemented as [StaticSettings](../chapter2/Pattern_StaticSettings.md).
 `spinMotion` is calculated as the sum of the distance of the start and end positions of
-finger 1 and 2, where start position was the position of finger 1 and 2 at pinchend - `spinDuration`.
+finger 1 and 2, where start position was the position of finger 1 and 2 at pinchend - `spinDuration`.<br>
 [Try the difference between `drag` and `fling` gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 <p align="center">
   <img src="http://www.gestureml.org/lib/exe/fetch.php/gestures/touch/simple/spatial/rotate/two_finger_rotate_gestureworks.png?w=200&tok=5f5c9f">
