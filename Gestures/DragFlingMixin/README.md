@@ -3,20 +3,20 @@
 This mixin allows to translate a sequence of mouse and touch events to reactive lifecycle hooks:
  * `dragGestureCallback(startDetail, dragDetail)`<br>
  * `flingGestureCallback(flingDetail)`.<br>
-In order for mixin to support work with smartphones it was added touch events.<br>
-Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.
+ In order for mixin to support work with smartphones it was added touch events.<br>
+Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.<br>
   Mixin contain 4 main function:<br>
 * `[start](e)` - which fired when a pointing device button is pressed on an element by `"mousedown"` event
              or touch points are placed on the touch surface (`"touchstart"` event).<br>
 * `[move](e)` -  is fired when a pointing device (usually a mouse) is stert moving while over an element by
             "touchmove" or "mousemove" events.<br>
 * `[moved](e)` - trigger `dragGestureCallback(dragDetail)` which contain:<br>
-* distX - distanceX (Y)
-* distY
-* x  actual coordinates X (Y)
-* y
-* pointerevent
-* startDragging<br>
+- distX - distanceX (Y)
+- distY
+- x  actual coordinates X (Y)
+- y
+- pointerevent
+- startDragging<br>
 `[end](e)` - can be triggered by four events:
                 `"touchend"` - is fired when one or more touch points are removed from the touch surface;
                 `"touchcancel"` - is fired when one or more touch points have been disrupted in an implementation-specific manner (for example, too many touch points are created).
