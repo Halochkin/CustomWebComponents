@@ -48,10 +48,9 @@
 
   import {DragFlingGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/DragFlingMixin/src/DragFlingGestureMixin.js";
   import {PinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/src/PinchMixin.js";
-  import {SwipeGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/SwipeGestureMixin/src/SwipeGesture.js";
   import {simulateEventSequence} from "https://rawgit.com/Halochkin/Components/master/Gestures/EventSimulator/src/EventSimulator.js";
 
-class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))) {
+class TestBlock extends DragFlingGesture(PinchGesture(HTMLElement)) {
 
     constructor() {
       super();
@@ -134,16 +133,6 @@ class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))
             simulateEventSequence([[myElement, typeEvent, "end", 1]])
           }, 250);
           break;
-        case "swipe":
-          this.addEventListener("swipeend", this._swipeListener);
-          this.lastListener.push([event.detail, this._swipeListener]);
-          simulateEventSequence([
-            [myElement, typeEvent, "start", 2],
-            [myElement, typeEvent, "move", 2],
-            [myElement, typeEvent, "end", 2]
-          ]);
-          this.removeEventListener(this.lastListener[this.lastListener.length - 1][0], this.lastListener[this.lastListener.length - 1][1]);
-          break;
       }
     }
 
@@ -188,9 +177,7 @@ class TestBlock extends SwipeGesture(DragFlingGesture(PinchGesture(HTMLElement))
       this.style.transition = "0.3s";
       this.innerText = "FLING";
       this.checkFunc();
-
     }
-
 
     //To ensure that the block does not leave the window border, this simple function is added,
     // which is called every time after onDrag(e) and onFling(e).
