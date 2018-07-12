@@ -6,75 +6,49 @@ This mixin allows to translate a sequence of mouse and touch events to reactive 
  In order for mixin to support work with smartphones it was added touch events.<br>
 Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.<br>
 This mixin allows to translate a sequence of mouse and touch events to callback/event.
+ Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
 ```javascript
 draggingStartCallback(detail) / "draggingstart"
 draggingCallback(detail) / "dragging"
 draggingEndCallback(detail) / "draggingend"
 flingCallback(detail) / "fling"
 ```
+To use the event, there is a static function `pinchEvent()`
+```javascript
+static get pinchEvent() {
+      return true;
+    }
+```
+All callbacks/events pass a set of standard details, based on `makeDetail()`:
+```javascript
+//startDetail - used for calculation of difference between actual and previous events
+function makeDetail(event, x, y, startDetail) {
+  const distX = x - startDetail.x;
+  const distY = y - startDetail.y;
+  const distDiag = Math.sqrt(distX * distX + distY * distY);
+  const durationMs = event.timeStamp - startDetail.event.timeStamp;
+  return {event, x, y, distX, distY, distDiag, durationMs};
+}
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  Mixin contain 4 main function:<br>
-* `[start](e)` - which fired when a pointing device button is pressed on an element by `"mousedown"` event
-             or touch points are placed on the touch surface (`"touchstart"` event).<br>
-* `[move](e)` -  is fired when a pointing device (usually a mouse) is stert moving while over an element by
-            "touchmove" or "mousemove" events.<br>
-* `[moved](e)` - trigger `dragGestureCallback(dragDetail)` which contain:<br>
-- distX - distanceX (Y)
-- distY
-- x  actual coordinates X (Y)
-- y
-- pointerevent
-- startDragging<br>
-`[end](e)` - can be triggered by four events:
-                `"touchend"` - is fired when one or more touch points are removed from the touch surface;
-                `"touchcancel"` - is fired when one or more touch points have been disrupted in an implementation-specific manner (for example, too many touch points are created).
-                `"mouseup"` - is fired when a pointing device button is released over an element.
-                `"mouseout"` - is fired when a pointing device (usually a mouse) is moved off the element that has the listener attached or off one of its children.
-
-The first `[end](e)` calls `[fling](e)` which triggered `flingGestureCallback(flinfDetail)` only if the last dragging event moved minimum `50px` in one direction during the last `200ms`.
-   The minimum distance and duration can be changed using these properties on the element
+`Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) and the difference between fling and drag gestures is that `flingCallback()` / "flinging" must meet the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. Other gesture-mixins work on the same principle.
+   The `minDistance` and `minDuration` can be changed using these properties on the element
    ```javascript
     .flingSettings.minDistance = 50;
     .flingSettings.minDuration = 200;
 ```
-`flingGestureCallback(flinfDetail)` contain:
-* angle: flingAngle(distX, distY),
-* distX - distanceX (Y)
-* distY
-* diagonalPx
-* durationMs
-* flingX  
-* fling value (use for `style.left = flingX + 'px'`)
-* flingY
-* x
-* xSpeedPxMs
-* y
-* ySpeedPxMs<br>
- Events Touch and mouse have different properties and to solve this problem, it was added `this[isTouchActive]`property which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
+In addition to the default list of details, `flingCallback(detail)` has a new value of detail - `angle`.
+`Angle` - equal to the angle between two touch points and gets from `flingAngle()`.
+
+```javascript
+function flingAngle(x = 0, y = 0) {
+  return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
+}
+```
 The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
   * up/north:     0
    * right/east:  90
    * down/south: 180
    * left/west:  270
+[`Try the difference between `drag` and `fling` gestures here`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
+
