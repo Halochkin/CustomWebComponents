@@ -6,11 +6,12 @@ This mixin allows to translate a sequence of mouse and touch events to reactive 
  In order for mixin to support work with smartphones it was added touch events.<br>
 Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault`.<br>
 This mixin allows to translate a sequence of mouse and touch events to callback/event.
-* `draggingStartCallback(detail)` / "draggingstart"<br>
-* `draggingCallback(detail)` / "dragging"<br>
-* `draggingEndCallback(detail)` / "draggingend"<br>
-* `flingCallback(detail)` / "fling"
-
+```javascript
+draggingStartCallback(detail) / "draggingstart"
+draggingCallback(detail) / "dragging"
+draggingEndCallback(detail) / "draggingend"
+flingCallback(detail) / "fling"
+```
 
 
 
