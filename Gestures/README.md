@@ -9,21 +9,21 @@ But to show the maximum potential of mobile devices with touch screens, we need 
 And it is quite simple: gestures.
 
 This repository contains all the basic gestures used on mobile devices: and combined into functional mixins:
-* [`DragFlingMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/DragFlingMixin) - adds support for one-finger gesture 
-for `drag` on the screen, commonly used to move and/or scroll elements on the screen and a`fling` gesture which is triggered when 
+* ### [`DragFlingMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/DragFlingMixin)
+adds support for one-finger gesture for `drag` on the screen, commonly used to move and/or scroll elements on the screen and a`fling` gesture which is triggered when 
 the finger is removed from the screen while in motion, the dragging ends abruptly (Similar to the 
 [`Drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) event).
-* [`PinchSpinMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/PinchGestureMixin) adds support for for two finger gestures such as:
+* ### [`PinchSpinMixin`](https://github.com/Halochkin/Components/tree/master/Gestures/PinchGestureMixin) 
+adds support for for two finger gestures such as:
   - pinch (used to for example zoom-out or shrink)<br>
   - expand (used to for example zoom-in or grow)<br>
   - rotate (used to... rotate)<br>
   - two-finger-drag (used to move a subselection of a page, when single-finger-drag is used to navigate the page as a whole)<br>
   - spin (used to trigger animations)<br>
- * [Try it](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
+ [`Play with gestures`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 
 
 ### Pros and cons of gestures
-Pros and cons of gestures
 Gestures offer significant opportunities for managing mobile devices. You can create a huge number of different combinations that will cause different actions. This allows you to get rid of unnecessary buttons in the interface and add interactivity.
 The most basic drawback of gestures is their unintuitiveness. You can expect people to be familiar with the gestures listed above, but they are completely unfamiliar with the rest of the gestures.<br>
 If you decide to add additional gestures to your app to control it, users will have to learn how to use the new gesture. This will require the creation of a special training unit or additional tips.
