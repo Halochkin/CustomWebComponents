@@ -21,6 +21,9 @@ Adds support for for two finger gestures such as:
   - rotate (used to... rotation)<br>
   - two-finger-drag (used to move a subselection of a page, when single-finger-drag is used to navigate the page as a whole)<br>
   - spin (used to trigger animations).<br>
+ * ### [`Event Simulator`](https://github.com/Halochkin/Components/tree/master/Gestures/EventSimulator)
+ Event Simulator allows to simulate custom events based on a sequence of events without physical interaction. You can add the number of touch points, the element on which the event will occur and timeout of execution.
+ Simulator support 3 main type of events: "start", "move" and "end". And you can set the required type of event, for example "mouse" or "touch".
  
  [`You can test these gestures yourself`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 
