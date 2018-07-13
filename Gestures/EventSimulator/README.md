@@ -1,8 +1,12 @@
 ### Event Simulator
-[`Event Simulator`](https://github.com/Halochkin/Components/blob/master/Gestures/EventSimulator/src/EventSimulator.js) allows to simulate custom events based on a sequence of events whose parameters can be set.
+### What is Event Simulator?
+Let's try to answer this question. [`Event Simulator`](https://github.com/Halochkin/Components/blob/master/Gestures/EventSimulator/src/EventSimulator.js) allows to simulate custom events based on a sequence of events without physical interaction. 
+Simulator support 3 main events: "start","move" and "end". And you can set the required type of event, for example "mouse" or "touch"
+In addition to simulating simple events, such as "touchstart", "touchent"... you can simulate gestures by adding a sequence of events to the array. Not bad, huh? Let's see how it works.
+### How to start to simulate the events and gestures?
 As an import function is used `simulateEventSequence(arrayIn)` which uses an array as an input parameter.
 Where 
-```html
+``` javascript
     arrayIn = [
     [element, "typeOfEvent", "event", number of touch points)],
     ...
@@ -44,8 +48,9 @@ function simulateEventSequence(arrayIn) {
       sendTouchEvent(300, 400, 450, 250, arrayIn[i][0], arrayIn[i][1] + "end", i, arrayIn[i][3]);
     }
   }
-}```
-`sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers)` adds the following values for events.
+}
+```
+sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers) adds the following values for events.
 ```javascript
  const touchObj = new Touch({
     identifier: id,
