@@ -2,7 +2,7 @@
 This mixin allows to translate a sequence of mouse or touch events to callback/event. The advantage of using this mixin is that it can be used for both desktop and mobile versions of the web application. Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault` and prevented selection of the text.
 ### Mouse and touch events support. What's next?
 Mouse and touch events have different transferred properties and to solve this problem, it was added `this[isTouchActive]` which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
-To prevent conflicts between the two event types when counting details, separate functions have been made for each. They pass parameters in same form, and have the same standard details, based on `makeDetail()`:
+To prevent conflicts between the two event types when counting details, separate functions have been made for each. They pass parameters in same form, and have the same default details, based on `makeDetail()`:
 ```javascript
 // where startDetail - used for calculation of difference between actual and previous events
 function makeDetail(event, x, y, startDetail) {
@@ -20,13 +20,13 @@ draggingCallback(detail) / "dragging"
 draggingEndCallback(detail) / "draggingend"
 flingCallback(detail) / "fling"
 ```
-To start using an event, you must add a `pinchEvent()` which return `true`. If you want to use only a callbacks, change "return `true`" to 'false' or remove the function.
+To start using an event, you must add a `dragEvent()` which return `true`. If you want to use only a callbacks, change "return `true`" to 'false' or remove the function.
 ```javascript
-static get pinchEvent() {
+static get dragEvent() {
       return true;
     }
 ```
-Before triggering each callback or event, DragFlingMixin checks for the presence of a corresponding callback or `pinchEvent()` in the code.
+Before triggering each callback or event, DragFlingMixin checks for the presence of a corresponding callback or `dragEvent()` in the code.
 ```javascript
 this.draggingStartCallback && this.draggingStartCallback(detail); 
 this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
@@ -62,6 +62,9 @@ I want to remind that when you are using a [functional mixin](https://github.com
 **you must remember to call `super.connectedCallback` and `super.disconnectedCallback`** in the component itself. 
 If you forget this, you will not get an Error, but the functional mixin will not be activated or deactivated.
 This closely resemble the compulsory call to `super()` in the `constructor()` of any class that extends another class. 
+```html
+<fling-ball></fling-ball>
+```
 ```javascript
 import {DragFlingGesture} from "../src/DragFlingMixin.js";
 
