@@ -2,10 +2,6 @@
 <html lang="en">
 <body>
 
-<script src="https://hammerjs.github.io/dist/hammer.js"></script>
-<script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
-<script> TouchEmulator(); </script>
-
 <style>
     body {
         padding: 10px;
@@ -85,7 +81,8 @@
     c.appendChild(b);
     document.body.appendChild(c);
   }
-  import {PinchGesture} from "../src/PinchMixin.js";
+  import {PinchGesture} from "../src/PinchGestureMixin.js";
+  import {simulateEventSequence} from "../src/EventsSimulator.js";
 
   class SpinOne extends PinchGesture(HTMLElement) {
 
@@ -114,40 +111,24 @@
       this.removeEventListener("spin", this._onSpinListener);
     }
 
-    onSwitch(event) {
-      if (event.detail === "auto") {
-        // this is necessary in order to hide the points of touching
-        setTimeout(
-          function () {
-            let body = document.querySelector("body");
-            for (let i = body.children.length - 3; i < body.children.length; i++) {
-              let point = body.children[i];
-              point.style.display = "none";
-            }
-          }, 10);
-        this.autoSpin();
-      }
-    }
 
-    autoSpin() {
-      const myElement = document.getElementById('controller');
-      let arr = [
-        [129, 225, 275, 73, 100],
-        [179, 255, 295, 295, 90],
-        [201, 209, 315, 166, 80],
-        [251, 220, 128, 249, 70],
-        [316, 245, 263, 220, 30],
-      ];
-      for (let i = 0; i < arr.length; i++) {
-        let touchType = "touch" + (i <= 1 ? "start" : i < arr.length - 1 ? "move" : "end");
-        let task = arr[i];
-        for (let stop = task[4] + performance.now(); performance.now() < stop;) ;
-        sendTouchEvent(task[0], task[1], task[2], task[3], myElement, touchType, 123, i);
+    onSwitch(event) {
+      const myElement = document.getElementById("controller");
+
+      if (event.detail === "auto") {
+        simulateEventSequence([
+          [myElement, "touch", "start", 1],
+          [myElement, "touch", "start", 2],
+          [myElement, "touch", "move", 2]
+        ]);
+        setTimeout(function () {
+          simulateEventSequence([[myElement, "touch", "end", 2]])
+        }, 120);
       }
     }
 
     onPinch(e) {
-      this.style.transition = "0s";
+      this.style.transition = "1s";
       prevSpinAngle = (this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0);
       this.style.transform = `rotate(${prevSpinAngle + e.detail.rotation}deg)`;
       this.innerText = "PINCH";
@@ -166,53 +147,11 @@
       ten(e);
       eleven(e);
       twelwe(e);
-      this.style.transition = "1s";
       this.style.transform = `rotate(${prevSpinAngle + e.detail.rotation * 10}deg)`;
       this.innerText = "SPIN";
     }
   }
 
-  function sendTouchEvent(x1, y1, x2, y2, element, eventType, id, counter) {
-    const touchObj = new Touch({
-      identifier: id,
-      target: element,
-      clientX: x1,
-      clientY: y1,
-      pageX: x1,
-      pageY: y1,
-      radiusX: 2.5,
-      radiusY: 2.5,
-      rotationAngle: 130,
-      force: 0.5,
-    });
-    const touchObj2 = new Touch({
-      identifier: id + counter,
-      target: element,
-      clientX: x2,
-      clientY: y2,
-      pageX: x2,
-      pageY: y2,
-      radiusX: 2.5,
-      radiusY: 2.5,
-      rotationAngle: 20,
-      force: 0.5,
-    });
-    const touchEvent = new TouchEvent(eventType, {
-      cancelable: true,
-      bubbles: true,
-      touches: [touchObj, touchObj2],
-      targetTouches: [touchObj, touchObj2],
-      changedTouches: [touchObj, touchObj2],
-    });
-    const touchStartBaseEvent = new TouchEvent(eventType, { // it is necessary for [oneHit] when first finger was not pressed on the element, so this second touch is part of something bigger.
-      cancelable: true,                                     // 'touchstart' begins from one finger - then function defined [oneHit] as true - then 'touchstart' begins one more time with two fingers
-      bubbles: true,                                        // without one-finger touch start PinchMixin will not works
-      touches: [touchObj],
-      targetTouches: [touchObj],
-      changedTouches: [touchObj],
-    });
-    counter === 0 ? element.dispatchEvent(touchStartBaseEvent) : element.dispatchEvent(touchEvent);
-  }
 
   class SpinExample extends PinchGesture(HTMLElement) {
   }
@@ -236,8 +175,8 @@
   function one(e) {
     let spin = document.getElementById("spinner1");
     let panel = document.getElementById("panel1");
-    spin.style.transition = `13s`;
-    spin.style.transform = `rotate(-${e.detail.rotation}deg)`;
+    spin.style.transition = `3s`;
+    spin.style.transform = `rotate(${e.detail.rotation}deg)`;
     panel.innerText =
       `Simple rotation
        Rotation:${(e.detail.rotation).toFixed(2)} deg,
@@ -249,7 +188,7 @@
     let spin = document.getElementById("spinner2");
     let panel = document.getElementById("panel2");
     spin.style.transition = `13s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 5}deg)`;
+    spin.style.transform = `rotate(${e.detail.rotation * 5}deg)`;
     panel.innerText =
       `Accelerated rotation(x5)
        Rotation:${(e.detail.rotation * 5).toFixed(2)} deg,
@@ -261,7 +200,7 @@
     let spin = document.getElementById("spinner3");
     let panel = document.getElementById("panel3");
     spin.style.transition = `16s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 10}deg)`;
+    spin.style.transform = `rotate(${e.detail.rotation * 10}deg)`;
     panel.innerText =
       `Rotation(x10)
        Rotation:${(e.detail.rotation * 10).toFixed(2)} deg,
@@ -273,7 +212,7 @@
     let spin = document.getElementById("spinner4");
     let panel = document.getElementById("panel4");
     spin.style.transition = `19s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 25}deg)`;
+    spin.style.transform = `rotate(${e.detail.rotation * 25}deg)`;
     panel.innerText =
       `Rotation (x25)
        Rotation:${(e.detail.rotation * 25).toFixed(2)} deg,
@@ -285,7 +224,7 @@
     let spin = document.getElementById("spinner5");
     let panel = document.getElementById("panel5");
     spin.style.transition = `15s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 25}deg) scaleX(${e.detail.xFactor}) scaleY(${e.detail.yFactor})`;
+    spin.style.transform = `rotate(${e.detail.rotation * 25}deg) scaleX(${e.detail.xFactor}) scaleY(${e.detail.yFactor})`;
     panel.innerText =
       `Async Scaling + rotation
        Y: ${(e.detail.yFactor).toFixed(2)} X: ${(e.detail.xFactor).toFixed(2)},
@@ -298,7 +237,7 @@
     let spin = document.getElementById("spinner6");
     let panel = document.getElementById("panel6");
     spin.style.transition = `15s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 25}deg) scale(${e.detail.diagonalFactor})`;
+    spin.style.transform = `rotate(${e.detail.rotation * 25}deg) scale(${e.detail.diagonalFactor})`;
     panel.innerText =
       `Sync Scaling + rotation
        Sync-scale: ${(e.detail.diagonalFactor).toFixed(2)},
@@ -376,7 +315,7 @@
     let spin = document.getElementById("spinner12");
     let panel = document.getElementById("panel12");
     spin.style.transition = `9s`;
-    spin.style.transform = `rotate(-${e.detail.rotation * 50}deg)`;
+    spin.style.transform = `rotate(${e.detail.rotation * 50}deg)`;
     panel.innerText =
       `Rotation (x50)
        Rotation:${(e.detail.rotation * 25).toFixed(2)} deg,
