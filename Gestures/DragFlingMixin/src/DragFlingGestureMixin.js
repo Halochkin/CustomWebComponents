@@ -120,16 +120,8 @@ export const DragFlingGesture = function (Base) {
      */
     static get flingSettings() {
       return {minDistance: 50, minDuration: 200};
-    }
-
-    /**
-     * By default it is only event
-     * @returns {number} 0 = event+callback, 1 = only event, -1 = only callback
-     */
-    static get dragFlingEventOrCallback() {
-      return 0;
-    }
-
+    };
+    
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
       this.addEventListener("selectstart", this[selectListener]);
@@ -156,7 +148,7 @@ export const DragFlingGesture = function (Base) {
       this[cachedEvents] = [detail];
       this.draggingStartCallback && this.draggingStartCallback(detail);
       this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
-    }
+    };
 
     [touchStart](e) {
       if (this[active] === 1)
@@ -172,7 +164,7 @@ export const DragFlingGesture = function (Base) {
       this[cachedEvents] = [detail];
       this.draggingStartCallback && this.draggingStartCallback(detail);
       this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
-    }
+    };
 
 
     [mouseMove](e) {
@@ -188,7 +180,7 @@ export const DragFlingGesture = function (Base) {
       const detail = makeDetail(event, x, y, prevDetail);
       this[cachedEvents].push(detail);
       this.draggingCallback && this.draggingCallback(detail);
-      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("dragging", {bubbles: true, detail}));
+      this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("dragging", {bubbles: true, detail}));
     }
 
     [mouseStop](e) {
@@ -199,18 +191,14 @@ export const DragFlingGesture = function (Base) {
       this[cachedEvents] = undefined;
       this[active] = 0;
       this.draggingEndCallback && this.draggingEndCallback(detail);
-      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
+      this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
     }
-
-    // [touchStop](e) {
-    // this[fling](e, e.targetTouches[0].pageX, e.targetTouches[0].pageY);
-    // this[eventAndOrCallback]("draggingend", {event: e, x: e.targetTouches[0].pageX, y: e.targetTouches[0].pageY});
+    
 
     [touchStop](e) {
       const lastMoveDetail = this[cachedEvents][this[cachedEvents].length - 1];
       const detail = {event: e, x: lastMoveDetail.x, y: lastMoveDetail.y};
       this[fling](detail.event, detail.x, detail.y);
-
       window.removeEventListener("touchmove", this[touchMoveListener]);
       window.removeEventListener("touchend", this[touchStopListener]);
       window.removeEventListener("touchcancel", this[touchStopListener]);
@@ -218,7 +206,7 @@ export const DragFlingGesture = function (Base) {
       this[active] = 0;
       this[activeEventOrCallback] = undefined;
       this.draggingendCallback && this.draggingendCallback(detail);
-      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
+      this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
     }
 
     [fling](e, x, y) {
@@ -234,17 +222,8 @@ export const DragFlingGesture = function (Base) {
       if (detail.distDiag >= settings.minDistance) {
         detail.angle = flingAngle(detail.distX, detail.distY);
         this.flingCallback && this.flingCallback(detail);
-        this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("fling", {bubbles: true, detail}));
+        this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("fling", {bubbles: true, detail}));
       }
     }
-
-    // [eventAndOrCallback](eventName, detail) {
-    //   if (this[activeEventOrCallback] <= 0) {
-    //     let cbName = eventName + "Callback";
-    //     this[cbName] && this[cbName](detail);
-    //   }
-    //   if (this[activeEventOrCallback] >= 0)
-    //     this.dispatchEvent(new CustomEvent(eventName, {bubbles: true, detail}));
-    // }
   }
 };
