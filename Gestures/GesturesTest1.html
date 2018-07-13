@@ -179,12 +179,12 @@
 
     onPinch(e) {
       let prevSpinAngle = (this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0);
+      this.style.transition = "1s";
       this.style.transform = `rotate(${prevSpinAngle + e.detail.rotation}deg)`;
-      // this.style.transform = `scale(${e.detail.diagonal / this.startDiagonal})`;
+      this.style.transform = `scale(${this.startDiagonal / e.detail.diagonal })`;
       this.style.backgroundColor = "green";
       this.style.border = "1px solid black";
-      this.style.borderRadius = '60px 60px';
-      this.style.transition = "0s";
+      this.style.borderRadius = '30px 30px';
       this.innerText = "PINCH";
     }
 
