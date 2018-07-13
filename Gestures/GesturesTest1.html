@@ -1,10 +1,13 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta name="viewport">
     <title>Demo</title>
-        <style>
-       test-block {
+
+    <style>
+        test-block {
             height: 200px;
             width: 200px;
             background-color: red;
@@ -13,6 +16,7 @@
             line-height: 15;
             color: white;
             border-radius: 10px;
+            touch-action: none;
         }
 
         switch-button {
@@ -34,7 +38,8 @@
             text-align: center;
             font-family: 'Baskerville Old Face', sans-serif;
         }
-        p{
+
+        p {
             width: 150px;
             height: 125px;
             overflow: hidden;
@@ -42,39 +47,42 @@
             border-radius: 5%;
             margin-top: 5px;
             margin-left: 438px;
-            border: 4px solid rgba(0,0,0,0.1)
+            border: 4px solid rgba(0, 0, 0, 0.1)
         }
-        img{
+
+        img {
             cursor: pointer;
             display: block;
             height: 126px;
             width: 103%;
             overflow: hidden;
         }
-        span{
+
+        span {
             width: 440px;
             float: left;
         }
     </style>
 </head>
 <body>
-<div id="borD"> <p align="center">
+
+
+<div id="borD"><p align="center">
     <img id="image">
 </p><br>
-   <span>Activate gestures using the radio buttons.
+    <span>Activate gestures using the radio buttons.
         The first time the event is activated, it will be simulated programmatically.
         Once activated, you can use the mouse or sensor.</span>
-
     <test-block id="controller"></test-block>
 </div>
 <switch-button id="buttons"></switch-button>
-<script type="module">
 
+<script type="module">
   import {DragFlingGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/DragFlingMixin/src/DragFlingGestureMixin.js";
   import {PinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/src/PinchMixin.js";
   import {simulateEventSequence} from "https://rawgit.com/Halochkin/Components/master/Gestures/EventSimulator/src/EventSimulator.js";
 
- class TestBlock extends DragFlingGesture(PinchGesture(HTMLElement)) {
+  class TestBlock extends DragFlingGesture(PinchGesture(HTMLElement)) {
 
     constructor() {
       super();
@@ -104,8 +112,9 @@
 
     disconnectedCallback() {
       super.disconnectedCallback();
-
       this.removeEventListener("fling", this._flingListener);
+      this.removeEventListener("dragging", this._dragListener);
+      this.removeEventListener("pinch", this._onPinchListener);
       document.getElementById("buttons").removeEventListener("buttons-select", this._switcherListener);
     }
 
@@ -122,9 +131,7 @@
             [myElement, typeEvent, "move", 2],
             [myElement, typeEvent, "end", 2]
           ]);
-          this.removeEventListener("pinch", this._onPinchListener);
-          picture.src="https://www.multiswipe.com/assets/POgest-1x-4a999f5d8955337a448eff0333d9bcc3.gif";
-          //todo read about this
+          picture.src = "https://www.multiswipe.com/assets/POgest-1x-4a999f5d8955337a448eff0333d9bcc3.gif";
           break;
         case "spin":
           this.addEventListener("spin", this._onSpinListener);
@@ -139,22 +146,20 @@
                             // For example, to meet the 'spin' conditions, the delay between the 'move' and 'end'
                             // must be longer than 100ms.
 
-          picture.src="https://www.multiswipe.com/assets/CRgest-1x-0429001b125a1679a35e357b376d93bb.gif";
+          picture.src = "https://www.multiswipe.com/assets/CRgest-1x-0429001b125a1679a35e357b376d93bb.gif";
           break;
         case "drag":
           this.addEventListener("dragging", this._dragListener);
+          picture.src = "https://www.multiswipe.com/assets/SUgest-1x-78d484f5c82bb8e46bce1f45cb63bbbf.gif";
           simulateEventSequence([
             [myElement, typeEvent, "start", 1],
             [myElement, typeEvent, "move", 1],
             [myElement, typeEvent, "end", 1]
           ]);
-          this.removeEventListener("spin", this._onSpinListener);
-
-          picture.src="https://www.multiswipe.com/assets/SUgest-1x-78d484f5c82bb8e46bce1f45cb63bbbf.gif";
-
           break;
         case "fling":
           this.addEventListener("fling", this._flingListener);
+          picture.src = "https://www.multiswipe.com/assets/SRgest-1x-2b9be5f7947863ad336f72f74b3baa6d.gif";
           simulateEventSequence([[myElement, typeEvent, "start", 1],
             setTimeout(function () {
               simulateEventSequence([[myElement, typeEvent, "move", 1]])
@@ -162,8 +167,6 @@
           setTimeout(function () {
             simulateEventSequence([[myElement, typeEvent, "end", 1]])
           }, 250);
-          picture.src="https://www.multiswipe.com/assets/SRgest-1x-2b9be5f7947863ad336f72f74b3baa6d.gif";
-          this.removeEventListener("dragging", this._dragListener);
 
           break;
       }
@@ -172,18 +175,20 @@
     pinchStartCallback(detail) {
       this.startDiagonal = detail.diagonal;
       this.startWidth = detail.width;
-      this.style.backgroundColor = "#52cc9c";
     }
 
     onPinch(e) {
       let prevSpinAngle = (this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0);
-      // this.style.transform = `rotate(${prevSpinAngle + e.detail.rotation}deg)`;
-      this.style.transform = `scale(${e.detail.diagonal / this.startDiagonal})`;
+      this.style.transform = `rotate(${prevSpinAngle + e.detail.rotation}deg)`;
+      // this.style.transform = `scale(${e.detail.diagonal / this.startDiagonal})`;
       this.style.backgroundColor = "green";
       this.style.border = "1px solid black";
       this.style.borderRadius = '60px 60px';
-      this.style.transition = "2s";
       this.innerText = "PINCH";
+    }
+
+    pinchEndCallback(detail) {
+      this.startDiagonal = undefined;
     }
 
     onSpin(e) {
