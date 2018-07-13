@@ -126,7 +126,7 @@ import {DragFlingGesture} from "../src/DragFlingMixin.js";
   }
  customElements.define("fling-ball", FlingBall);
 ```
-[Try it here](https://codepen.io/Halochkin/pen/JZBWQp?editors=0010)
+[Try it on codepen](https://codepen.io/Halochkin/pen/JZBWQp?editors=0010)
 ### Reference
 * [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 * [DragEvent](https://developer.mozilla.org/en-US/docs/Web/API/DragEvent)
