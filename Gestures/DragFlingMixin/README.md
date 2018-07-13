@@ -16,9 +16,9 @@ static get pinchEvent() {
 ```
 All callbacks/events pass a set of standard details, based on `makeDetail()`:
 ```javascript
-//startDetail - used for calculation of difference between actual and previous events
+// where startDetail - used for calculation of difference between actual and previous events
 function makeDetail(event, x, y, startDetail) {
-  const distX = x - startDetail.x;
+  const distX = x - startDetail.x; 
   const distY = y - startDetail.y;
   const distDiag = Math.sqrt(distX * distX + distY * distY);
   const durationMs = event.timeStamp - startDetail.event.timeStamp;
