@@ -83,6 +83,17 @@ sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers) adds the followi
   });
   fingers === 1 ? element.dispatchEvent(oneFingerEvent) : element.dispatchEvent(twoFingersEvent);
   ```
+  ### What is the difference between `touches`, `targetTouches` and `changedTouches`?
+* `touches:` list of information for each finger touching the screen at the moment
+* `targetTouches:` Similar to touches, but filtered only for finger touch information that started in the same node
+* `changedTouches:` a list of information for each finger participating in an event (see below) to better understand what might be in these lists, quickly jump to some examples.
+Let's look at the differences in more detail:
+- When I put my finger down, all three lists will have the same information. It will be in `changedTouches` because placing a finger down is what triggered the event
+- When I put the second finger down, the touches will have two elements, one for each finger. targetTouches will have two elements only if the finger was placed in the same node as the first finger. `changedTouches` will have information relating to the second finger because its what caused the event
+- If I put two fingers exactly at the same time, it could have two elements in the `changedTouches`, one for each finger
+- If I translate fingers, the only list that will change will be the `changedTouches` and will contain information related to the number of fingers that have been moved (at least one).
+- When I lift my finger, it will be removed from the touches, `targetTouches`, and will appear in the `changedTouches` since this triggered the event
+- Deleting my last finger leaves the touches and `targetTouches` empty and the changedTouches will contain the information for the last finger
   ### Example
   ```html
 <switch-button></switch-button>
