@@ -6,7 +6,7 @@ Using a  [DragFlingMixin](https://github.com/Halochkin/Components/blob/master/Ge
       import {DragFlingGesture} from "../src/DragFlingMixin.js";
       
       class ExampleClass extends DragFlingGesture(HTMLElement) {
-       //
+       //some stuff
        }
 ```
 
