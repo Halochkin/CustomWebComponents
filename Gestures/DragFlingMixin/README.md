@@ -45,9 +45,9 @@ If they are missed, add them, otherwise the mixin will not respond to the action
 
 ### What is a 'drag' and what is 'fling' What is in common? 
 `Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported.
-<p align="center">
-  <img src="https://cdn3.iconfinder.com/data/icons/touch-hand-gestures/60/touch_gestures_tap_drag_move-512.png" style="height: 50px; width: 50px">
-</p><br>
+<p align="center" style="height: 50px; width: 50px;">
+  <img src="https://cdn3.iconfinder.com/data/icons/touch-hand-gestures/60/touch_gestures_tap_drag_move-512.png">
+</p>
 `Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) and the difference between fling and drag gestures is that `flingCallback()` / "flinging" must meet the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. Other gesture-mixins work on the same principle.
    The `minDistance` and `minDuration` can be changed using these properties on the element
    ```javascript
