@@ -69,11 +69,11 @@ The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
 [Try the difference between `drag` and `fling` gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 ### Example
 To resolve conflicts, it is good practice to use a [InvadeAndRetreat Pattern](https://github.com/orstavik/JoiComponents/blob/master/book/chapter3/Pattern2_InvadeAndRetreat.md). 
-When you are using a functional mixin that uses `connectedCallback` and `disconnectedCallback`,
+I want to remind that when you are using a [functional mixin](https://github.com/orstavik/JoiComponents/blob/master/book/chapter2/Pattern2_FunctionalMixin.md) that uses `connectedCallback` and `disconnectedCallback`,
 **you must remember to call `super.connectedCallback` and `super.disconnectedCallback`** in the component itself. 
 If you forget this, you will not get an Error, but the functional mixin will not be activated or deactivated.
 This closely resemble the compulsory call to `super()` in the `constructor()` of any class that extends another class. 
-```html
+```javascript
 import {DragFlingGesture} from "../src/DragFlingMixin.js";
 
   class FlingBall extends DragFlingGesture(HTMLElement) {
