@@ -1,5 +1,5 @@
  ## PinchSpinMixin
- This mixin records a sequence of two-finger `"touchstart"`, `"touchmove"` and `"touchend"` to callback/event:
+ This mixin records a sequence of **two-finger** `"touchstart"`, `"touchmove"` and `"touchend"` to callback/event:
  
 pinchStartCallback(detail) / "pinchstart"
 pinchCallback(detail) / "pinch"
