@@ -1,16 +1,5 @@
 ## DragFlingGestureMixin
 This mixin allows to translate a sequence of mouse or touch events to callback/event. The advantage of using this mixin is that it can be used for both desktop and mobile versions of the web application. Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault` and prevented selection of the text.
-### How to start?
-Using a  [DragFlingMixin](https://github.com/Halochkin/Components/blob/master/Gestures/DragFlingMixin/src/DragFlingGestureMixin.js) begins with the import.
-```javascript
-      import {DragFlingGesture} from "../src/DragFlingMixin.js";
-      
-      class ExampleClass extends DragFlingGesture(HTMLElement) {
-       //some stuff
-       }
-```
-Also you can make an import from [rawgit.com](https://rawgit.com/).
-
 ### Work with mouse and touch events. What is next?
 Mouse and touch events have different transferred properties and to solve this problem, it was added `this[isTouchActive]` which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
 To prevent conflicts between the two event types when counting details, separate functions have been made for each. They pass parameters in same form, and have the same standard details, based on `makeDetail()`:
