@@ -83,6 +83,86 @@ sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers) adds the followi
   });
   fingers === 1 ? element.dispatchEvent(oneFingerEvent) : element.dispatchEvent(twoFingersEvent);
   ```
+  ### Example
+  ```html
+<switch-button></switch-button>
+ ```
+  ```javascript
+  class TestBlock extends PinchGesture(HTMLElement) {
+    constructor() {
+      super();
+      this._onPinchListener = e => this.onPinch(e);
+      this._onSpinListener = e => this.onSpin(e);
+      this._switcherListener = e => this.onSwitch(e);
+      }
+    static get pinchEvent() {
+      return true;
+    }
+    connectedCallback() {
+      super.connectedCallback();  //do not forget about this
+        document.getElementById("buttons").addEventListener("buttons-select", this._switcherListener);
+    }
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      document.getElementById("buttons").removeEventListener("buttons-select", this._switcherListener);
+    }
+   onSwitch(event) {
+      const myElement = document.getElementById('controller');
+      const typeEvent = "touch";
+      let picture = document.getElementById("image");
+      switch (event.detail) {    // the switch value of radio buttons
+        case "pinch":
+          this.addEventListener("pinch", this._onPinchListener);
+          simulateEventSequence([                                        //[1] 
+            [myElement, typeEvent, "start", 1],                          //[2] 
+            [myElement, typeEvent, "start", 2],                          //[3] 
+            [myElement, typeEvent, "move", 2],
+            [myElement, typeEvent, "end", 2]
+          ]);
+          this.removeEventListener("pinch", this._onPinchListener);
+          picture.src="https://www.multiswipe.com/assets/POgest-1x-4a999f5d8955337a448eff0333d9bcc3.gif";
+          break;
+        case "spin":
+          this.addEventListener("spin", this._onSpinListener);
+          simulateEventSequence([
+            [myElement, typeEvent, "start", 1],
+            [myElement, typeEvent, "start", 2],
+            [myElement, typeEvent, "move", 2]
+          ]);
+          setTimeout(function () {
+            simulateEventSequence([[myElement, typeEvent, "end", 2]])
+          }, 120);                                                        //[4] 
+          picture.src="https://www.multiswipe.com/assets/CRgest-1x-0429001b125a1679a35e357b376d93bb.gif";
+          break;
+  }
+        onPinch(e) {
+      this.innerText = "PINCH";
+    }
+        onSpin(e) {
+      this.innerText = "SPIN";
+    }
+  }
+  
+   class SwitchButtons extends PinchGesture(HTMLElement) {
+    constructor() {
+      super();
+      this.innerHTML = `
+    <input type="radio" id="pinch" name="check"><label>Pinch</label>
+    <input type="radio" id="spin" name="check" ><label>Spin</label>`;
+      this.addEventListener("click", e => {
+        this.dispatchEvent(new CustomEvent("buttons-select", {composed: true, bubbles: true, detail: e.target.id}));
+      });
+    }
+  }
+   customElements.define("switch-button", SwitchButtons);
+  ```
+  1. Before you start to simulate events - specify the sequence of events to call the desired events.
+  2. To dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
+  3. `Pinch` event starts with one finger touching - then two fingers touching, so the start event is called twice.
+  4. If you have some time limits - you can add a delay. For example, to meet the 'spin' conditions, the delay between the 'move' and 'end' must be longer than 100ms. 
+  [Try Demo](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
+  ### Why do I need to simulate events? Where can I use them? 
+  The most useful in testing. You can programmatically call the necessary events to see the result of their execution.  Agree with me that when you test an event much faster, and it is more convenient if the program performs physical interaction instead of you. In addition, this feature can be useful when adding effects and transformations to your web application
   ### References
   * [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent)
   * [`Touch events`](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
