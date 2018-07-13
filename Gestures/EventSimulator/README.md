@@ -170,8 +170,8 @@ sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers) adds the followi
   1. Before you start to simulate events - specify the sequence of events to call the desired events.
   2. To dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
   3. `Pinch` event starts with one finger touching - then two fingers touching, so the start event is called twice.
-  4. If you have some time limits - you can add a delay. For example, to meet the 'spin' conditions, the delay between the 'move' and 'end' must be longer than 100ms. 
-  [Try Demo](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
+  4. If you have some time limits - you can add a delay. For example, to meet the 'spin' conditions, the delay between the 'move' and 'end' must be longer than 100ms.<br>
+  You can try [Demo](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
   ### Why do I need to simulate events? Where can I use them? 
   The most useful in testing. You can programmatically call the necessary events to see the result of their execution.  Agree with me that when you test an event much faster, and it is more convenient if the program performs physical interaction instead of you. In addition, this feature can be useful when adding effects and transformations to your web application
   ### References
