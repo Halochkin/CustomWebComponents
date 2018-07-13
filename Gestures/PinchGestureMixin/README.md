@@ -1,32 +1,51 @@
  ## PinchSpinMixin
- This mixin records a sequence of **two-finger** `"touchstart"`, `"touchmove"` and `"touchend"` to callback/event:
+ This mixin records a sequence of **two-finger** `"touchstart"`, `"touchmove"` and `"touchend"` to callback/event. This mixin works only with touch events, because the pinch gesture can only be done with your fingers. [`PinchSpinMixin`](https://github.com/Halochkin/Components/blob/master/Gestures/PinchGestureMixin/src/PinchMixin.js) can be used for two finger gestures such as:
+ * pinch
+ * expand
+ * rotate
+ * zoom-in/out 
+ * two-finger drag 
  
+### Let's start.
+`Pinch` can be called at different stages of lifecycle, but `spin` only once, it will be called after the end-event ("touchend"/"touchcancel").
+```javascript 
 pinchStartCallback(detail) / "pinchstart"
 pinchCallback(detail) / "pinch"
 pinchEndCallback(detail) / "pinchend"
 spinCallback(detail) / "spin"
-To add the ability to use the event `spinEvent()` must return `true`.
+```
+To add the ability to use the event `pinchEvent()` must return `true`.
 ```javascript
-static get spinEvent() {
+static get pinchEvent() {
       return true;
     }
 ```
-All callbacks/events pass a set of standard details, based on `makeDetail()`:
+All pinch callbacks/events contain a set of default details, based on `makeDetail()`:
 ```javascript
 function makeDetail(touchevent) {
   function makeDetail(touchevent) {
-  const f1 = touchevent.targetTouches[0];
-  const f2 = touchevent.targetTouches[1];
-  const x1 = f1.pageX;
+  const f1 = touchevent.targetTouches[0];      //information about first touch-point
+  const f2 = touchevent.targetTouches[1];      //second touch-point
+  const x1 = f1.pageX;                   
   const y1 = f1.pageY;
   const x2 = f2.pageX;
   const y2 = f2.pageY;
-  const width = Math.abs(x2 - x1);
+  const width = Math.abs(x2 - x1);             
   const height = Math.abs(y2 - y1);
   const diagonal = Math.sqrt(width * width + height * height);
   const angle = calcAngle(x1 - x2, y1 - y2);
   return {touchevent, x1, y1, x2, y2, diagonal, width, height, angle};
  }
+}
+```
+The angle is calculated as a straight line between two touch points, starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
+   * up/north:   0
+   * right/east: 90
+   * down/south: 180
+   * left/west:  270
+```javascript
+function calcAngle(x, y) {
+  return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
 }
 ```
 #### "Can you imagine the difference between pinch and spin?" 
@@ -36,6 +55,9 @@ function makeDetail(touchevent) {
 * `Spin` gesture is a continuous gesture that occurs when two fingers that touch the screen move around each other and
   used to control objects on the screen it `only` can  be triggered by an `spinCallback(detail)` or a `spin` event.
 For example, you can use them to rotate or change the scale of an element.<br>
+<p align="center">Spin gesture demonstration
+  <img src="http://www.gestureml.org/lib/exe/fetch.php/gestures/touch/simple/spatial/rotate/two_finger_rotate_gestureworks.png?w=200&tok=5f5c9f">
+</p><br>
 The benefit of `spin` over a `pinch` is that the `spinCallback()` is only triggered with certain conditions: 
 one or both fingers have moved more than a minimum `spinMotion`(px) for more than minimum `spinDuration`(ms) this allows 
 prevent accidental calls.
@@ -47,13 +69,9 @@ prevent accidental calls.
 Both `spinMotion` and `spinDuration` are implemented as [StaticSettings](../chapter2/Pattern_StaticSettings.md).
 `spinMotion` is calculated as the sum of the distance of the start and end positions of
 finger 1 and 2, where start position was the position of finger 1 and 2 at pinchend - `spinDuration`.<br>
-[Try the difference between `drag` and `fling` gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
-<p align="center">
-  <img src="http://www.gestureml.org/lib/exe/fetch.php/gestures/touch/simple/spatial/rotate/two_finger_rotate_gestureworks.png?w=200&tok=5f5c9f">
-</p><br>
+[Try the difference between `drag` and `fling` gestures on codepen](https://codepen.io/Halochkin/pen/PaVPNV)
 
-`spinCallback(detail)` has some additional values of detail: 
-
+In addition to default details `spinCallback(detail)` has some additional values: 
 - `touchevent` - spinEvent detail
 - `duration` - duration of the spinEvent
 - `xFactor` - the scale factor(X) for asymmetrical zoom in / zoom out
@@ -64,22 +82,9 @@ finger 1 and 2, where start position was the position of finger 1 and 2 at pinch
  ### Example: swipeGesture
  
  ```html
- <style>
-  spinning-block {
-     display: inline-block;
-        width: 200px;
-        height: 200px;
-        background-color: #c238cc;
-        text-align: center;
-        margin: 30px;
-        border: 2px solid #ff16d7;
-        border-radius: 0 50% 50% 50%;
-  }
-</style>
-
 <spinning-block></spinning-block>
-
-<script type="module">
+```
+```javascript
   import {PinchGesture} from "../../src/gestures/PinchSpin.js";
 
   class SpinningBlock extends PinchGesture(HTMLElement) {  //[1]
@@ -88,10 +93,15 @@ finger 1 and 2, where start position was the position of finger 1 and 2 at pinch
       return true;
     }
 
-    spinCallback(detail) {                              
-      this.style.transform = `rotate(-${detail.rotation * 5}deg)`;  // 5 - acceleration factor and can be changed
+    pinchStartCallback(pinchDetail) {
+      const lastRotate = this.style.transform ? parseFloat(this.style.transform.substring(7)) : 0;
+      this._startAngle = lastRotate + pinchDetail.angle;
     }
-  }
+
+    pinchCallback(pinchDetail) {
+      this.style.transform = `rotate(${this._startAngle - pinchDetail.angle}deg)`;
+      this.style.backgroundColor = "orange";
+    }
 
   customElements.define("spinning-block", SpinningBlock); 
 
@@ -102,7 +112,7 @@ finger 1 and 2, where start position was the position of finger 1 and 2 at pinch
   });
 </script>
  ```
- [Try it](https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/test/SpinBlock.html)
+ [Try different ways of use pinch gestures](https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/test/SpinDemoLab.html)
   ### Reference
   * [Zingtouch](https://zingchart.github.io/zingtouch/)
  
