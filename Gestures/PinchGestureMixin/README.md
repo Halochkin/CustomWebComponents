@@ -66,10 +66,10 @@ prevent accidental calls.
       return {spinMotion: 50, spinDuration: 100};
     }
 ```
+
 Both `spinMotion` and `spinDuration` are implemented as [StaticSettings](../chapter2/Pattern_StaticSettings.md).
 `spinMotion` is calculated as the sum of the distance of the start and end positions of
 finger 1 and 2, where start position was the position of finger 1 and 2 at pinchend - `spinDuration`.<br>
-[Try the difference between `drag` and `fling` gestures on codepen](https://codepen.io/Halochkin/pen/PaVPNV)
 
 In addition to default details `spinCallback(detail)` has some additional values: 
 - `touchevent` - spinEvent detail
@@ -84,6 +84,7 @@ In addition to default details `spinCallback(detail)` has some additional values
  ```html
 <spinning-block></spinning-block>
 ```
+
 ```javascript
   import {PinchGesture} from "../../src/gestures/PinchSpin.js";
 
