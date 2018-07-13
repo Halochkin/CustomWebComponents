@@ -1,4 +1,4 @@
-### Event Simulator
+## Event Simulator
 ### What is Event Simulator?
 Let's try to answer this question. [`Event Simulator`](https://github.com/Halochkin/Components/blob/master/Gestures/EventSimulator/src/EventSimulator.js) allows to simulate custom events based on a sequence of events without physical interaction. 
 Simulator support 3 main events: "start","move" and "end". And you can set the required type of event, for example "mouse" or "touch"
