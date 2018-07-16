@@ -8,6 +8,26 @@ Now all the power of communication is in our hands.
 But to show the maximum potential of mobile devices with touch screens, we need to explore a way to communicate with these devices.
 And it is quite simple: gestures.
 
+### What are the gesture settings for?
+All gesture mixins implement two gestures. The first is basic and it does not need certain conditions under which it will be activated.  The second gesture is the advanced version of the basic gesture, which has more functionality. But how to separate these gestures? This requires minimal settings to activate the advanced gesture, and it does not apply to the basic version. These minimal settings are based on minimum duration and distance. This is done to prevent accidental activation by the user of the extended gesture. The basic gesture is activated without restrictions.
+#### Minimum setting values. How to find the 'Golden mean'?
+Let's look at a small example:
+```javascript
+static get minSettings() {
+      return {
+      minDistance: 50,
+      minDuration: 200
+      };
+    };
+```
+The `minDistance` value is the distance between the end event (which meets the minimum duration requirements) and the extended event.
+The `minDuration` is equal to the duration of the final event ("touchend","mouseend" etc.). Each advanced gesture has 2 stages of checking for matches with the minimum settings. The first is to check that the final event will last more than 200 milliseconds. If not, the extended gesture will not be executed and the base gesture will be activated. The next check is the distance check. This means that the user has to change the position of the touch/mouse point by more than 50 pixels in 200 milliseconds.<br>
+#### ±100ms is a lot.
+What will happen if you choose the wrong minimum duration settings? If the minduration is set to 5ms, then if you simple happen to click on the screen, the screen might register this as a small movement that takes 5ms. If such a touch triggers lots of later movement in the element triggered by spin or fling, your element will feel more like a licing insect than a reactive ui control.
+If your duration is too long, ut will frustrate users that are in a hurry. A user might try to quickly navigate to a point making a quick spin or fling. That might take as little as 150ms(?). If you have set the duration to 200ms, your hurried user will be more and more frustrated with your rigid web app.<br>
+##### Briefly about the main.
+Using the `minSettings()` allows you to switch between two gestures. It checks whether the base version will become advanced or not. If the conditions are met, the base version is `transformed` into extended version, if not - only the base version is activated.
+### A review of the gestures
 This repository contains all the basic gestures used on mobile devices: and combined into functional mixins:
 * ### [`DragFlingMixin`](https://github.com/Halochkin/Components/blob/master/Gestures/DragFlingMixin/README.md)
 This mixin support for one-finger gesture for `drag` on the screen, commonly used to move and/or scroll elements on the screen.
@@ -24,8 +44,8 @@ Adds support for for two finger gestures such as:
  * ### [`Event Simulator`](https://github.com/Halochkin/Components/tree/master/Gestures/EventSimulator)
  Event Simulator allows to simulate custom events based on a sequence of events without physical interaction. You can add the number of touch points, the element on which the event will occur and timeout of execution.
  Simulator support 3 main type of events: "start", "move" and "end". And you can set the required type of event, for example "mouse" or "touch".
- 
  [`You can test these gestures yourself`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
+
 
 ### Pros and cons of gestures
 Gestures offer significant opportunities for managing mobile devices. You can create a huge number of different combinations that will cause different actions. This allows you to get rid of unnecessary buttons in the interface and add interactivity.
