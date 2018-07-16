@@ -35,7 +35,7 @@ function makeDetail(event, x, y, startDetail) {  //[1]
   return {event, x, y, distX, distY, distDiag, durationMs};
 }
 ```
-1.where `startDetail` - used for calculation of difference between actual and previous events. In `fling` gesture it is equal to the last event that lasted longer than the minimum duration settings.<br>
+1. Where `startDetail` - used for calculation of difference between actual and previous events. In `fling` gesture it is equal to the last event that lasted longer than the minimum duration settings.<br>
 Before triggering each callback or event, DragFlingMixin checks for the presence of a corresponding callback or `dragEvent()` in the code.
 ```javascript
 this.draggingStartCallback && this.draggingStartCallback(detail); 
