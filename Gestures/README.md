@@ -46,9 +46,8 @@ Adds support for for two finger gestures such as:
  Simulator support 3 main type of events: "start", "move" and "end". And you can set the required type of event, for example "mouse" or "touch".
  [`You can test these gestures yourself`](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 
-
 ### Pros and cons of gestures
-Gestures offer significant opportunities for managing mobile devices. You can create a huge number of different combinations that will cause different actions. This allows you to get rid of unnecessary buttons in the interface and add interactivity.
+Gestures offer significant opportunities for managing mobile devices. You can create a huge number of different combinations that will cause different actions. This allows you to get rid of unnecessary buttons in the interface and add interactivity. Also it gives the user a sense of direct interaction with the interface elements and increases the sense of involvement when manipulating objects.
 The most basic drawback of gestures is their unintuitiveness. You can expect people to be familiar with the gestures listed above, but they are completely unfamiliar with the rest of the gestures.<br>
 If you decide to add additional gestures to your app to control it, users will have to learn how to use the new gesture. This will require the creation of a special training unit or additional tips.
 People don't like to learn something new, especially in applications. A lot of new information leads to misunderstanding and refusal of the application. Therefore, it makes sense to enter gestures into the interface gradually, one at a time.
@@ -57,6 +56,16 @@ Therefore, if you plan to add your gestures to the application, you need to solv
 - How much demand for additional gestures to your users
 - They do not conflict with the gestures of the operating system
 - How will you teach new user gestures
+### Discussion: advices how to use custom gestures.
+#### Avoid conflicts of your gestures with the system!
+If your app is designed to remap a standard gesture then it may confuse users. For love you need to avoid this.
+#### Do not duplicate the functionality of standard gestures with new ones.
+If you want to replace the standard gesture with your own, then most likely it will push the user away, because learning new gestures for the sake of one application is an occupation that not all users will decide on.
+#### Be careful with complex gestures.
+Leave the user an alternative way to perform an action with the help of interface elements, because even if the gesture will provide a more convenient and fast way, it is less obvious action, as it is not reflected in the graphical interface.
+#### Don't forget that the user is concentrating on the content.
+If you can perform an action, both with the help of a complex swipe, and with two or three clicks, it is more likely the user will prefer the second method, since it is more obvious. If the gesture system is complicated, the user will start thinking about how to control the application, not what he wants from it.
+
 ### Reference
 * [Pinch-zoom-gesture](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Pinch_zoom_gestures)
 * [Touch events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
