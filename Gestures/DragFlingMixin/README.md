@@ -13,6 +13,16 @@ static get dragEvent() {
       return true;
     }
 ```
+### What is a 'drag' and what is 'fling' What is in common? 
+* `Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported. <br>
+* `Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) if simply this is a more advanced version of `drag`. <br>
+The difference between `fling` and `drag` gestures is that `flingCallback()` / `"flinging"` must match the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. 
+```javascript
+    static get flingSettings() {
+      return {minDistance: 50, minDuration: 200};
+    };
+```
+This means that the user has to change the position of the touch/mouse position by more than 50 pixels in 200 milliseconds.<br>
 ### Mouse and touch events support. What's next?
 Mouse and touch events have different properties, and if you use the same function to calculate their values, conflicts will occur, resulting in an error. To resolve this problem, it was added `this[isTouchActive]` which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false" and separate functions have been made for each type of event. They pass parameters in same form, and have the same default details, based on `makeDetail()`:
 ```javascript
@@ -30,18 +40,7 @@ Before triggering each callback or event, DragFlingMixin checks for the presence
 this.draggingStartCallback && this.draggingStartCallback(detail); 
 this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
 ```
-If they are missed, add them, otherwise the mixin will not respond to the action.
-
-### What is a 'drag' and what is 'fling' What is in common? 
-* `Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported. <br>
-* `Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) if simply this is a more advanced version of `drag`. <br>
-The difference between `fling` and `drag` gestures is that `flingCallback()` / `"flinging"` must match the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. 
-```javascript
-    static get flingSettings() {
-      return {minDistance: 50, minDuration: 200};
-    };
-```
-This means that the user has to change the position of the touch/mouse position by more than 50 pixels in 200 milliseconds.<br>
+If they are missed, add them, otherwise the mixin will not respond to the action.<br>
 In addition to the default list of details, `flingCallback(detail)` has a new value of detail - `angle`.
 `Angle` - equal to the angle between two touch points and gets from `flingAngle()`.
 
