@@ -1,13 +1,37 @@
  ## PinchSpinMixin
- This mixin records a sequence of **two-finger** `"touchstart"`, `"touchmove"` and `"touchend"` to callback/event. This mixin works only with touch events, because the pinch gesture can only be done with your fingers. [`PinchSpinMixin`](https://github.com/Halochkin/Components/blob/master/Gestures/PinchGestureMixin/src/PinchMixin.js) can be used for two finger gestures such as:
+ This mixin records a sequence of **two-finger** `"touchstart"`, `"touchmove"`, `"touchend"` and `"touchcancel"` to callback/event. This mixin works only with touch events, because the pinch gesture can only be done with our fingers. The `pinchstart`, `pinch`, `pinchend` timeline correspond to 
+`touchstart`, `touchmove`, and `touchend/touchcancel`.
+ [`PinchSpinMixin`](https://github.com/Halochkin/Components/blob/master/Gestures/PinchGestureMixin/src/PinchMixin.js) can be used for two finger gestures such as:
  * pinch
  * expand
  * rotate
  * zoom-in/out 
  * two-finger drag 
+ #### "Can you imagine the difference between pinch and spin?" 
+* `Pinch` are mainly used to zoom in/out images, zoom in/out maps, zoom in/out web pages. A `pinch` gesture reports changes to the distance between two fingers touching the screen. Pinch gestures are continuous, so action method is called each time the distance between the fingers changes. <br>
+ In addition to the default list of details, `pinchEndCallback(detail)/"pinchend"` has `duration` value which is equal to the time(ms) between the last and "touchend"/"touchcancel" events.
+* `Spin` gesture is a continuous gesture that occurs when two fingers that touch the screen move around each other and
+  used to control objects on the screen it `only` can  be triggered by an `spinCallback(detail)` or a `spin` event.
+For example, you can use them to rotate or change the scale of an element.<br>
+<p align="center">Spin gesture demonstration
+  <img src="http://www.gestureml.org/lib/exe/fetch.php/gestures/touch/simple/spatial/rotate/two_finger_rotate_gestureworks.png?w=200&tok=5f5c9f">
+</p><br>
+The benefit of `spin` over a `pinch` is that the `spinCallback()` is only triggered with certain conditions: 
+one or both fingers have moved more than a minimum `spinMotion`(px) for more than minimum `spinDuration`(ms) this allows 
+prevent accidental calls.
+
+```javascript
+ static get spinSettings() {
+      return {spinMotion: 50, spinDuration: 100};
+    }
+``` 
+This means that the user has to change the sum of positions of the touch points by more than 50 pixels in 100 milliseconds.<br>
+Both `spinMotion` and `spinDuration` are implemented as [StaticSettings](../chapter2/Pattern_StaticSettings.md).
+`spinMotion` is calculated as the sum of the distance of the start and end positions of
+finger 1 and 2, where start position was the position of finger 1 and 2 at pinchend - `spinDuration`.<br>
  
-### Let's start.
-`Pinch` can be called at different stages of lifecycle, but `spin` only once, it will be called after the end-event ("touchend"/"touchcancel").
+### How to call?
+`Pinch` can be triggered at different stages of lifecycle, but `spin` only once, it will be called after the end-event ("touchend"/"touchcancel").
 ```javascript 
 pinchStartCallback(detail) / "pinchstart"
 pinchCallback(detail) / "pinch"
@@ -20,7 +44,7 @@ static get pinchEvent() {
       return true;
     }
 ```
-All pinch callbacks/events contain a set of default details, based on `makeDetail()`:
+All callbacks/events contain a set of default details, based on `makeDetail()`:
 ```javascript
 function makeDetail(touchevent) {
   function makeDetail(touchevent) {
@@ -38,7 +62,7 @@ function makeDetail(touchevent) {
  }
 }
 ```
-The angle is calculated as a straight line between two touch points, starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
+The `angle` is calculated as a straight line between two touch points, starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
    * up/north:   0
    * right/east: 90
    * down/south: 180
@@ -48,29 +72,6 @@ function calcAngle(x, y) {
   return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
 }
 ```
-#### "Can you imagine the difference between pinch and spin?" 
-* `Pinch` are mainly used to zoom in/out images, zoom in/out maps, zoom in/out web pages. A `pinch` gesture reports changes to the distance between two fingers touching the screen. Pinch gestures are continuous, so action method is called each time the distance between the fingers changes. <br>
- In addition to the default list of details, `pinchEndCallback(detail)/"pinchend"` has `duration` value which is equal to the time(ms) between the last and "touchend"/"touchcancel" events.
- 
-* `Spin` gesture is a continuous gesture that occurs when two fingers that touch the screen move around each other and
-  used to control objects on the screen it `only` can  be triggered by an `spinCallback(detail)` or a `spin` event.
-For example, you can use them to rotate or change the scale of an element.<br>
-<p align="center">Spin gesture demonstration
-  <img src="http://www.gestureml.org/lib/exe/fetch.php/gestures/touch/simple/spatial/rotate/two_finger_rotate_gestureworks.png?w=200&tok=5f5c9f">
-</p><br>
-The benefit of `spin` over a `pinch` is that the `spinCallback()` is only triggered with certain conditions: 
-one or both fingers have moved more than a minimum `spinMotion`(px) for more than minimum `spinDuration`(ms) this allows 
-prevent accidental calls.
-
-```javascript
- static get spinSettings() {
-      return {spinMotion: 50, spinDuration: 100};
-    }
-```
-Both `spinMotion` and `spinDuration` are implemented as [StaticSettings](../chapter2/Pattern_StaticSettings.md).
-`spinMotion` is calculated as the sum of the distance of the start and end positions of
-finger 1 and 2, where start position was the position of finger 1 and 2 at pinchend - `spinDuration`.<br>
-
 In addition to default details `spinCallback(detail)` has some additional values: 
 - `touchevent` - spinEvent detail
 - `duration` - duration of the spinEvent
@@ -114,5 +115,6 @@ In addition to default details `spinCallback(detail)` has some additional values
  ```
  [Try different ways of use pinch gestures](https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/test/SpinDemoLab.html)
   ### Reference
+  * [Try the difference among different gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
   * [Zingtouch](https://zingchart.github.io/zingtouch/)
  
