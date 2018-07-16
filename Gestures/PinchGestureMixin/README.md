@@ -61,12 +61,12 @@ For example, you can use them to rotate or change the scale of an element.<br>
 The benefit of `spin` over a `pinch` is that the `spinCallback()` is only triggered with certain conditions: 
 one or both fingers have moved more than a minimum `spinMotion`(px) for more than minimum `spinDuration`(ms) this allows 
 prevent accidental calls.
+
 ```javascript
  static get spinSettings() {
       return {spinMotion: 50, spinDuration: 100};
     }
 ```
-
 Both `spinMotion` and `spinDuration` are implemented as [StaticSettings](../chapter2/Pattern_StaticSettings.md).
 `spinMotion` is calculated as the sum of the distance of the start and end positions of
 finger 1 and 2, where start position was the position of finger 1 and 2 at pinchend - `spinDuration`.<br>
@@ -84,7 +84,6 @@ In addition to default details `spinCallback(detail)` has some additional values
  ```html
 <spinning-block></spinning-block>
 ```
-
 ```javascript
   import {PinchGesture} from "../../src/gestures/PinchSpin.js";
 
