@@ -13,7 +13,7 @@
 * `Spin` gesture is a continuous gesture that occurs when two fingers that touch the screen move around each other and
   used to control objects on the screen it `only` can  be triggered by an `spinCallback(detail)` or a `spin` event.
 For example, you can use them to rotate or change the scale of an element.<br>
-<p align="center">Spin gesture demonstration
+<p align="center">
   <img src="https://www.multiswipe.com/assets/ACgest-1x-6a7dd8c9c7e611512de9ea7a041ea0a2.gif">
 </p><br>
 The benefit of `spin` over a `pinch` is that the `spinCallback()` is only triggered with certain conditions: 
