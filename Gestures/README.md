@@ -20,13 +20,13 @@ static get minSettings() {
       };
     };
 ```
+Using the `minSettings()` allows you to switch between two gestures. It checks whether the base version will become advanced or not. If the conditions are met, the base version is `transformed` into extended version, if not - only the base version is activated.
 The `minDistance` value is the distance between the end event (which meets the minimum duration requirements) and the extended event.
 The `minDuration` is equal to the duration of the final event ("touchend","mouseend" etc.). Each advanced gesture has 2 stages of checking for matches with the minimum settings. The first is to check that the final event will last more than 200 milliseconds. If not, the extended gesture will not be executed and the base gesture will be activated. The next check is the distance check. This means that the user has to change the position of the touch/mouse point by more than 50 pixels in 200 milliseconds.<br>
 #### ±100ms is a lot.
 What will happen if you choose the wrong minimum duration settings? If the minduration is set to 5ms, then if you simple happen to click on the screen, the screen might register this as a small movement that takes 5ms. If such a touch triggers lots of later movement in the element triggered by spin or fling, your element will feel more like a licing insect than a reactive ui control.
 If your duration is too long, ut will frustrate users that are in a hurry. A user might try to quickly navigate to a point making a quick spin or fling. That might take as little as 150ms(?). If you have set the duration to 200ms, your hurried user will be more and more frustrated with your rigid web app.<br>
-##### Briefly about the main.
-Using the `minSettings()` allows you to switch between two gestures. It checks whether the base version will become advanced or not. If the conditions are met, the base version is `transformed` into extended version, if not - only the base version is activated.
+
 ### A review of the gestures
 This repository contains all the basic gestures used on mobile devices: and combined into functional mixins:
 * ### [`DragFlingMixin`](https://github.com/Halochkin/Components/blob/master/Gestures/DragFlingMixin/README.md)
