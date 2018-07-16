@@ -72,7 +72,6 @@ import {DragFlingGesture} from "../src/DragFlingMixin.js";
 
     constructor() {
       super();
-      this._dragstartListener = e => this._onDraggingStart(e);
       this._dragendListener = e => this._onDraggingEnd(e);
       this._dragListener = e => this._onDragging(e);
       this._flingListener = e => this._onFling(e);
@@ -83,37 +82,30 @@ import {DragFlingGesture} from "../src/DragFlingMixin.js";
     }
 
     connectedCallback() {
-      super.connectedCallback();  //don't forget this
-      this.addEventListener("draggingstart", this._dragstartListener);
+     super.connectedCallback();    //don't forget about this
+     this.addEventListener("dragging", this._dragListener);
     }
     disconnectedCallback() {
-      super.disconnectedCallback();
-      this.removeEventListener("draggingstart", this._dragstartListener);
-    }
-   _onDraggingStart(e) {
-      this.style.backgroundColor = "red";
-      this.addEventListener("dragging", this._dragListener);
+     super.disconnectedCallback();
+     this.removeEventListener("dragging", this._dragListener);
     }
 
     _onDragging(e) {
-      this.style.transition = undefined;
-      this.style.left = (parseFloat(this.style.left) + e.detail.distX) + "px";
-      this.style.top = (parseFloat(this.style.top) + e.detail.distY) + "px";
+      this.innerText = "DRAG";
       this.addEventListener("draggingend", this._dragendListener);
       this.addEventListener("fling", this._flingListener);
     }
 
     _onDraggingEnd(e) {
-      this.style.backgroundColor = "unset";
-      this.removeEventListener("draggingend", this._dragendListener);
+      this.style.backgroundColor = "red";
       this.removeEventListener("fling", this._flingListener);
       this.removeEventListener("dragging", this._dragListener);
     }
 
     _onFling(e) {
-      this.style.transition = "all " + e.detail.durationMs + "ms cubic-bezier(0.39, 0.58, 0.57, 1)";
       this.style.left = (parseFloat(this.style.left) + e.detail.distX) + "px";
       this.style.top = (parseFloat(this.style.top) + e.detail.distY) + "px";
+      this.removeEventListener("draggingend", this._dragendListener);
     }
   }
  customElements.define("fling-ball", FlingBall);
