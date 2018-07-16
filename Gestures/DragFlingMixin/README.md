@@ -112,7 +112,7 @@ import {DragFlingGesture} from "../src/DragFlingMixin.js";
 ```
 [Try it on codepen](https://codepen.io/Halochkin/pen/JZBWQp?editors=0010)
 ### Reference
-* [Try the difference between `drag` and `fling` and other gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
+* [Try the difference among different gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 * [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 * [DragEvent](https://developer.mozilla.org/en-US/docs/Web/API/DragEvent)
 * [Touch events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
