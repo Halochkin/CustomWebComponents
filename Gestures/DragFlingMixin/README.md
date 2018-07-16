@@ -36,7 +36,7 @@ If they are missed, add them, otherwise the mixin will not respond to the action
 * `Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported. <br>
 * `Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) if simply this is a more advanced version of `drag`. <br>
 The difference between `fling` and `drag` gestures is that `flingCallback()` / `"flinging"` must match the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. 
-   ```javascript
+```javascript
     static get flingSettings() {
       return {minDistance: 50, minDuration: 200};
     };
