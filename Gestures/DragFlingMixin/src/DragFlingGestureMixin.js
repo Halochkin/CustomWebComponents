@@ -121,7 +121,7 @@ export const DragFlingGesture = function (Base) {
     static get flingSettings() {
       return {minDistance: 50, minDuration: 200};
     };
-    
+
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
       this.addEventListener("selectstart", this[selectListener]);
@@ -193,7 +193,7 @@ export const DragFlingGesture = function (Base) {
       this.draggingEndCallback && this.draggingEndCallback(detail);
       this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
     }
-    
+
 
     [touchStop](e) {
       const lastMoveDetail = this[cachedEvents][this[cachedEvents].length - 1];
@@ -205,7 +205,7 @@ export const DragFlingGesture = function (Base) {
       this[cachedEvents] = undefined;
       this[active] = 0;
       this[activeEventOrCallback] = undefined;
-      this.draggingendCallback && this.draggingendCallback(detail);
+      this.draggingEndCallback && this.draggingEndCallback(detail);
       this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingend", {bubbles: true, detail}));
     }
 
