@@ -1,19 +1,6 @@
 ## DragFlingGestureMixin
-This mixin allows to translate a sequence of mouse or touch events to callback/event. The advantage of using this mixin is that it can be used for both desktop and mobile versions of the web application. Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault` and prevented selection of the text.
-### Mouse and touch events support. What's next?
-Mouse and touch events have different transferred properties and to solve this problem, it was added `this[isTouchActive]` which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false".
-To prevent conflicts between the two event types when counting details, separate functions have been made for each. They pass parameters in same form, and have the same default details, based on `makeDetail()`:
-```javascript
-// where startDetail - used for calculation of difference between actual and previous events
-function makeDetail(event, x, y, startDetail) {
-  const distX = x - startDetail.x; 
-  const distY = y - startDetail.y;
-  const distDiag = Math.sqrt(distX * distX + distY * distY);
-  const durationMs = event.timeStamp - startDetail.event.timeStamp;
-  return {event, x, y, distX, distY, distDiag, durationMs};
-}
-```
-Below are the ways to call pinch or drag events. `Drag` can be called at different stages, but `fling` only one, will be called after the end-events ("mouseup"/"touchend" etc.).
+This mixin allows to translate a sequence of mouse or touch events to callback/event. The advantage of using this mixin is that it can be used for both desktop and mobile versions of the web application. Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault` and prevented selection of the text.<br>
+Below are the ways to call `pinch` or `drag` events. `Drag` can be called at different stages, but `fling` only one, will be called after the end-events ("mouseup"/"touchend" etc.).
 ```javascript
 draggingStartCallback(detail) / "draggingstart"
 draggingCallback(detail) / "dragging"
@@ -26,6 +13,18 @@ static get dragEvent() {
       return true;
     }
 ```
+### Mouse and touch events support. What's next?
+Mouse and touch events have different properties, and if you use the same function to calculate their values, conflicts will occur, resulting in an error. To resolve this problem, it was added `this[isTouchActive]` which equals `true` whenever the touchdown is fired. If the `mousedown` event is fired `this[isTouchActive]` will be "false" and separate functions have been made for each type of event. They pass parameters in same form, and have the same default details, based on `makeDetail()`:
+```javascript
+function makeDetail(event, x, y, startDetail) {  //[1]
+  const distX = x - startDetail.x; 
+  const distY = y - startDetail.y;
+  const distDiag = Math.sqrt(distX * distX + distY * distY);
+  const durationMs = event.timeStamp - startDetail.event.timeStamp;
+  return {event, x, y, distX, distY, distDiag, durationMs};
+}
+```
+1.where `startDetail` - used for calculation of difference between actual and previous events. In `fling` gesture it is equal to the last event that lasted longer than the minimum duration settings.<br>
 Before triggering each callback or event, DragFlingMixin checks for the presence of a corresponding callback or `dragEvent()` in the code.
 ```javascript
 this.draggingStartCallback && this.draggingStartCallback(detail); 
@@ -34,13 +33,15 @@ this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart"
 If they are missed, add them, otherwise the mixin will not respond to the action.
 
 ### What is a 'drag' and what is 'fling' What is in common? 
-`Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported.
-`Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) and the difference between `fling` and `drag` gestures is that `flingCallback()` / "flinging" must match the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. Other gesture-mixins work on the same principle.
-   The `minDistance` and `minDuration` can be changed using these properties on the element
+* `Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported. <br>
+* `Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) if simply this is a more advanced version of `drag`. <br>
+The difference between `fling` and `drag` gestures is that `flingCallback()` / `"flinging"` must match the minimum requirements that create a 'boundary' between the calls to these two events. These requirements are setted to the function `flingSettings()` as object property value. 
    ```javascript
-    .flingSettings.minDistance = 50;
-    .flingSettings.minDuration = 200;
+    static get flingSettings() {
+      return {minDistance: 50, minDuration: 200};
+    };
 ```
+This means that the user has to change the position of the touch/mouse position by more than 50 pixels in 200 milliseconds.<br>
 In addition to the default list of details, `flingCallback(detail)` has a new value of detail - `angle`.
 `Angle` - equal to the angle between two touch points and gets from `flingAngle()`.
 
@@ -85,6 +86,7 @@ import {DragFlingGesture} from "../src/DragFlingMixin.js";
      super.connectedCallback();    //don't forget about this
      this.addEventListener("dragging", this._dragListener);
     }
+    
     disconnectedCallback() {
      super.disconnectedCallback();
      this.removeEventListener("dragging", this._dragListener);
