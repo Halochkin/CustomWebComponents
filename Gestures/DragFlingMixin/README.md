@@ -55,7 +55,6 @@ The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
    * down/south: 180
    * left/west:  270
    
-[Try the difference between `drag` and `fling` gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 ### Example
 To resolve conflicts, it is good practice to use a [InvadeAndRetreat Pattern](https://github.com/orstavik/JoiComponents/blob/master/book/chapter3/Pattern2_InvadeAndRetreat.md). 
 I want to remind that when you are using a [functional mixin](https://github.com/orstavik/JoiComponents/blob/master/book/chapter2/Pattern2_FunctionalMixin.md) that uses `connectedCallback` and `disconnectedCallback`,
@@ -113,6 +112,7 @@ import {DragFlingGesture} from "../src/DragFlingMixin.js";
 ```
 [Try it on codepen](https://codepen.io/Halochkin/pen/JZBWQp?editors=0010)
 ### Reference
+* [Try the difference between `drag` and `fling` and other gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 * [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 * [DragEvent](https://developer.mozilla.org/en-US/docs/Web/API/DragEvent)
 * [Touch events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
