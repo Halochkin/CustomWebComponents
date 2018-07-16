@@ -58,7 +58,7 @@ Therefore, if you plan to add your gestures to the application, you need to solv
 - How will you teach new user gestures
 ### Discussion: advices how to use custom gestures.
 #### Avoid conflicts of your gestures with the system!
-If your app is designed to remap a standard gesture then it may confuse users. For love you need to avoid this.
+If your app is designed to remap a standard gesture then it may confuse users.
 #### Do not duplicate the functionality of standard gestures with new ones.
 If you want to replace the standard gesture with your own, then most likely it will push the user away, because learning new gestures for the sake of one application is an occupation that not all users will decide on.
 #### Be careful with complex gestures.
