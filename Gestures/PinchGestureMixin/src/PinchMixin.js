@@ -96,7 +96,7 @@ export const PinchGesture = function (Base) {
     // }
 
     static get spinSettings() {
-      return {spinMotion: 50, spinDuration: 100};
+      return {spinMotion: 30, spinDuration: 100};
     }
 
     connectedCallback() {
@@ -131,7 +131,7 @@ export const PinchGesture = function (Base) {
       window.addEventListener("touchcancel", this[endListener]);
       const detail = makeDetail(e);
       this[recordedEventDetails] = [detail];
-      this.pinchstartCallback && this.pinchstartCallback(detail);
+      this.pinchStartCallback && this.pinchStartCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchstart", {bubbles: true, detail}));
     }
 
@@ -159,7 +159,7 @@ export const PinchGesture = function (Base) {
       detail.duration = Math.abs(this[recordedEventDetails][0].touchevent.timeStamp - e.timeStamp);
       this[spin](e);
       this[recordedEventDetails] = undefined;
-      this.pinchendCallback && this.pinchendCallback(detail);
+      this.pinchEndCallback && this.pinchEndCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchend", {bubbles: true, detail}));
     }
 
