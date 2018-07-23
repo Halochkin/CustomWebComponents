@@ -96,7 +96,7 @@ export const PinchGesture = function (Base) {
     // }
 
     static get spinSettings() {
-      return {spinMotion: 30, spinDuration: 100};
+      return {spinMotion: 20, spinDuration: 50};
     }
 
     connectedCallback() {
