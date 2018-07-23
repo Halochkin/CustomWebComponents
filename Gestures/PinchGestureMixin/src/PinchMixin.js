@@ -177,10 +177,9 @@ export const PinchGesture = function (Base) {
       detail.yFactor = Math.abs(spinStart.height / detail.height);
       detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
       detail.rotation = spinStart.angle - detail.angle;
-      let lastspinMotion = (detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
-    
-      alert(lastspinMotion);
-      if (lastspinMotion < settings.spinMotion)
+      detail.lastspinMotion = (detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1); //the sum of the distance of the start and end positions of finger 1 and 2
+      
+      if (detail.lastspinMotion < settings.spinMotion)
         return;
       this.spinCallback && this.spinCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("spin", {bubbles: true, detail}));
