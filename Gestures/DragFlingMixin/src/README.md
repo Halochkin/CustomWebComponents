@@ -60,11 +60,13 @@ In order to determine the continuation of an event, it is necessary to define an
 `events`-an array of all events
 timeTest - event.timeStamp - the minimum value of the length.
 ```
+#### Stop events
 Stop events are executed by the same Prince as the start of the event. For mouse events `[mouseStop] (e)`, for touch events - `[touchStop] (e)`. The result of both functions is a call `[fling](e, x, y)` and draggingEndCallback (detail) / "draggingend" where details = {
  event: all information about the event
  x: x-coordinate position
  y: Y-coordinates
 }
+#### flingCallback/'fling' event
 Function `[fling] (e, x, y)` trigger `flingCallback(detail)` where in addition to default details from `makeDetail()` there is the `angle` value which getting from `flingAngle(detail.distX, detail.distY)` which calculates the angle which starts at 12 o'clock and is measured clockwise from 0 to 360 degrees.
 up / North: 0
 right / East: 90
