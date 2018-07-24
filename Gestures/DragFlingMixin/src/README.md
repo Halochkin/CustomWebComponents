@@ -58,7 +58,7 @@ where` ' javascript{
     } " `
 In order to determine the continuation of an event, you need to define an event that is greater than the minimum duration condition. To do this, use the function `findLastEventOlderThan (events, timeTest) ' where
 events-an array of all events, timeTest - event.timeStamp - the minimum value of the length.
-Stop events are executed by the same Prince as the start of the event. For mouse events `[mouseStop](e)`, for touch events - `[touchStop] (e)`. The result of both functions is a call `[fling](e, x, y)` and draggingEndCallback (detail) / "draggingend" where details = {
+Stop events are executed by the same Prince as the start of the event. For mouse events `[mouseStop] (e)`, for touch events - `[touchStop] (e)`. The result of both functions is a call `[fling](e, x, y)` and draggingEndCallback (detail) / "draggingend" where details = {
  event: all information about the event
  x: x-coordinate position
  y: Y-coordinates
