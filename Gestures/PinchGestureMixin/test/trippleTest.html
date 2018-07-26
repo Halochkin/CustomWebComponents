@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport">
+    <title>Demo</title>
+
+    <style>
+        test-block {
+            height: 200px;
+            width: 200px;
+            background-color: #4cd2e4;
+            border: 2px solid red;
+            display: block;
+            border-radius: 10px;
+            touch-action: none;
+            text-align: center;
+            line-height: 12;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div></div>
+<test-block id="controller"></test-block>
+
+
+<script type="module">
+
+  import {TriplePinchGesture} from "./TripleFingerGtureMixin.js";
+
+  class TestBlock extends TriplePinchGesture(HTMLElement) {
+
+    constructor() {
+      super();
+      this.style.marginTop = "175px";
+      this.style.marginLeft = "175px";
+    }
+
+
+    triplePinchStartCallback(e) {
+      this.style.boxShadow = " 0px 0px 45px 6px rgba(110,222,73,1)";
+      this.innerText = "triplePinchStartCallback";
+    }
+  }
+
+  customElements.define("test-block", TestBlock);
+
+
+</script>
+</body>
+</html>
