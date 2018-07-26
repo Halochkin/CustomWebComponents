@@ -56,24 +56,19 @@ export const TriplePinchGesture = function (Base) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiSettings;
 
-
-      // for (let i = 0; i < length; i++) {
-      //   this.lala.push(e.targetTouches[i].identifier);
-      // }
-
       if (length > settings.fingers)
         return this[end](e);
 
-
+// alert("A");
       if (length === 1) {
-        this[oneHit] = true;
+        // this[oneHit] = true;
         this.firstTouch = e.timeStamp;
-        return;
+        // return;
       }
       if (length !== settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
         return;
-      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
-        return;
+      // if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
+      //   return;
       e.preventDefault();                                       //block defaultAction
       const body = document.querySelector("body");              //block touchAction
       this[cachedTouchAction] = body.style.touchAction;         //block touchAction
