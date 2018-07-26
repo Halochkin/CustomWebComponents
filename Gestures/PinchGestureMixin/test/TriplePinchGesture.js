@@ -7,6 +7,7 @@ const move = Symbol("touchMove");
 const end = Symbol("touchEnd");
 const recordedEventDetails = Symbol("recordedEventDetails");
 const cachedTouchAction = Symbol("cachedTouchAction");
+const firstTouch = Symbol("firstTouch ");
 const oneHit = Symbol("firstTouchIsAHit");
 
 
@@ -37,7 +38,6 @@ export const TriplePinchGesture = function (Base) {
       this[startListener] = (e) => this[start](e);
       this[moveListener] = (e) => this[move](e);
       this[endListener] = (e) => this[end](e);
-      this.lala = [];
     }
 
     connectedCallback() {
@@ -55,28 +55,25 @@ export const TriplePinchGesture = function (Base) {
     [start](e) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiSettings;
-      alert("0");
-        alert(settings)
       if (length > settings.fingers)
         return this[end](e);
-      alert(length +"lenght");
-alert("A");
+
       if (length === 1) {
-        // this[oneHit] = true;
-        this.firstTouch = e.timeStamp;
-        // return;
+        this[oneHit] = true;
+        this[firstTouch] = e.timeStamp;
+        return;
       }
-      alert(settings.fingers +"PZDC");
-      alert(length +"PZDC lenght");
-      alert(e.timeStamp - this.firstTouch+"PZDC");
+      // alert(settings.fingers +"PZDC");
+      // alert(length +"PZDC lenght");
+      // alert(e.timeStamp - this.firstTouch+"PZDC");
       if (length !== settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
         return;
-      alert(settings.fingers +"succesfull");
-      alert(length +"succesfull lenght");
-      alert(e.timeStamp - this.firstTouch+"succesfull");
+      // alert(settings.fingers +"succesfull");
+      // alert(length +"succesfull lenght");
+      // alert(e.timeStamp - this.firstTouch+"succesfull");
 
-      // if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
-      //   return;
+      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
+        return;
       e.preventDefault();                                       //block defaultAction
       const body = document.querySelector("body");              //block touchAction
       this[cachedTouchAction] = body.style.touchAction;         //block touchAction
@@ -103,6 +100,7 @@ alert("A");
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
       this[oneHit] = false;
+      this[firstTouch] = undefined;
       const body = document.querySelector("body");              //retreat touchAction
       body.style.touchAction = this[cachedTouchAction];         //retreat touchAction
       this[cachedTouchAction] = undefined;                      //retreat touchAction
