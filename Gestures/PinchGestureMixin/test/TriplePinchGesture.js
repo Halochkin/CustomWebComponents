@@ -1,0 +1,107 @@
+const startListener = Symbol("touchStartListener");
+const moveListener = Symbol("touchMoveListener");
+const endListener = Symbol("touchEndListener");
+const start = Symbol("touchStart");
+const move = Symbol("touchMove");
+const end = Symbol("touchEnd");
+const recordedEventDetails = Symbol("recordedEventDetails");
+const cachedTouchAction = Symbol("cachedTouchAction");
+const oneHit = Symbol("firstTouchIsAHit");
+
+
+function makeDetail(touchevent) {
+  const f1 = touchevent.targetTouches[0];
+  const f2 = touchevent.targetTouches[1];
+  const x1 = f1.pageX;
+  const y1 = f1.pageY;
+  const x2 = f2.pageX;
+  const y2 = f2.pageY;
+  const x3 = f2.pageX;
+  const y3 = f2.pageY;
+  const width = Math.abs(x2 - x1);
+  const height = Math.abs(y2 - y1);
+  const diagonal = Math.sqrt(width * width + height * height);
+  return {touchevent, x1, y1, x2, y2, y3, x3, diagonal, width, height};
+
+}
+
+export const TriplePinchGesture = function (Base) {
+  return class extends Base {
+    constructor() {
+      super();
+      this[recordedEventDetails] = undefined;
+      this[cachedTouchAction] = undefined;                      //block touchAction
+      this[oneHit] = false;
+      this[startListener] = (e) => this[start](e);
+      this[moveListener] = (e) => this[move](e);
+      this[endListener] = (e) => this[end](e);
+      this.lala = [];
+    }
+
+    connectedCallback() {
+      if (super.connectedCallback) super.connectedCallback();
+      this.addEventListener("touchstart", this[startListener]);
+    }
+
+    disconnectedCallback() {
+      if (super.disconnectedCallback) super.disconnectedCallback();
+      this.removeEventListener("touchstart", this[startListener]);
+    }
+
+    [start](e) {
+      const length = e.targetTouches.length;
+      for (let i = 0; i < e.targetTouches.length; i++) {
+        this.lala.push(e.targetTouches[i].identifier);
+      }
+      if (length > 3)
+        return this[end](e);
+      if (length === 1) {
+        this[oneHit] = true;
+        return;
+      }
+      if (length !== 3)
+        throw new Error("omg?! how many fingers??");
+      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
+        return;
+
+      e.preventDefault();                                       //block defaultAction
+      const body = document.querySelector("body");              //block touchAction
+      this[cachedTouchAction] = body.style.touchAction;         //block touchAction
+      body.style.touchAction = "none";                          //block touchAction
+      window.addEventListener("touchmove", this[moveListener]);
+      window.addEventListener("touchend", this[endListener]);
+      window.addEventListener("touchcancel", this[endListener]);
+      const detail = makeDetail(e);
+      this[recordedEventDetails] = [detail];
+      alert("start");
+      this.triplePinchStartCallback && this.triplePinchStartCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("triplepinchstart", {bubbles: true, detail}));
+    }
+
+    [move](e) {
+      e.preventDefault();
+      const detail = makeDetail(e);
+      this.triplePinchCallback && this.triplePinchCallback(detail);
+      document.querySelector("div").textContent = e.changedTouches.length;
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinch", {bubbles: true, detail}));
+    }
+
+    [end](e) {
+      if (this.lala.length < 3)
+        return;
+      e.preventDefault();                                       //block defaultAction
+      window.removeEventListener("touchmove", this[moveListener]);
+      window.removeEventListener("touchend", this[endListener]);
+      window.removeEventListener("touchcancel", this[endListener]);
+      this[oneHit] = false;
+      const body = document.querySelector("body");              //retreat touchAction
+      body.style.touchAction = this[cachedTouchAction];         //retreat touchAction
+      this[cachedTouchAction] = undefined;                      //retreat touchAction
+      const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
+      this[recordedEventDetails] = undefined;
+      this.triplePinchEndCallback && this.triplePinchEndCallback(detail);
+      this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchend", {bubbles: true, detail}));
+      this.lala = [];
+    }
+  }
+};
