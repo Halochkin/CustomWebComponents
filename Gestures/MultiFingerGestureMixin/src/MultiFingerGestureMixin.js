@@ -10,7 +10,7 @@ const firstTouch = Symbol("firstTouch ");
 const oneHit = Symbol("firstTouchIsAHit");
 
 
-function makeDetail(touchevent) {
+function makeDetail(touchevent) {  //todo remake makeDetail()
   const f1 = touchevent.targetTouches[0];
   const f2 = touchevent.targetTouches[1];
   const x1 = f1.pageX;
@@ -96,7 +96,7 @@ export const TriplePinchGesture = function (Base) {
       this[cachedTouchAction] = undefined;                      //retreat touchAction
       const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
       this[recordedEventDetails] = undefined;
-      this.multiFingerhEndCallback && this.multiFingerEndCallback(detail);
+      this.multiFingerhEndCallback && this.multiFingerhEndCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {bubbles: true, detail}));
     }
   }
