@@ -10,13 +10,13 @@ And it is quite simple: gestures.
 
 ### What are the gesture settings for?
 Gestures can help pave the way for more beautiful interfaces, because many of these actions can be hidden in the interface. Gestures provide speed in user action and are a convenient way for users to interact with devices of different shapes and sizes.
-In addition only a beautiful design applications — enough so that it became popular. In the era of touch devices, the design of the application should be intuitive. 
+In addition only a beautiful design applications — enough so that it became popular. In the era of touch devices, the design of the application should be intuitive. <br>
  It is logical that the functions of mobile applications provide more control over navigation than the usual button presses. Because applications have less space for traditional buttons, they allow users to open or hide different menu blocks with different gestures.<br>
- To increase the number of gestures, you can add a minimum duration in milliseconds, which allows you to create two similar gestures and add a conditional border that allows you to switch between them depending on the the minimum duration and use two gestures to activate different functionality. 
+ To increase the number of gestures, you can add a minimum duration in milliseconds, which allows you to create two similar gestures and add a conditional border that allows you to switch between them depending on the the minimum duration and use two gestures to activate different functionality. <br>
 All `gestureMixins` implement two gestures. The first is basic and it does not need certain conditions under which it will be activated.  The second gesture is the advanced version of the basic gesture, which has more functionality. But how to separate these gestures? This requires minimal settings to activate the advanced gesture, and it does not apply to the basic version. These minimal settings are based on minimum duration and distance. This is done to prevent accidental activation by the user of the extended gesture. The basic gesture is activated without restrictions.
 #### ±100ms is a lot.
-Our life is full of events of millisecond duration, for example, one blink lasts about a third of a second. The human reaction time is about 100-200ms plus the time it takes to perform an action in response to an incentive. 
-For example, if the user interface of a program reacts to user actions longer than 200ms, then the user starts to feel the delay if less than 50-the user perceives the interface response as instantaneous.
+Our life is full of events of millisecond duration, for example, one blink lasts about a third of a second. The human reaction time is about 100-200ms plus the time it takes to perform an action in response to an incentive. <br>
+For example, if the user interface of a program reacts to user actions longer than 200ms then the user starts to feel the delay if less than 50-the user perceives the interface response as instantaneous.
 #### Minimum setting values. How to find the 'Golden mean'?
 Let's look at a small example:
 ```javascript
@@ -27,16 +27,17 @@ static get minSettings() {
       };
     };
 ```
-Using the `minSettings()` allows you to switch between two gestures. It checks whether the base version will become advanced or not. If the conditions are met, the base version is `transformed` into extended version, if not - only the base version is activated.
-The `minDistance` value is the distance between the end event (which meets the minimum duration requirements) and the extended event.
-The `minDuration` is equal to the duration of the final event ("touchend","mouseend" etc.). Each advanced gesture has 2 stages of checking for matches with the minimum settings. The first is to check that the final event will last more than 150 milliseconds. If not, the extended gesture will not be executed and the base gesture will be activated. The next check is the distance check. This means that the user has to change the position of the touch/mouse point by more than 50 pixels in 150 milliseconds.<br>
+Using the `minSettings()` allows you to switch between two gestures. It checks whether the base version will become advanced or not. If the conditions are met, the base version is `transformed` into extended version, if not - only the base version is activated.<br>
+The `minDistance` value is the distance between the end event (which meets the minimum duration requirements) and the extended event.<br>
+The `minDuration` is equal to the duration of the final event ("touchend","mouseend" etc.). <br>
+Each advanced gesture has 2 stages of checking for matches with the minimum settings. The first is to check that the final event will last more than 150 milliseconds. If not, the extended gesture will not be executed and the base gesture will be activated. The next check is the distance check. This means that the user has to change the position of the touch/mouse point by more than 50 pixels in 150 milliseconds.<br>
 #### The optimal value for the minimum duration?
  Looking at the fact that most users use intuitive gestures that will allow you to predict what movement will start a certain command. This means that on an intuitive level, users will use the drag event to flip through photos. 
 To perform all gestures you need to make a sequence of events: 
 * Initiation: Initial contact to start an action, such as a click or tap.
 * Movement: some movement on the screen to make something happen.
 * End: end gesture as the contact with the screen ends.
-If the minimum duration of the action you add as a condition to activate the modified gesture is too small then if you just click on the screen, the script can register this as a small movement that can take less than `5ms` and perform the action.
+If the minimum duration of the action you add as a condition to activate the modified gesture is too small then if you just click on the screen, the script can register this as a small movement that can take less than `5ms` and perform the action. <br>
 If the duration is too long the users will be upset because most of them are "too lazy" and do not want to perform gestures more than `500ms`. If your delay is equal to or greater than `400ms` - the chance of successful activation is reduced by `60%`, and the functionality that must be activated by a modified gesture will not work, and this is not what users expect from your application. 
 `The optimal delay is 100ms` because if the user interface of the program responds to the user action longer than 200ms, the user starts to feel the delay if less than 50-the user perceives the interface response as instantaneous. A 100ms will not cause a noticeable delay, and prevent accidental activation.
 ### Multifinger gestures
