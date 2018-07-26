@@ -31,7 +31,6 @@ export const TriplePinchGesture = function (Base) {
   return class extends Base {
     constructor() {
       super();
-      this[selectListener] = e => e.preventDefault() && false;
       this[recordedEventDetails] = undefined;
       this[cachedTouchAction] = undefined;                      //block touchAction
       this[oneHit] = false;
@@ -43,12 +42,10 @@ export const TriplePinchGesture = function (Base) {
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
       this.addEventListener("touchstart", this[startListener]);
-      this.addEventListener("selectstart", this[selectListener]);
     }
 
     disconnectedCallback() {
       if (super.disconnectedCallback) super.disconnectedCallback();
-      this.removeEventListener("selectstart", this[selectListener]);
       this.removeEventListener("touchstart", this[startListener]);
     }
 
