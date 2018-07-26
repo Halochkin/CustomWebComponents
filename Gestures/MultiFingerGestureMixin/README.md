@@ -61,7 +61,7 @@ import {TriplePinchGesture} from "./TripleFingerGtureMixin.js";
 2. When the gesture is activated, the element will be highlighted with a green shadow.
 3. If the user removes at least one finger-the gesture will be deactivated, and the highlight will disappear.
 ####
-[Try it](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html);
+[Try it yourself](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html)
 
 ### References
 1. [Multi-touch](https://en.wikipedia.org/wiki/Multi-touch)
