@@ -49,6 +49,7 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [start](e) {
+      document.querySelector("div").textContent = e.targetTouches.length;
       const length = e.targetTouches.length;
       for (let i = 0; i < e.targetTouches.length; i++) {
         this.lala.push(e.targetTouches[i].identifier);
@@ -81,7 +82,7 @@ export const TriplePinchGesture = function (Base) {
       e.preventDefault();
       const detail = makeDetail(e);
       this.triplePinchCallback && this.triplePinchCallback(detail);
-      document.querySelector("div").textContent = e.changedTouches.length;
+
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinch", {bubbles: true, detail}));
     }
 
