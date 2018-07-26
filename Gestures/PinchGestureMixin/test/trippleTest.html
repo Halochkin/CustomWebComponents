@@ -23,13 +23,16 @@
 <body>
 
 
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="touch-emulator.js"></script>
+<script> TouchEmulator(); </script>
 <div></div>
 <test-block id="controller"></test-block>
 
 
 <script type="module">
 
-  import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/test/TriplePinchGesture.js";
+  import {TriplePinchGesture} from "./TripleFingerGtureMixin.js";
 
   class TestBlock extends TriplePinchGesture(HTMLElement) {
 
@@ -39,11 +42,16 @@
       this.style.marginLeft = "175px";
     }
 
-
     triplePinchStartCallback(e) {
       this.style.boxShadow = " 0px 0px 45px 6px rgba(110,222,73,1)";
       this.innerText = "triplePinchStartCallback";
     }
+
+    triplePinchEndCallback(e) {
+      this.style.boxShadow = "none";
+      this.innerText = "triplePinchEndCallback";
+    }
+    
   }
 
   customElements.define("test-block", TestBlock);
