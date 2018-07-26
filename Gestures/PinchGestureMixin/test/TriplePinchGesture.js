@@ -70,7 +70,7 @@ export const TriplePinchGesture = function (Base) {
         this.firstTouch = e.timeStamp;
         return;
       }
-      if (length === settings.fingers && (e.timeStamp - this.firstTouch) > settings.maxDuration)
+      if (length !== settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
         return;
       // if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
       //   return;
@@ -107,6 +107,7 @@ export const TriplePinchGesture = function (Base) {
       this[recordedEventDetails] = undefined;
       this.triplePinchEndCallback && this.triplePinchEndCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchend", {bubbles: true, detail}));
+      // this.lala = [];
     }
   }
 };
