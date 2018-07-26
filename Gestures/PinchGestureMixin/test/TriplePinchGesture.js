@@ -55,12 +55,14 @@ export const TriplePinchGesture = function (Base) {
     [start](e) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiSettings;
+      document.querySelector("div").innerText = settings.fingers + " sett.fingers " + length + " lenght ";
+
       if (length > settings.fingers)
         return this[end](e);
 
       if (length === 1) {
         this[oneHit] = true;
-        this[firstTouch] = e.timeStamp;
+        this.firstTouch = e.timeStamp;
         return;
       }
       // alert(settings.fingers +"PZDC");
@@ -68,6 +70,7 @@ export const TriplePinchGesture = function (Base) {
       // alert(e.timeStamp - this.firstTouch+"PZDC");
       if (length !== settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
         return;
+      document.querySelector("div").innerText = settings.fingers + " sett.fingers " + length + " lenght " + settings.fingers + " sett.fingers " + e.timeStamp + " e.timeStamp " + this.firstTouch + " this.firstTouch " + (e.timeStamp - this.firstTouch);
       // alert(settings.fingers +"succesfull");
       // alert(length +"succesfull lenght");
       // alert(e.timeStamp - this.firstTouch+"succesfull");
@@ -100,7 +103,7 @@ export const TriplePinchGesture = function (Base) {
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
       this[oneHit] = false;
-      this[firstTouch] = undefined;
+      this.firstTouch = undefined;
       const body = document.querySelector("body");              //retreat touchAction
       body.style.touchAction = this[cachedTouchAction];         //retreat touchAction
       this[cachedTouchAction] = undefined;                      //retreat touchAction
