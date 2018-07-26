@@ -60,6 +60,7 @@ import {TriplePinchGesture} from "./TripleFingerGtureMixin.js";
 1. Adding the number of touch points and the maximum time for gesture activation.
 2. When the gesture is activated, the element will be highlighted with a green shadow.
 3. If the user removes at least one finger-the gesture will be deactivated, and the highlight will disappear.
+####
 [Try it](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html);
 
 ### References
