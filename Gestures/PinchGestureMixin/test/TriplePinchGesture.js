@@ -56,6 +56,7 @@ export const TriplePinchGesture = function (Base) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiSettings;
       alert("0");
+        alert(settings)
       if (length > settings.fingers)
         return this[end](e);
       alert(length +"lenght");
