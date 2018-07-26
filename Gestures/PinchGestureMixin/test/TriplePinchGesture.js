@@ -73,7 +73,6 @@ export const TriplePinchGesture = function (Base) {
       window.addEventListener("touchcancel", this[endListener]);
       const detail = makeDetail(e);
       this[recordedEventDetails] = [detail];
-      alert("start");
       this.triplePinchStartCallback && this.triplePinchStartCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("triplepinchstart", {bubbles: true, detail}));
     }
