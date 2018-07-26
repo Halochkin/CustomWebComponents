@@ -31,7 +31,7 @@
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/PinchGestureMixin/test/TriplePinchGesture.js";
 
   class TestBlock extends TriplePinchGesture(HTMLElement) {
- constructor() {
+  constructor() {
       super();
       this.style.marginTop = "175px";
       this.style.marginLeft = "175px";
@@ -41,17 +41,13 @@
       return {fingers: 3, maxDuration: 500};
     }
 
-
     triplePinchStartCallback(e) {
-      this.style.boxShadow = " 0px 0px 45px 6px rgba(110,222,73,1)";
-      this.innerText = "triplePinchStartCallback";
+      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
     }
 
     triplePinchEndCallback(e) {
       this.style.boxShadow = "none";
-      this.innerText = "triplePinchEndCallback";
     }
-
   }
 
   customElements.define("test-block", TestBlock);
