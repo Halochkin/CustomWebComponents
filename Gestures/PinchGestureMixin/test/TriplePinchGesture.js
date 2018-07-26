@@ -53,22 +53,27 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [start](e) {
-      document.querySelector("div").textContent = e.targetTouches.length;
       const length = e.targetTouches.length;
-      for (let i = 0; i < e.targetTouches.length; i++) {
-        this.lala.push(e.targetTouches[i].identifier);
-      }
-      if (length > 3)
-        return this[end](e);
-      if (length === 1) {
-        this[oneHit] = true;
-        return;
-      }
-      if (length !== 3)
-        throw new Error("omg?! how many fingers??");
-      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
-        return;
+      const settings = this.constructor.multiSettings;
 
+
+      // for (let i = 0; i < length; i++) {
+      //   this.lala.push(e.targetTouches[i].identifier);
+      // }
+
+      if (length > settings.fingers)
+        return this[end](e);
+
+
+      if (length === 1) {
+        // this[oneHit] = true;
+        this.firstTouch = e.timeStamp;
+        return;
+      }
+      if (length === settings.fingers && (e.timeStamp - this.firstTouch) > settings.maxDuration)
+        return;
+      // if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
+      //   return;
       e.preventDefault();                                       //block defaultAction
       const body = document.querySelector("body");              //block touchAction
       this[cachedTouchAction] = body.style.touchAction;         //block touchAction
@@ -86,13 +91,10 @@ export const TriplePinchGesture = function (Base) {
       e.preventDefault();
       const detail = makeDetail(e);
       this.triplePinchCallback && this.triplePinchCallback(detail);
-
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinch", {bubbles: true, detail}));
     }
 
     [end](e) {
-      if (this.lala.length < 3)
-        return;
       e.preventDefault();                                       //block defaultAction
       window.removeEventListener("touchmove", this[moveListener]);
       window.removeEventListener("touchend", this[endListener]);
@@ -105,7 +107,6 @@ export const TriplePinchGesture = function (Base) {
       this[recordedEventDetails] = undefined;
       this.triplePinchEndCallback && this.triplePinchEndCallback(detail);
       this.constructor.pinchEvent && this.dispatchEvent(new CustomEvent("pinchend", {bubbles: true, detail}));
-      this.lala = [];
     }
   }
 };
