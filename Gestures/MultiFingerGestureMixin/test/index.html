@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport">
+    <title>MultiFingerGestureMixin</title>
+
+    <style>
+        test-block {
+            height: 200px;
+            width: 200px;
+            background-color: #4cd2e4;
+            border: 2px solid red;
+            display: block;
+            border-radius: 10px;
+            touch-action: none;
+            text-align: center;
+            line-height: 12;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+<test-block></test-block>
+<script type="module">
+
+  import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
+
+  class TestBlock extends TriplePinchGesture(HTMLElement) {
+
+    constructor() {
+      super();
+      this.style.marginTop = "175px";
+      this.style.marginLeft = "175px";
+    }
+
+    static get multiFingerSettings() {
+      return {fingers: 3, maxDuration: 500};
+    }
+
+    multiFingerCallback(e) {
+      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
+    }
+
+    multiFingerhEndCallback(e) {
+      this.style.boxShadow = "none";
+    }
+  }
+
+  customElements.define("test-block", TestBlock);
+
+</script>
+</body>
+</html>
