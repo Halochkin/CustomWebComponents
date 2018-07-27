@@ -2,6 +2,25 @@
 MultiFingerGestureMixin allows you to add a multi-touch event to a callback or event. The features of this mixin
 is that you can set the required number of touches (when pressed at the same time, will be trigger callback/event) and the maximum duration
 (time between the activation of the first and last touch points). 
+```javascript
+multiFingerStartCallback(detail) / "multifingerstart"
+multiFingerCallback(detail) / "multifinger"
+draggingEndCallback(detail) / "draggingend"
+multiFingerhEndCallback(detail / "multifingerend"
+```
+To start using an event, you must add a `multifingerEvent()` which return `true`. If you want to use only a callbacks, change "return `true`" to `false` or remove the function.
+```javascript
+static get multifingerEvent()() {
+      return true;
+    }
+```
+As details mixin return:
+| Таблицы       | Это                | 
+| ------------- |:------------------:| 
+| столбец 3     | выровнен вправо    | 
+| столбец 2     | выровнен по центру |  
+| зебра-строки  | прикольные         |  
+
 ###
 
 These values must be added to the `multiFingerSettings()`
