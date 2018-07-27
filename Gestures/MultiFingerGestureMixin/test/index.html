@@ -5,7 +5,7 @@
     <title>MultiFingerGestureMixin</title>
 
     <style>
-        test-block {
+         test-block {
             height: 200px;
             width: 200px;
             background-color: #4cd2e4;
@@ -14,23 +14,26 @@
             border-radius: 10px;
             touch-action: none;
             text-align: center;
-            line-height: 12;
             color: white;
+            margin: auto;
+            margin-top: 30px;
         }
 
         div {
-             height: 50px;
+            height: 50px;
             width: 50px;
             border-radius: 50%;
             background-color: #507aff;
             border: 3px solid red;
             position: absolute;
-            font-size: 20px;
+            font-size: 30px;
+            line-height: 6;
         }
 
     </style>
 </head>
 <body>
+<a></a>
 <test-block></test-block>
 <script type="module">
 
@@ -43,8 +46,8 @@
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
-      this.style.marginTop = "175px";
-      this.style.marginLeft = "175px";
+      this.style.marginTop = "75px";
+      this.style.marginLeft = "75px";
     }
 
     static get multiFingerSettings() {
@@ -56,38 +59,73 @@
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._move);
       this.addEventListener("touchend", this._end);
+      document.querySelector("a").innerText = `Start distances between points:
+      1 and 2: 0 px;
+      2 and 3: 0 px;
+      3 and 1: 0 px;
+      `;
+    }
+
+    disconnectedCallback() {
+      super.connectedCallback();
+      this.removeEventListener("touchstart", this._start);
+      this.removeEventListener("touchmove", this._move);
+      this.removeEventListener("touchend", this._end);
     }
 
     addtouchesPoints(e) {
-      for (let i = 0; i < e.targetTouches.length; i++) {
+      if (e.touches.length === 1)
+        return;
+      for (let i = 0; i < e.touches.length; i++) {
         let elem = document.createElement("div");
         elem.innerText = i + 1;
         elem.id = "point" + i;
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
         document.querySelector("body").appendChild(elem);
+
       }
     }
 
     movetouchesPoints(e) {
-      for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.touches.length === 1)
+        return;
+      for (let i = 0; i < e.touches.length; i++) {
         let elem = document.getElementById("point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
+        // document.querySelector("a").innerText += "ds";
+
       }
+
     }
 
     removetouchesPoints(e) {
-      debugger;
-      let elem = document.querySelector("body");
-      elem.innerHTML = `<test-block></test-block>`;
+      let elem = document.querySelectorAll("div");
+      for (let i = 0; i < elem.length; i++) {
+        elem[i].parentNode.removeChild(elem[i])
+      }
     }
 
     multiFingerStartCallback(detail) {
+      console.log(detail);
       this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
+      document.querySelector("a").innerText = `Start distances between points:
+      1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
+      2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
+      3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
+      `;
     }
-      
-    multiFingerhEndCallback(e) {
+
+    multiFingerCallback(detail) {
+      document.querySelector("a").innerText = `Last distances between points:
+      1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
+      2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
+      3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
+      `;
+    }
+
+    multiFingerhEndCallback(detail) {
       this.style.boxShadow = "none";
     }
   }
