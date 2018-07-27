@@ -26,23 +26,56 @@
 
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
 
-  class TestBlock extends TriplePinchGesture(HTMLElement) {
+   class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
-      this.style.marginTop = "75px";
-      this.style.marginLeft = "75px";
+      this._start = e => this.addtouchesPoints(e);
+      this._move = e => this.movetouchesPoints(e);
+      this._end = e => this.removetouchesPoints(e);
+      this.style.marginTop = "175px";
+      this.style.marginLeft = "175px";
     }
 
     static get multiFingerSettings() {
       return {fingers: 3, maxDuration: 500};
     }
 
+    connectedCallback() {
+      super.connectedCallback();
+      this.addEventListener("touchstart", this._start);
+      this.addEventListener("touchmove", this._move);
+      this.addEventListener("touchend", this._end);
+    }
+
+    addtouchesPoints(e) {
+      for (let i = 0; i < e.targetTouches.length; i++) {
+        let elem = document.createElement("div");
+        elem.id = "point" + i;
+        elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
+        elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
+        document.querySelector("body").appendChild(elem);
+      }
+    }
+
+    movetouchesPoints(e) {
+      for (let i = 0; i < e.targetTouches.length; i++) {
+        let elem = document.getElementById("point" + i);
+        elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
+        elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
+      }
+    }
+
+    removetouchesPoints(e) {
+      let elem = document.querySelector("body");
+      elem.innerHTML = `<test-block></test-block>`;
+    }
+
     multiFingerStartCallback(detail) {
       this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
     }
-
-    multiFingerhEndCallback(detail) {
+      
+    multiFingerhEndCallback(e) {
       this.style.boxShadow = "none";
     }
   }
