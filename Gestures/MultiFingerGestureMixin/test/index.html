@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta name="viewport" content="width=device-width">
-    <title>MultiFingerGestureMixin</title>
+    <title>Demo</title>
 
     <style>
-         test-block {
+        test-block {
             height: 200px;
             width: 200px;
             background-color: #4cd2e4;
@@ -14,6 +14,7 @@
             border-radius: 10px;
             touch-action: none;
             text-align: center;
+
             color: white;
             margin: auto;
             margin-top: 30px;
@@ -44,15 +45,13 @@
 
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
 
-   class TestBlock extends TriplePinchGesture(HTMLElement) {
+ class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
-      this.style.marginTop = "75px";
-      this.style.marginLeft = "75px";
     }
 
     static get multiFingerSettings() {
@@ -64,8 +63,7 @@
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._move);
       this.addEventListener("touchend", this._end);
-      document.querySelector("a").innerText = `Press "Shift" + Click to simulate multiple gesture
-Start distances between points:
+      document.querySelector("a").innerText = `Start distances between points:
       1 and 2: 0 px;
       2 and 3: 0 px;
       3 and 1: 0 px;
@@ -100,6 +98,8 @@ Start distances between points:
         let elem = document.getElementById("point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
+        // document.querySelector("a").innerText += "ds";
+
       }
 
     }
@@ -135,6 +135,7 @@ Start distances between points:
   }
 
   customElements.define("test-block", TestBlock);
+
 
 </script>
 </body>
