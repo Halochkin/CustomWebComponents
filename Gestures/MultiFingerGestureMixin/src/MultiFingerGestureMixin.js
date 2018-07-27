@@ -10,20 +10,14 @@ const firstTouch = Symbol("firstTouch ");
 const oneHit = Symbol("firstTouchIsAHit");
 
 
-function makeDetail(touchevent) {  //todo remake makeDetail()
-  const f1 = touchevent.targetTouches[0];
-  const f2 = touchevent.targetTouches[1];
-  const x1 = f1.pageX;
-  const y1 = f1.pageY;
-  const x2 = f2.pageX;
-  const y2 = f2.pageY;
-  const x3 = f2.pageX;
-  const y3 = f2.pageY;
-  const width = Math.abs(x2 - x1);
-  const height = Math.abs(y2 - y1);
-  const diagonal = Math.sqrt(width * width + height * height);
-  return {touchevent, x1, y1, x2, y2, y3, x3, diagonal, width, height};
-
+function makeDetail(touchevent) {
+  const coordArr = [];
+  const length = touchevent.targetTouches.length;
+  for (let i = 0; i < touchevent.targetTouches.length; i++) {
+    let touch = {x: touchevent.targetTouches[i].pageX, y: touchevent.targetTouches[i].pageY};
+    coordArr.push(touch);
+  }
+  return {touchevent, coordArr, length};
 }
 
 export const TriplePinchGesture = function (Base) {
@@ -51,7 +45,7 @@ export const TriplePinchGesture = function (Base) {
     [start](e) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
-       if (length > settings.fingers)  // Check to see if the number of active touch points exceeds the maximum allowed.
+      if (length > settings.fingers)  // Check to see if the number of active touch points exceeds the maximum allowed.
         return;
 
       if (length === 1) {
@@ -72,9 +66,13 @@ export const TriplePinchGesture = function (Base) {
       window.addEventListener("touchend", this[endListener]);
       window.addEventListener("touchcancel", this[endListener]);
       const detail = makeDetail(e);
+      detail.length = length;
       this[recordedEventDetails] = [detail];
       this.multiFingerStartCallback && this.multiFingerStartCallback(detail);
-      this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerstart", {bubbles: true, detail}));
+      this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerstart", {
+        bubbles: true,
+        detail
+      }));
     }
 
     [move](e) {
@@ -97,7 +95,10 @@ export const TriplePinchGesture = function (Base) {
       const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
       this[recordedEventDetails] = undefined;
       this.multiFingerhEndCallback && this.multiFingerhEndCallback(detail);
-      this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {bubbles: true, detail}));
+      this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {
+        bubbles: true,
+        detail
+      }));
     }
   }
 };
