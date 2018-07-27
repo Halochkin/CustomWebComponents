@@ -15,7 +15,7 @@ static get multifingerEvent()() {
     }
 ```
 
-If you using more than 1 finger, details mixin return details:
+If you using more than 1 finger, details mixin return next details:
 
 | Detail        | description        | 
 | ------------- |:------------------:|
