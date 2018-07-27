@@ -18,7 +18,7 @@ draggingCallback(detail) / "dragging"
 draggingEndCallback(detail) / "draggingend"
 flingCallback(detail) / "fling"
 ```
-To start using an event, you must add a `dragEvent()` which return `true`. If you want to use only a callbacks, change "return `true`" to 'false' or remove the function.
+To start using an event, you must add a `dragEvent()` which return `true`. If you want to use only a callbacks, change "return `true`" to `false` or remove the function.
 ```javascript
 static get dragEvent() {
       return true;
