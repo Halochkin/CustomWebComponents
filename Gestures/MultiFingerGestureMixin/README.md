@@ -14,13 +14,18 @@ static get multifingerEvent()() {
       return true;
     }
 ```
-As details mixin return:
-| Таблицы       | Это                | 
-| ------------- |:------------------:| 
-| столбец 3     | выровнен вправо    | 
-| столбец 2     | выровнен по центру |  
-| зебра-строки  | прикольные         |  
 
+If you using more than 1 finger, details mixin return details:
+
+| Detail        | description        | 
+| ------------- |:------------------:|
+| x             | X coordinates of the point  | 
+| y             | Y coordinates    | 
+| distX         | distance between points along the X axis    | 
+| distY         | Y axis |   
+| diagonal      | diagonal|   
+
+In case you use only one finger, details will contain only `x` and `y`.
 ###
 
 These values must be added to the `multiFingerSettings()`
