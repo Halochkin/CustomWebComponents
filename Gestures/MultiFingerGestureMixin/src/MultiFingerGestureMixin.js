@@ -15,8 +15,15 @@ function makeDetail(touchevent) {
   const length = touchevent.targetTouches.length;
   for (let i = 0; i < touchevent.targetTouches.length; i++) {
     let touch = {x: touchevent.targetTouches[i].pageX, y: touchevent.targetTouches[i].pageY};
+    if (length > 1) {
+      let counter = (i + 1 >= length ? 0 : i + 1);
+      touch.distX = touchevent.targetTouches[counter].pageX - touchevent.targetTouches[i].pageX;
+      touch.distY = touchevent.targetTouches[counter].pageY - touchevent.targetTouches[i].pageY;
+      touch.diagonal = Math.sqrt(touch.distX * touch.distX + touch.distY * touch.distY);
+    }
     coordArr.push(touch);
   }
+
   return {touchevent, coordArr, length};
 }
 
@@ -92,7 +99,7 @@ export const TriplePinchGesture = function (Base) {
       const body = document.querySelector("body");              //retreat touchAction
       body.style.touchAction = this[cachedTouchAction];         //retreat touchAction
       this[cachedTouchAction] = undefined;                      //retreat touchAction
-      const detail = Object.assign({}, this[recordedEventDetails][this[recordedEventDetails].length - 1]);
+      const detail = makeDetail(e);
       this[recordedEventDetails] = undefined;
       this.multiFingerhEndCallback && this.multiFingerhEndCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {
