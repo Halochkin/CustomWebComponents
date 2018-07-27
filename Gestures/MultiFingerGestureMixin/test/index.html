@@ -19,12 +19,13 @@
         }
 
         div {
-            height: 50px;
+             height: 50px;
             width: 50px;
             border-radius: 50%;
             background-color: #507aff;
             border: 3px solid red;
             position: absolute;
+            font-size: 20px;
         }
 
     </style>
@@ -60,6 +61,7 @@
     addtouchesPoints(e) {
       for (let i = 0; i < e.targetTouches.length; i++) {
         let elem = document.createElement("div");
+        elem.innerText = i + 1;
         elem.id = "point" + i;
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
@@ -68,7 +70,7 @@
     }
 
     movetouchesPoints(e) {
-      for (let i = 0; i < e.targetTouches.length; i++) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
         let elem = document.getElementById("point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
@@ -76,6 +78,7 @@
     }
 
     removetouchesPoints(e) {
+      debugger;
       let elem = document.querySelector("body");
       elem.innerHTML = `<test-block></test-block>`;
     }
