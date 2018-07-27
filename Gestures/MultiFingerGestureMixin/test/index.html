@@ -38,11 +38,11 @@
       return {fingers: 3, maxDuration: 500};
     }
 
-    multiFingerCallback(e) {
+    multiFingerStartCallback(detail) {
       this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
     }
 
-    multiFingerhEndCallback(e) {
+    multiFingerhEndCallback(detail) {
       this.style.boxShadow = "none";
     }
   }
