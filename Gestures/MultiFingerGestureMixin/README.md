@@ -86,7 +86,6 @@ import {TriplePinchGesture} from "./TripleFingerGtureMixin.js";
 2. When the gesture is activated, the element will be highlighted with a green shadow.
 3. If the user removes at least one finger-the gesture will be deactivated, and the highlight will disappear.
 ####
-[Try it yourself](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html)
 ### Discussion: What can go wrong and how to deal with it
 he problem is if (pointer 1 center) is too close to (pointer 2 center), then the device will consider them as `one` pointer. The bad news is that this value can be different and depends on the physical parameters of the display and cannot be changed programmatically.<br>
 A large number of manuals for operating systems and OEM (Original Equipment Manufacturer – official equipment suppliers) indicate the target area of touch, the size of which is less than the values confirmed by a large number of scientific studies. For example, Apple's guide determines the size of the target touch area at 44 pixels-but this is not a physical quantity. When designing interfaces with touch screens, you need to rely on the physical size, expressed in millimeters, inches, or points.
@@ -95,8 +94,7 @@ Nokia and Microsoft insist on the optimal value of 7 mm. the distance between th
 This means that the size of the element to which you add a multi-touch gesture must be large enough to fit several touch points freely on its area, and the distance between their centers must be relatively large for easy movement.<br>
 Also, if an item has several small buttons that can be pressed at the same time, the distance between them should be greater than the minimum size at which two touch points will be identified as one. As I mentioned above, in different devices this size is different and it is quite difficult to determine the average value. But our task is to develop universal applications that will be supported by different devices. So for this, use the most reasonable distance that your design allows.
 
-
-
+[Check your sensor device](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html)
 
 ### References
 1. [Multi-touch](https://en.wikipedia.org/wiki/Multi-touch)
