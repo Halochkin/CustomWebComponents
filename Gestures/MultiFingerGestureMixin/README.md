@@ -95,7 +95,7 @@ This means that the size of the element to which you add a multi-touch gesture m
 
 [Check your sensor device](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html)<br>
 or<br>
-[Try desktop demo](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/SimualtingEvent.html)
+[Try the desktop demo](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/SimualtingEvent.html)
 
 ### References
 1. [Multi-touch](https://en.wikipedia.org/wiki/Multi-touch)
