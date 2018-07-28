@@ -103,8 +103,8 @@
 
 
     addtouchesPoints(e) {
-//       if (e.touches.length 1)
-//         return;
+      if (e.touches.length === 1)
+        return;
       for (let i = 0; i < e.touches.length; i++) {
         let elem = document.createElement("div");
         elem.innerText = i + 1;
@@ -116,8 +116,8 @@
     }
 
     movetouchesPoints(e) {
-//       if (e.touches.length === 1)
-//         return;
+      if (e.touches.length === 1)
+        return;
       for (let i = 0; i < e.touches.length; i++) {
         let elem = document.querySelector("#point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
