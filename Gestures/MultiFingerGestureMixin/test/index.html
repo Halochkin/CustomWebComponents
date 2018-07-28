@@ -77,16 +77,18 @@
       this.removeEventListener("touchend", this._end);
     }
 
-    addtouchesPoints(e) {
-      if (e.touches.length === 1)
+     addtouchesPoints(e) {
+      if (e.touches.length <=2)
         return;
-      for (let i = 0; i < e.touches.length; i++) {
+      for (let i = e.touches.length-e.changedTouches.length; i < e.touches.length; i++) {
         let elem = document.createElement("div");
         elem.innerText = i + 1;
         elem.id = "point" + i;
-        elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
-        elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
+        elem.style.left = (e.touches[i].pageX - 25) + "px";
+        elem.style.top = (e.touches[i].pageY - 25) + "px";
         document.querySelector("body").appendChild(elem);
+        // let elems = document.getElementById("point1");
+        // document.querySelector("body").removeChild(elems);
 
       }
     }
@@ -107,7 +109,7 @@
     removetouchesPoints(e) {
       let elem = document.querySelectorAll("div");
       for (let i = 0; i < elem.length; i++) {
-        elem[i].parentNode.removeChild(elem[i])
+        // elem[i].parentNode.removeChild(elem[i])
       }
     }
 
