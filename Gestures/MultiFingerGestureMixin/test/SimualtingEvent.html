@@ -90,7 +90,8 @@
       const typeEvent = "touch";
 
       simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
-      [myElement, typeEvent, "start", 3],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
+    [myElement, typeEvent, "start",1 ],
+          [myElement, typeEvent, "start", 3],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
         setInterval(function () {
           simulateEventSequence([[myElement, typeEvent, "move", 3]])
         }, 100),
