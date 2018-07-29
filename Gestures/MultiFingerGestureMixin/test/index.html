@@ -34,9 +34,9 @@
 </head>
 <body>
     
-<!-- <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
 <script src="https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/touch-emulator.js"></script>
-<script> TouchEmulator(); </script> -->
+<script> TouchEmulator(); </script>
     
 <a></a>
 <test-block></test-block>
@@ -51,7 +51,6 @@
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
-      this._simulate = e => this.simulateGesture(e);
     }
 
     static get multiFingerSettings() {
@@ -82,7 +81,7 @@
     addtouchesPoints(e) {
       for (let i = e.touches.length - e.changedTouches.length; i < e.touches.length; i++) {
         let elem = document.createElement("div");
-//         elem.innerText = i + 1;
+        elem.innerText = i + 1;
         elem.id = "point" + i;
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
