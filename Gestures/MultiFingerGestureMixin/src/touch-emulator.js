@@ -259,7 +259,6 @@
    */
   function showTouches(ev) {
     var touch, i, el, styles;
-
     // first all visible touches
     for (i = 0; i < ev.touches.length; i++) {
       touch = ev.touches[i];
