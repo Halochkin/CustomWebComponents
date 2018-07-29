@@ -206,7 +206,8 @@
 
       touchList.push(new Touch(eventTarget, 1, multiTouchStartPos, (deltaX * -1) - f, (deltaY * -1) + f));
       touchList.push(new Touch(eventTarget, 2, multiTouchStartPos, deltaX + f, deltaY - f));
-      touchList.push(new Touch(eventTarget, 3, multiTouchStartPos, (deltaY - - 1.5), deltaY +  1.5));
+      touchList.push(new Touch(eventTarget, 3, multiTouchStartPos, (deltaY - 1.5), deltaY + 1.5));
+      touchList.push(new Touch(eventTarget, 4, multiTouchStartPos, (deltaY - f + 1.5), deltaY));
     } else {
       touchList.push(new Touch(eventTarget, 1, mouseEv, 0, 0));
     }
