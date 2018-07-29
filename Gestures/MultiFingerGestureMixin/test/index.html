@@ -14,7 +14,6 @@
             border-radius: 10px;
             touch-action: none;
             text-align: center;
-
             color: white;
             margin: auto;
             margin-top: 30px;
@@ -61,7 +60,6 @@
 
     connectedCallback() {
       super.connectedCallback();
-//       document.querySelector("input").addEventListener("click", this._simulate);
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._move);
       this.addEventListener("touchend", this._end);
