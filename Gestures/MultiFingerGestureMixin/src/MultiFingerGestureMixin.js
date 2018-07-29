@@ -57,10 +57,10 @@ export const TriplePinchGesture = function (Base) {
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
         return;
       }
-      if (length > settings.fingers)
+      if (length !== settings.fingers)
         return;
-      if (length < settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
-        return;
+      // if (length < settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
+      //   return;
 
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
