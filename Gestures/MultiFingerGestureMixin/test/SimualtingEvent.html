@@ -35,7 +35,6 @@
 </head>
 <body>
 
-
 <script src="https://hammerjs.github.io/dist/hammer.js"></script>
 <script src="https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/touch-emulator.js"></script>
 <script> TouchEmulator(); </script>
@@ -84,27 +83,23 @@
       this.removeEventListener("touchend", this._end);
     }
 
-  simulateGesture(e) {
+    simulateGesture(e) {
 
       const myElement = document.querySelector("test-block");
       const typeEvent = "touch";
 
       simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
-    [myElement, typeEvent, "start",1 ],
-          [myElement, typeEvent, "start", 3],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
+        [myElement, typeEvent, "start",1 ],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).// to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
+        [myElement, typeEvent, "start", 3],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
         setInterval(function () {
           simulateEventSequence([[myElement, typeEvent, "move", 3]])
         }, 100),
-        // setTimeout(function () {
-        //   simulateEventSequence([[myElement, typeEvent, "end", 3]])
-        // }, 1000)
-
       ]);
     }
 
 
-      addtouchesPoints(e) {
-      if (e.touches.length <3)
+    addtouchesPoints(e) {
+      if (e.touches.length <2)
         return;
       for (let i = 0; i < e.touches.length; i++) {
         let elem = document.createElement("div");
@@ -123,7 +118,10 @@
         let elem = document.querySelector("#point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
+        // document.querySelector("a").innerText += "ds";
+
       }
+
     }
 
     removetouchesPoints(e) {
@@ -136,17 +134,16 @@
     multiFingerStartCallback(detail) {
       console.log(detail);
       this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
-      document.querySelector("a").innerText = `
-      Start distances between points:
+      document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
+      duration: ${detail.duration.toFixed(3)}
       `;
     }
 
     multiFingerCallback(detail) {
-      document.querySelector("a").innerText = `
-      Last distances between points:
+      document.querySelector("a").innerText = `Last distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
@@ -159,6 +156,7 @@
   }
 
   customElements.define("test-block", TestBlock);
+
 
 </script>
 </body>
