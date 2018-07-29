@@ -91,6 +91,7 @@ export const TriplePinchGesture = function (Base) {
         return;
       e.preventDefault();
       const detail = makeDetail(e);
+      detail.length = e.targetTouches.length;
       this.multiFingerCallback && this.multiFingerCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifinger", {bubbles: true, detail}));
     }
