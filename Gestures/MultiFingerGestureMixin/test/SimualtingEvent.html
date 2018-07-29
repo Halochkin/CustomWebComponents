@@ -49,14 +49,14 @@
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
   import {simulateEventSequence} from "../src/EventsSimulator.js";
  
-    class TestBlock extends TriplePinchGesture(HTMLElement) {
+  class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
-      // this._simulate = e => this.simulateGesture(e);
+      this._simulate = e => this.simulateGesture(e);
     }
 
     static get multiFingerSettings() {
@@ -85,10 +85,8 @@
     }
 
     simulateGesture(e) {
-
       const myElement = document.querySelector("test-block");
       const typeEvent = "touch";
-
       simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
         [myElement, typeEvent, "start",1 ],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).// to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
         [myElement, typeEvent, "end",1 ],
