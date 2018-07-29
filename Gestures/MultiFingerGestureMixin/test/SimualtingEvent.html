@@ -99,9 +99,7 @@
 
 
     addtouchesPoints(e) {
-      if (e.touches.length <2)
-        return;
-      for (let i = 0; i < e.touches.length; i++) {
+  for (let i = e.touches.length-e.changedTouches.length; i < e.touches.length; i++) {
         let elem = document.createElement("div");
         elem.innerText = i + 1;
         elem.id = "point" + i;
