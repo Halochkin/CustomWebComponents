@@ -35,9 +35,9 @@
 </head>
 <body>
     
-<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<!-- <script src="https://hammerjs.github.io/dist/hammer.js"></script>
 <script src="https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/touch-emulator.js"></script>
-<script> TouchEmulator(); </script>
+<script> TouchEmulator(); </script> -->
     
 <a></a>
 <test-block></test-block>
@@ -45,13 +45,14 @@
 
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
 
- class TestBlock extends TriplePinchGesture(HTMLElement) {
+  class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
+      this._simulate = e => this.simulateGesture(e);
     }
 
     static get multiFingerSettings() {
@@ -60,6 +61,7 @@
 
     connectedCallback() {
       super.connectedCallback();
+      document.querySelector("input").addEventListener("click", this._simulate);
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._move);
       this.addEventListener("touchend", this._end);
@@ -77,50 +79,45 @@
       this.removeEventListener("touchend", this._end);
     }
 
-     addtouchesPoints(e) {
-      if (e.touches.length <=2)
-        return;
-      for (let i = e.touches.length-e.changedTouches.length; i < e.touches.length; i++) {
+
+    addtouchesPoints(e) {
+      for (let i = e.touches.length - e.changedTouches.length; i < e.touches.length; i++) {
         let elem = document.createElement("div");
         elem.innerText = i + 1;
         elem.id = "point" + i;
-        elem.style.left = (e.touches[i].pageX - 25) + "px";
-        elem.style.top = (e.touches[i].pageY - 25) + "px";
+        elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
+        elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
         document.querySelector("body").appendChild(elem);
-        // let elems = document.getElementById("point1");
-        // document.querySelector("body").removeChild(elems);
-
       }
     }
 
+
     movetouchesPoints(e) {
-      if (e.touches.length === 1)
-        return;
+
       for (let i = 0; i < e.touches.length; i++) {
-        let elem = document.getElementById("point" + i);
+        let elem = document.querySelector("#point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
-        // document.querySelector("a").innerText += "ds";
-
       }
-
     }
 
     removetouchesPoints(e) {
       let elem = document.querySelectorAll("div");
       for (let i = 0; i < elem.length; i++) {
-        // elem[i].parentNode.removeChild(elem[i])
+        elem[i].parentNode.removeChild(elem[i])
       }
     }
 
     multiFingerStartCallback(detail) {
       console.log(detail);
-      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
       document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
+      callback:  multiFingerStartCallback()
       `;
+      this.style.boxShadow = "0px 0px 55px 15px rgba(110,222,73,1)";
+
     }
 
     multiFingerCallback(detail) {
@@ -128,6 +125,7 @@
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
+      callback:  multiFingerCallback()
       `;
     }
 
