@@ -48,14 +48,15 @@
 
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
   import {simulateEventSequence} from "../src/EventsSimulator.js";
-class TestBlock extends TriplePinchGesture(HTMLElement) {
+ 
+    class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
-      this._simulate = e => this.simulateGesture(e);
+      // this._simulate = e => this.simulateGesture(e);
     }
 
     static get multiFingerSettings() {
@@ -110,11 +111,14 @@ class TestBlock extends TriplePinchGesture(HTMLElement) {
       }
     }
 
+
     movetouchesPoints(e) {
+
       for (let i = 0; i < e.touches.length; i++) {
         let elem = document.querySelector("#point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
+        // document.querySelector("a").innerText += "ds";
 
       }
 
@@ -128,15 +132,13 @@ class TestBlock extends TriplePinchGesture(HTMLElement) {
     }
 
     multiFingerStartCallback(detail) {
+      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
       document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
-      touches:  ${detail.length};
-      callback: multiFingerStartCallback()
+      callback:  multiFingerStartCallback()
       `;
-      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
-
     }
 
     multiFingerCallback(detail) {
@@ -144,11 +146,8 @@ class TestBlock extends TriplePinchGesture(HTMLElement) {
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
-      touches:  ${detail.length};
-      callback: multiFingerCallback()
+      callback:  multiFingerCallback()
       `;
-      this.style.boxShadow = " 0px 0px 55px 15px green";
-
     }
 
     multiFingerhEndCallback(detail) {
@@ -157,6 +156,8 @@ class TestBlock extends TriplePinchGesture(HTMLElement) {
   }
 
   customElements.define("test-block", TestBlock);
+
+
 </script>
 </body>
 </html>
