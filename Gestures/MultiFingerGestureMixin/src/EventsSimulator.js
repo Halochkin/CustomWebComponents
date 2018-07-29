@@ -4,22 +4,15 @@ let time = 1;
 function simulateEventSequence(arrayIn) {
   for (let i = 0; i < arrayIn.length; i++) {
     if (arrayIn[i][2] === "start") {
-      sendTouchEvent(125, 255, 275, 75, 385, 21, arrayIn[i][0], arrayIn[i][1] + "start", i, arrayIn[i][3]);
+      sendTouchEvent(220, 255, 275, 175, 345, 250, arrayIn[i][0], arrayIn[i][1] + "start", i, arrayIn[i][3]);
     }
-    // if (arrayIn[i][2] === "move") {
-    //   sendTouchEvent(30, 200, 20, 100, 300, 200, arrayIn[i][0], arrayIn[i][1] + "move", i, arrayIn[i][3]);
-    // }
     if (arrayIn[i][2] === "move") {
-
-      // setInterval(function () {
       time += 1;
-      sendTouchEvent(125 + time * 1.3, 225 + time, 275 + time * 1.2, 75 + time, 385 + time, 21 + time, arrayIn[i][0], arrayIn[i][1] + "move", i, arrayIn[i][3]);
-      // }, 200)
+      sendTouchEvent(220 - time * 1.1, 235 + time, 275 + time, 175 - time, 345 + time, 250 + time, arrayIn[i][0], arrayIn[i][1] + "move", i, arrayIn[i][3]);
     }
     if (arrayIn[i][2] === "end") {
       sendTouchEvent(300, 400, 450, 250, 500, 50, arrayIn[i][0], arrayIn[i][1] + "end", i, arrayIn[i][3]);
     }
-
   }
 }
 
@@ -83,3 +76,4 @@ function sendTouchEvent(x1, y1, x2, y2, x3, y3, element, eventType, id, fingers)
   });
   fingers === 1 ? element.dispatchEvent(oneFingerEvent) : element.dispatchEvent(threeFingersEvent);
 }
+
