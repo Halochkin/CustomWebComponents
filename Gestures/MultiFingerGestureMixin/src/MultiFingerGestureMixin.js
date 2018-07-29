@@ -74,6 +74,7 @@ export const TriplePinchGesture = function (Base) {
       window.addEventListener("touchcancel", this[endListener]);
       const detail = makeDetail(e);
       detail.length = length;
+      detail.duration = e.timeStamp - this.firstTouch;
       this[recordedEventDetails] = [detail];
       this.multiFingerStartCallback && this.multiFingerStartCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerstart", {
