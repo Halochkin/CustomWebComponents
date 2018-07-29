@@ -53,7 +53,7 @@ export const TriplePinchGesture = function (Base) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
       if (length > settings.fingers)  // Check to see if the number of active touch points exceeds the maximum allowed.
-        return;
+        return this[end](e);
 
       if (length === 1) {
         this[oneHit] = true;
@@ -61,7 +61,7 @@ export const TriplePinchGesture = function (Base) {
         return;
       }
       if (length !== settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
-        return;
+        return this[end](e);
 
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
