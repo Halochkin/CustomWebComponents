@@ -75,6 +75,7 @@
       3 and 1: 0 px;
        duration: 0ms;
       `;
+        this.style.boxShadow = "none";
     }
 
     disconnectedCallback() {
@@ -133,7 +134,6 @@
     }
 
     multiFingerStartCallback(detail) {
-      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
       document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
@@ -142,6 +142,7 @@
       duration: ${detail.duration.toFixed(3)},
       callback:  multiFingerStartCallback()
       `;
+      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
     }
 
     multiFingerCallback(detail) {
