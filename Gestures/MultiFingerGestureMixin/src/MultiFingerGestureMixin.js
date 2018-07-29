@@ -52,16 +52,16 @@ export const TriplePinchGesture = function (Base) {
     [start](e) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
-      if (length > settings.fingers)  // Check to see if the number of active touch points exceeds the maximum allowed.
-        return this[end](e);
+   
 
       if (length === 1) {
         this[oneHit] = true;
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
         return;
       }
-      if (length !== settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
+      if ((length !== settings.fingers) || ((e.timeStamp - this.firstTouch) > settings.maxDuration))
         return this[end](e);
+
 
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
@@ -74,6 +74,7 @@ export const TriplePinchGesture = function (Base) {
       window.addEventListener("touchcancel", this[endListener]);
       const detail = makeDetail(e);
       detail.length = length;
+      detail.duration = e.timeStamp - this.firstTouch;
       this[recordedEventDetails] = [detail];
       this.multiFingerStartCallback && this.multiFingerStartCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerstart", {
@@ -83,8 +84,11 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [move](e) {
+      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
+        return;
       e.preventDefault();
       const detail = makeDetail(e);
+      detail.length = e.targetTouches.length;
       this.multiFingerCallback && this.multiFingerCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifinger", {bubbles: true, detail}));
     }
