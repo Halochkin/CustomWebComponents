@@ -83,4 +83,3 @@ function sendTouchEvent(x1, y1, x2, y2, x3, y3, element, eventType, id, fingers)
   });
   fingers === 1 ? element.dispatchEvent(oneFingerEvent) : element.dispatchEvent(threeFingersEvent);
 }
-
