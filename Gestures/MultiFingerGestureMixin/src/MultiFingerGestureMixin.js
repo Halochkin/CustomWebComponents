@@ -52,15 +52,17 @@ export const TriplePinchGesture = function (Base) {
     [start](e) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
-   
+
 
       if (length === 1) {
         this[oneHit] = true;
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
         return;
       }
-      if ((length !== settings.fingers) || ((e.timeStamp - this.firstTouch) > settings.maxDuration))
+      // if ((length !== settings.fingers) || ((e.timeStamp - this.firstTouch) > settings.maxDuration))
+      if (length !== settings.fingers)
         return;
+
 
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
@@ -83,8 +85,6 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [move](e) {
-      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
-        return;
       e.preventDefault();
       const detail = makeDetail(e);
       detail.length = e.targetTouches.length;
@@ -104,7 +104,7 @@ export const TriplePinchGesture = function (Base) {
       this[cachedTouchAction] = undefined;                      //retreat touchAction
       const detail = makeDetail(e);
       this[recordedEventDetails] = undefined;
-      this.multiFingerhEndCallback && this.multiFingerhEndCallback(detail);
+      this.multiFingerEndCallback && this.multiFingerEndCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {
         bubbles: true,
         detail
