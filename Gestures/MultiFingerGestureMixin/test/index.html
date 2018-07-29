@@ -70,6 +70,7 @@
       2 and 3: 0 px;
       3 and 1: 0 px;
       `;
+     this.style.boxShadow = "none";
     }
 
     disconnectedCallback() {
@@ -83,7 +84,7 @@
     addtouchesPoints(e) {
       for (let i = e.touches.length - e.changedTouches.length; i < e.touches.length; i++) {
         let elem = document.createElement("div");
-        elem.innerText = i + 1;
+//         elem.innerText = i + 1;
         elem.id = "point" + i;
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
@@ -91,9 +92,7 @@
       }
     }
 
-
     movetouchesPoints(e) {
-
       for (let i = 0; i < e.touches.length; i++) {
         let elem = document.querySelector("#point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
