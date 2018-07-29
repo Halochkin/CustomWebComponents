@@ -75,7 +75,7 @@
       3 and 1: 0 px;
        duration: 0ms;
       `;
-//       this.style.boxShadow = "none";
+      this.style.boxShadow = "none";
     }
 
     disconnectedCallback() {
@@ -135,10 +135,10 @@
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
       callback:  multiFingerStartCallback()
       `;
-      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
+      this.style.boxShadow = "0px 0px 55px 15px rgba(110,222,73,1)";
     }
 
-    multiFingerCallback(detail) {
+    multiFingerCallback(detail) 
       document.querySelector("a").innerText = `Last distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
