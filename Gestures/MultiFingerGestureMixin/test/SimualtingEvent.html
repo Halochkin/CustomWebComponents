@@ -14,7 +14,6 @@
             border-radius: 10px;
             touch-action: none;
             text-align: center;
-
             color: white;
             margin: auto;
             margin-top: 30px;
@@ -43,13 +42,12 @@
 <a></a>
 <test-block></test-block>
 
-
 <script type="module">
 
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
   import {simulateEventSequence} from "../src/EventsSimulator.js";
  
-  class TestBlock extends TriplePinchGesture(HTMLElement) {
+ class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
@@ -116,10 +114,7 @@
         let elem = document.querySelector("#point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
-        // document.querySelector("a").innerText += "ds";
-
       }
-
     }
 
     removetouchesPoints(e) {
@@ -130,7 +125,7 @@
     }
 
     multiFingerStartCallback(detail) {
-      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
+      this.style.boxShadow = "0px 0px 55px 15px rgba(110,222,73,1)";
       document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
