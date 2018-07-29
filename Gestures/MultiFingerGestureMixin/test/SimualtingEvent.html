@@ -86,17 +86,17 @@
 
     simulateGesture(e) {
 
-      const myElement = document.querySelector("test-block");
-      const typeEvent = "touch";
+//       const myElement = document.querySelector("test-block");
+//       const typeEvent = "touch";
 
-      simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
-        [myElement, typeEvent, "start",1 ],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).// to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
-        [myElement, typeEvent, "end",1 ],
-        [myElement, typeEvent, "start", 3],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
-        setInterval(function () {
-          simulateEventSequence([[myElement, typeEvent, "move", 3]])
-        }, 100),
-      ]);
+//       simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
+//         [myElement, typeEvent, "start",1 ],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).// to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
+//         [myElement, typeEvent, "end",1 ],
+//         [myElement, typeEvent, "start", 3],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
+//         setInterval(function () {
+//           simulateEventSequence([[myElement, typeEvent, "move", 3]])
+//         }, 100),
+//       ]);
     }
 
 
