@@ -56,7 +56,7 @@
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
-      // this._simulate = e => this.simulateGesture(e);
+      this._simulate = e => this.simulateGesture(e);
     }
 
     static get multiFingerSettings() {
