@@ -132,21 +132,23 @@
       }
     }
 
-    multiFingerStartCallback(detail) { 
+    multiFingerStartCallback(detail) {
+      this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
       document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
+      touches: ${detail.length}
       duration: ${detail.duration.toFixed(3)}
       `;
     }
 
     multiFingerCallback(detail) {
-   this.style.boxShadow = " 0px 0px 55px 15px rgba(110,222,73,1)";
       document.querySelector("a").innerText = `Last distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
       3 and 1:  ${detail.coordArr[2].diagonal.toFixed(3)} px;
+      touches: ${detail.length}
       `;
     }
 
