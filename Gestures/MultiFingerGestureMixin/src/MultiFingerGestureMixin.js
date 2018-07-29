@@ -62,12 +62,12 @@ export const TriplePinchGesture = function (Base) {
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
         return;
       }
-      if (length !== settings.fingers)
+      alert(length);
+      if ((length !== settings.fingers) || ((e.timeStamp - this.firstTouch) > settings.maxDuration))
         return this[end](e);
+      alert(length);
 
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
-        return;
-      if (e.timeStamp - this.firstTouch > settings.maxDuration)
         return;
       e.preventDefault();                                       //block defaultAction
       const body = document.querySelector("body");              //block touchAction
@@ -79,7 +79,7 @@ export const TriplePinchGesture = function (Base) {
       const detail = makeDetail(e);
       detail.length = length;
       detail.duration = e.timeStamp - this.firstTouch;
-      // this[recordedEventDetails] = [detail];
+      this[recordedEventDetails] = [detail];
       this.multiFingerStartCallback && this.multiFingerStartCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerstart", {
         bubbles: true,
@@ -92,7 +92,6 @@ export const TriplePinchGesture = function (Base) {
         return;
       e.preventDefault();
       const detail = makeDetail(e);
-      detail.length = e.targetTouches.length;
       this.multiFingerCallback && this.multiFingerCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifinger", {bubbles: true, detail}));
     }
@@ -108,7 +107,7 @@ export const TriplePinchGesture = function (Base) {
       body.style.touchAction = this[cachedTouchAction];         //retreat touchAction
       this[cachedTouchAction] = undefined;                      //retreat touchAction
       const detail = makeDetail(e);
-      // this[recordedEventDetails] = undefined;
+      this[recordedEventDetails] = undefined;
       this.multiFingerhEndCallback && this.multiFingerhEndCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {
         bubbles: true,
