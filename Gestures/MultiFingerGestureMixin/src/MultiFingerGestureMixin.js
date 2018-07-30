@@ -53,19 +53,15 @@ export const TriplePinchGesture = function (Base) {
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
       if (length > settings.fingers)
         return this[end](e);
-      alert(length);
       if (length === 1) {
         this[oneHit] = true;
-        alert(this[oneHit]);
         this[firstTouch] = e.timeStamp;   // first finger touch timeStamp
         return;
       }
-        alert(length +" length 2");
       if (e.targetTouches.length !== settings.fingers)
         return this[end](e);
       if ((e.timeStamp - this[firstTouch]) > settings.maxDuration)
         return this[end](e);
-
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
       alert("ZBS");
@@ -93,7 +89,7 @@ export const TriplePinchGesture = function (Base) {
       window.removeEventListener("touchmove", this[moveListener]);
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
-      this[oneHit] = false;
+//       this[oneHit] = false;
 //       this[firstTouch] = undefined;
       const detail = makeDetail(e);
       this.multiFingerEndCallback && this.multiFingerEndCallback(detail);
