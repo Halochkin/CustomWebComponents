@@ -65,7 +65,7 @@ export const TriplePinchGesture = function (Base) {
       alert("ZBS");
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
-       alert("PZDTC!!!!);
+       alert("PZDTC!!!!");
       e.preventDefault();                                       //block defaultAction
       window.addEventListener("touchmove", this[moveListener]);
       window.addEventListener("touchend", this[endListener]);
