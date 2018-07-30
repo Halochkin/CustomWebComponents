@@ -50,14 +50,16 @@ export const TriplePinchGesture = function (Base) {
     [start](e) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
-       alert(length +"length");
+
       if (length > settings.fingers)
         return this[end](e);
       if (length === 1) {
         this[oneHit] = true;
+        alert("oneHit");
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
         return;
       }
+      alert(settings.fingers+"fingers");
       if (length !== settings.fingers)
         throw new Error("omg?! how many fingers??");
       // if ((e.timeStamp - this.firstTouch) > settings.maxDuration)
