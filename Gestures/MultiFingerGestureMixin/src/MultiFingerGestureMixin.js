@@ -51,20 +51,22 @@ export const TriplePinchGesture = function (Base) {
       const length = e.targetTouches.length;
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
        alert(length +"length");
+      if (length > settings.fingers)
+        return this[end](e);
       if (length === 1) {
         this[oneHit] = true;
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
-        return this[end](e);
+        return;
       }
-      alert(1);
       if (length !== settings.fingers)
-       return this[end](e);
-//       if ((e.timeStamp - this.firstTouch) > settings.maxDuration)
-//         return this[end](e);
-        alert(2);
+        throw new Error("omg?! how many fingers??");
+      // if ((e.timeStamp - this.firstTouch) > settings.maxDuration)
+      //   return this[end](e);
+      alert("ZBS");
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
-      // e.preventDefault();                                       //block defaultAction
+       alert("PZDTC!!!!);
+      e.preventDefault();                                       //block defaultAction
       window.addEventListener("touchmove", this[moveListener]);
       window.addEventListener("touchend", this[endListener]);
       window.addEventListener("touchcancel", this[endListener]);
