@@ -55,13 +55,12 @@ export const TriplePinchGesture = function (Base) {
         return this[end](e);
       if (length === 1) {
         this[oneHit] = true;
-        alert("oneHit");
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
         return;
       }
-      alert(settings.fingers+"fingers");
-      if (length !== settings.fingers)
-        throw new Error("omg?! how many fingers??");
+      alert(e.targetTouches.length !== settings.fingers);
+      if (e.targetTouches.length !== settings.fingers)
+        return this[end](e);
       // if ((e.timeStamp - this.firstTouch) > settings.maxDuration)
       //   return this[end](e);
       alert("ZBS");
@@ -92,7 +91,7 @@ export const TriplePinchGesture = function (Base) {
       window.removeEventListener("touchmove", this[moveListener]);
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
-      this[oneHit] = false;
+//       this[oneHit] = false;
       this.firstTouch = undefined;
       const detail = makeDetail(e);
       this.multiFingerEndCallback && this.multiFingerEndCallback(detail);
