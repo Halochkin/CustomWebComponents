@@ -34,17 +34,18 @@
 </head>
 <body>
     
-<!-- <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
 <script src="https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/touch-emulator.js"></script>
-<script> TouchEmulator(); </script> -->
-    
+<script> TouchEmulator(); </script>
+
+<input type="button" value="Make a magic">Or Simulate multitouch gesture using Sift + Click
 <a></a>
 <test-block></test-block>
-<script type="module">
 
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
-
-   class TestBlock extends TriplePinchGesture(HTMLElement) {
+  import {simulateEventSequence} from "../src/EventsSimulator.js";
+     
+  class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
@@ -53,13 +54,14 @@
       this._end = e => this.removetouchesPoints(e);
       this._simulate = e => this.simulateGesture(e);
     }
-
+    
     static get multiFingerSettings() {
       return {fingers: 3, maxDuration: 500};
     }
 
     connectedCallback() {
       super.connectedCallback();
+      document.querySelector("input").addEventListener("click", this._simulate);
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._move);
       this.addEventListener("touchend", this._end);
@@ -71,13 +73,27 @@
     }
 
     disconnectedCallback() {
-      super.disconnectedCallback();
+      super.connectedCallback();
       this.removeEventListener("touchstart", this._start);
       this.removeEventListener("touchmove", this._move);
       this.removeEventListener("touchend", this._end);
     }
 
-   addtouchesPoints(e) {
+    simulateGesture(e) {
+      const myElement = document.querySelector("test-block");
+      const typeEvent = "touch";
+      simulateEventSequence([     // before you start to simulate events - specify the sequence of events to call the desired events.
+        [myElement, typeEvent, "start", 1],  // to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).// to dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).
+        [myElement, typeEvent, "end", 1],
+        [myElement, typeEvent, "start", 3],  // for example, the "pinch" event starts with one finger touching - then two fingers touching, so the start event is called twice.
+        setInterval(function () {
+          simulateEventSequence([[myElement, typeEvent, "move", 3]])
+        }, 100),
+      ]);
+    }
+
+
+    addtouchesPoints(e) {
       for (let i = e.targetTouches.length - e.changedTouches.length; i < e.touches.length; i++) {
         let elem = document.createElement("div");
         elem.innerText = i + 1;
@@ -104,6 +120,7 @@
     }
 
     multiFingerStartCallback(detail) {
+      console.log(detail);
       document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
@@ -111,7 +128,6 @@
       callback:  multiFingerStartCallback()
       `;
       this.style.boxShadow = "0px 0px 55px 15px rgba(110,222,73,1)";
-
     }
 
     multiFingerCallback(detail) {
@@ -129,7 +145,6 @@
   }
 
   customElements.define("test-block", TestBlock);
-
 </script>
 </body>
 </html>
