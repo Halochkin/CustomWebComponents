@@ -60,7 +60,6 @@
 
     connectedCallback() {
       super.connectedCallback();
-      document.querySelector("input").addEventListener("click", this._simulate);
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._move);
       this.addEventListener("touchend", this._end);
