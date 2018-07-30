@@ -35,6 +35,7 @@ export const TriplePinchGesture = function (Base) {
       this[startListener] = (e) => this[start](e);
       this[moveListener] = (e) => this[move](e);
       this[endListener] = (e) => this[end](e);
+       this[firstTouch] = undefined;
     }
 
     connectedCallback() {
@@ -62,6 +63,8 @@ export const TriplePinchGesture = function (Base) {
       if ((e.timeStamp - this[firstTouch]) > settings.maxDuration)
         return this[end](e);
       alert(e.timeStamp - this[firstTouch]);
+      alert(e.timeStamp);
+      alert(this[firstTouch]);
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
       e.preventDefault();                                       //block defaultAction
