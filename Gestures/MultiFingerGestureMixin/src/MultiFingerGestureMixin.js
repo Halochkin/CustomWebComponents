@@ -31,8 +31,6 @@ export const TriplePinchGesture = function (Base) {
   return class extends Base {
     constructor() {
       super();
-      this[recordedEventDetails] = undefined;
-      this[cachedTouchAction] = undefined;                      //block touchAction
       this[oneHit] = false;
       this[startListener] = (e) => this[start](e);
       this[moveListener] = (e) => this[move](e);
@@ -50,28 +48,25 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [start](e) {
-      const length = e.touches.length;
+      const length = e.targetTouches.length;
       const settings = this.constructor.multiFingerSettings;  // includes number of the fingers and max duration beetwenn first and the last touches.
       if (length === 1) {
         this[oneHit] = true;
         this.firstTouch = e.timeStamp;   // first finger touch timeStamp
         return;
       }
-      if (length !== settings.fingers || (e.timeStamp - this.firstTouch) > settings.maxDuration)
+      if (length !== settings.fingers)
         return this[end](e);
+      if ((e.timeStamp - this.firstTouch) > settings.maxDuration)
+        return this[end](e);
+      
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
-      e.preventDefault();                                       //block defaultAction
-      const body = document.querySelector("body");              //block touchAction
-      this[cachedTouchAction] = body.style.touchAction;         //block touchAction
-      body.style.touchAction = "none";                          //block touchAction
+      // e.preventDefault();                                       //block defaultAction
       window.addEventListener("touchmove", this[moveListener]);
       window.addEventListener("touchend", this[endListener]);
       window.addEventListener("touchcancel", this[endListener]);
       const detail = makeDetail(e);
-      detail.length = length;
-      detail.duration = e.timeStamp - this.firstTouch;
-      this[recordedEventDetails] = [detail];
       this.multiFingerStartCallback && this.multiFingerStartCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerstart", {
         bubbles: true,
@@ -80,8 +75,6 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [move](e) {
-      if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
-        return;
       e.preventDefault();
       const detail = makeDetail(e);
       this.multiFingerCallback && this.multiFingerCallback(detail);
@@ -95,11 +88,7 @@ export const TriplePinchGesture = function (Base) {
       window.removeEventListener("touchcancel", this[endListener]);
       this[oneHit] = false;
       this.firstTouch = undefined;
-      const body = document.querySelector("body");              //retreat touchAction
-      body.style.touchAction = this[cachedTouchAction];         //retreat touchAction
-      this[cachedTouchAction] = undefined;                      //retreat touchAction
       const detail = makeDetail(e);
-      this[recordedEventDetails] = undefined;
       this.multiFingerEndCallback && this.multiFingerEndCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {
         bubbles: true,
