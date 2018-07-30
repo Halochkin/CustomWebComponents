@@ -97,11 +97,10 @@
       }
     }
 
-       removetouchesPoints(e) {
+     removetouchesPoints(e) {
       let elem = document.querySelectorAll("div");
-      for (let i = e.targetTouches.length - e.changedTouches.length; i < e.touches.length; i++) {
-        let ident = e.changedTouches[i].identifier;
-        elem[ident - 1].parentNode.removeChild(elem[ident - 1])
+      for (let i = 0; i < elem.length; i++) {
+        elem[i].parentNode.removeChild(elem[i])
       }
     }
 
