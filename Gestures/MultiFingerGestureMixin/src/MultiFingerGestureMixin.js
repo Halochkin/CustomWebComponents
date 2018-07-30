@@ -92,7 +92,7 @@ export const TriplePinchGesture = function (Base) {
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
       this[oneHit] = false;
-      this[firstTouch] = undefined;
+//       this[firstTouch] = undefined;
       const detail = makeDetail(e);
       this.multiFingerEndCallback && this.multiFingerEndCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {
