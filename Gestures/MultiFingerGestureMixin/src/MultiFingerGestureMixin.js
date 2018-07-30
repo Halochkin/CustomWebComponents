@@ -64,7 +64,6 @@ export const TriplePinchGesture = function (Base) {
         return this[end](e);
       if (!this[oneHit])                                         //first finger was not pressed on the element, so this second touch is part of something bigger.
         return;
-      alert("ZBS");
       e.preventDefault();                                       //block defaultAction
       window.addEventListener("touchmove", this[moveListener]);
       window.addEventListener("touchend", this[endListener]);
@@ -85,12 +84,10 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [end](e) {
-      e.preventDefault();                                       //block defaultAction
+      e.preventDefault();                                       
       window.removeEventListener("touchmove", this[moveListener]);
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
-//       this[oneHit] = false;
-//       this[firstTouch] = undefined;
       const detail = makeDetail(e);
       this.multiFingerEndCallback && this.multiFingerEndCallback(detail);
       this.constructor.multifingerEvent && this.dispatchEvent(new CustomEvent("multifingerend", {
