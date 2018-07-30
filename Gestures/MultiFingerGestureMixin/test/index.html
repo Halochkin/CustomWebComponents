@@ -44,13 +44,14 @@
 
   import {TriplePinchGesture} from "https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/MultiFingerGestureMixin.js";
 
-  class TestBlock extends TriplePinchGesture(HTMLElement) {
+   class TestBlock extends TriplePinchGesture(HTMLElement) {
 
     constructor() {
       super();
       this._start = e => this.addtouchesPoints(e);
       this._move = e => this.movetouchesPoints(e);
       this._end = e => this.removetouchesPoints(e);
+      this._simulate = e => this.simulateGesture(e);
     }
 
     static get multiFingerSettings() {
@@ -59,6 +60,7 @@
 
     connectedCallback() {
       super.connectedCallback();
+      document.querySelector("input").addEventListener("click", this._simulate);
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._move);
       this.addEventListener("touchend", this._end);
@@ -67,19 +69,17 @@
       2 and 3: 0 px;
       3 and 1: 0 px;
       `;
-     this.style.boxShadow = "none";
     }
 
     disconnectedCallback() {
-      super.connectedCallback();
+      super.disconnectedCallback();
       this.removeEventListener("touchstart", this._start);
       this.removeEventListener("touchmove", this._move);
       this.removeEventListener("touchend", this._end);
     }
 
-
-    addtouchesPoints(e) {
-       for (let i = e.targetTouches.length - e.changedTouches.length; i < e.touches.length; i++) {
+   addtouchesPoints(e) {
+      for (let i = e.targetTouches.length - e.changedTouches.length; i < e.touches.length; i++) {
         let elem = document.createElement("div");
         elem.innerText = i + 1;
         elem.id = "point" + i;
@@ -90,14 +90,14 @@
     }
 
     movetouchesPoints(e) {
-       for (let i = 0; i < e.targetTouches.length; i++) {
+      for (let i = 0; i < e.touches.length; i++) {
         let elem = document.querySelector("#point" + i);
         elem.style.left = (e.targetTouches[i].pageX - 25) + "px";
         elem.style.top = (e.targetTouches[i].pageY - 25) + "px";
       }
     }
 
-     removetouchesPoints(e) {
+    removetouchesPoints(e) {
       let elem = document.querySelectorAll("div");
       for (let i = 0; i < elem.length; i++) {
         elem[i].parentNode.removeChild(elem[i])
@@ -105,6 +105,7 @@
     }
 
     multiFingerStartCallback(detail) {
+      console.log(detail);
       document.querySelector("a").innerText = `Start distances between points:
       1 and 2:  ${detail.coordArr[0].diagonal.toFixed(3)} px;
       2 and 3:  ${detail.coordArr[1].diagonal.toFixed(3)} px;
@@ -130,7 +131,6 @@
   }
 
   customElements.define("test-block", TestBlock);
-
 
 </script>
 </body>
