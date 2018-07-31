@@ -40,10 +40,6 @@ To perform all gestures you need to make a sequence of events:
 If the minimum duration of the action you add as a condition to activate the modified gesture is too small then if you just click on the screen, the script can register this as a small movement that can take less than `5ms` and perform the action. <br>
 If the duration is too long the users will be upset because most of them are "too lazy" and do not want to perform gestures more than `500ms`. If your delay is equal to or greater than `400ms` - the chance of successful activation is reduced by `60%`, and the functionality that must be activated by a modified gesture will not work, and this is not what users expect from your application. 
 `The optimal delay is 100ms` because if the user interface of the program responds to the user action longer than 200ms, the user starts to feel the delay if less than 50-the user perceives the interface response as instantaneous. A 100ms will not cause a noticeable delay, and prevent accidental activation.
-### Multifinger gestures
-Mobile applications are becoming more complex and richer, and developers need mechanisms to handle touch events efficiently. For example, many games require you to press multiple keys at the same time – in the context of a touch screen, this means touching multiple points at once. <br>
-The problem of developing multi-finger gestures suggests that the trigger mechanism is not the only one. It can be first one finger, then two, then three. It can be one and two and three at the same time. It could be one and two and three. Also, you often don't want a user who used four fingers and then deleted two fingers and then added one to trigger a three-finger gesture. <br>
-To solve this problem, a pattern () was created that assigns an ID to each finger and prevents the accidental start of the multi-finger gesture if the touch presses were not sequential.
 
 
 ### A review of my custom gestures
@@ -59,7 +55,10 @@ Adds support for for two finger gestures such as:
   - expand (used to for example zoom-in or grow)<br>
   - rotate (used to... rotation)<br>
   - two-finger-drag (used to move a subselection of a page, when single-finger-drag is used to navigate the page as a whole)<br>
-  - spin (used to trigger animations).<br>
+* ### [MultifingerGestureMixin](https://github.com/Halochkin/Components/tree/master/Gestures/MultiFingerGestureMixin)
+Mobile applications are becoming more complex and richer, and developers need mechanisms to handle touch events efficiently. For example, many games require you to press multiple keys at the same time – in the context of a touch screen, this means touching multiple points at once. <br>
+The problem of developing multi-finger gestures suggests that the trigger mechanism is not the only one. It can be first one finger, then two, then three. It can be one and two and three at the same time. It could be one and two and three. Also, you often don't want a user who used four fingers and then deleted two fingers and then added one to trigger a three-finger gesture. <br>
+To solve this problem, a `MultifingerGestureMixin` assigns an ID to each finger and prevents the accidental start of the multi-finger gesture if the touch presses were not sequential.
  * ### [`Event Simulator`](https://github.com/Halochkin/Components/tree/master/Gestures/EventSimulator)
  Event Simulator allows to simulate custom events based on a sequence of events without physical interaction. You can add the number of touch points, the element on which the event will occur and timeout of execution.
  Simulator support 3 main type of events: "start", "move" and "end". And you can set the required type of event, for example "mouse" or "touch".
