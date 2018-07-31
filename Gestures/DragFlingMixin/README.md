@@ -50,7 +50,7 @@ Parameters described in the next table:<br>
 this.draggingStartCallback && this.draggingStartCallback(detail); 
 this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
 ```
-If they are missed, add them, otherwise the mixin will not respond to the action.<br>
+##### If they are missed, add them, otherwise the mixin will not respond to the action.<br>
 In addition to the default list of details, `flingCallback(detail)` has a new value of detail - `angle`.
 `Angle` - equal to the angle between two touch points and gets from `flingAngle()`.
 
