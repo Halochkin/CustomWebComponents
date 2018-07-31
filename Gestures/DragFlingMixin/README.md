@@ -45,7 +45,7 @@ Parameters described in the next table:<br>
 | diagonal      | diagonal|   
 | durationMs    | duration between actual and previous events|   
 
-Before triggering each callback or event, `DragFlingMixin` checks for the presence of a corresponding callback or `dragEvent()` in the code.
+##### Before triggering each callback or event, `DragFlingMixin` checks for the presence of a corresponding callback or `dragEvent()` in the code.
 ```javascript
 this.draggingStartCallback && this.draggingStartCallback(detail); 
 this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
