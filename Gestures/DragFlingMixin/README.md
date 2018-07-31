@@ -37,12 +37,14 @@ function makeDetail(event, x, y, startDetail) {  //[1]
 ```
  Where `startDetail` - used for calculation of difference between actual and previous events. In `fling` gesture it is equal to the last event that lasted longer than the minimum duration settings.<br>
 Parameters described in the next table:<br>
+
 | Detail        | description        | 
 | ------------- |:------------------:|
 | distX         | distance between points along the X axis    | 
 | distY         | Y axis |   
 | diagonal      | diagonal|   
 | durationMs    | duration between actual and previous events|   
+
 Before triggering each callback or event, `DragFlingMixin` checks for the presence of a corresponding callback or `dragEvent()` in the code.
 ```javascript
 this.draggingStartCallback && this.draggingStartCallback(detail); 
@@ -58,6 +60,8 @@ function flingAngle(x = 0, y = 0) {
 }
 ```
 The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
+
+|Direction|    Ungle  |
 | ------------- |:------------------:|
 | up/north      | 0| 
 | right/east    |90|   
