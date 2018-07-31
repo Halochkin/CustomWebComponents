@@ -63,11 +63,28 @@ function makeDetail(touchevent) {
  }
 }
 ```
-The `angle` is calculated as a straight line between two touch points, starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
-   * up/north:   0
-   * right/east: 90
-   * down/south: 180
-   * left/west:  270
+Where
+| Detail        | description        | 
+| ------------- |:------------------:|
+| f1        | first touches detail  | 
+| f2       | second touches detail  | 
+| x1       | first touches pageX |   
+| y1      | first touches pageY|   
+| x2       | second touches pageX |   
+| y2      | second touches pageY|   
+| width   | distance between first and second Y-touches |   
+| height    | distance between first and second X-touches|   
+| diagonal      | diagonal|   
+| angle  | is calculated as a straight line between two touch points, starts at 12 o'clock and counts clockwise from 0 to 360 degrees.|   
+Angle values:
+
+|Direction|    Ungle  |
+| ------------- |:------------------:|
+| up/north      | 0| 
+| right/east    |90|   
+| down/south    |180|   
+| left/west  |270|   
+
 ```javascript
 function calcAngle(x, y) {
   return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
