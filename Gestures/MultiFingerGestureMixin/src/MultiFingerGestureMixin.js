@@ -4,11 +4,8 @@ const endListener = Symbol("touchEndListener");
 const start = Symbol("touchStart");
 const move = Symbol("touchMove");
 const end = Symbol("touchEnd");
-const recordedEventDetails = Symbol("recordedEventDetails");
-const cachedTouchAction = Symbol("cachedTouchAction");
 const firstTouch = Symbol("firstTouch");
 const oneHit = Symbol("firstTouchIsAHit");
-
 
 function makeDetail(touchevent) {
   const coordArr = [];
