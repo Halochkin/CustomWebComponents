@@ -1,3 +1,7 @@
+//MultiFingerGestureMixin allows you to add a multi-touch event to a callback or event. 
+// The features of this mixin is that you can set the required number of touches (when pressed at the same time, 
+// will be trigger callback/event) and the maximum duration (time between the activation of the first and last touch points).
+
 const startListener = Symbol("touchStartListener");
 const moveListener = Symbol("touchMoveListener");
 const endListener = Symbol("touchEndListener");
@@ -23,6 +27,12 @@ function makeDetail(touchevent) {
 
   return {touchevent, coordArr, length};
 }
+// Where
+//  x - X coordinates of the point  
+//  y - Y coordinates   
+//  distX -distance between points along the X axis   
+//  distY - Y axis 
+//  diagonal - diagonal  
 
 export const TriplePinchGesture = function (Base) {
   return class extends Base {
