@@ -45,7 +45,21 @@ static get pinchEvent() {
       return true;
     }
 ```
-All callbacks/events contain a set of default details, based on `makeDetail()`:
+All callbacks/events contain a set of default details, based on `makeDetail()`, where:
+
+| Detail        | description        | 
+| ------------- |------------------|
+| f1        | first touches detail  | 
+| f2       | second touches detail  | 
+| x1       | first touches pageX |   
+| y1      | first touches pageY|   
+| x2       | second touches pageX |   
+| y2      | second touches pageY|   
+| width   | distance between first and second Y-touches |   
+| height    | distance between first and second X-touches|   
+| diagonal      | diagonal|   
+| angle  | is calculated as a straight line between two touch points, starts at 12 o'clock and counts clockwise from 0 to 360 degrees|
+
 ```javascript
 function makeDetail(touchevent) {
   function makeDetail(touchevent) {
@@ -64,20 +78,6 @@ function makeDetail(touchevent) {
 }
 ```
 
-Where
-
-| Detail        | description        | 
-| ------------- |------------------|
-| f1        | first touches detail  | 
-| f2       | second touches detail  | 
-| x1       | first touches pageX |   
-| y1      | first touches pageY|   
-| x2       | second touches pageX |   
-| y2      | second touches pageY|   
-| width   | distance between first and second Y-touches |   
-| height    | distance between first and second X-touches|   
-| diagonal      | diagonal|   
-| angle  | is calculated as a straight line between two touch points, starts at 12 o'clock and counts clockwise from 0 to 360 degrees.|   
 Angle values:
 
 |Direction|    Ungle  |
