@@ -96,12 +96,22 @@ In addition to default details `spinCallback(detail)` has some additional values
 
 | Detail        | description        | 
 | ------------- |------------------|
-| touchevent  |  spinEvent detail |
+|touchevent  |  spinEvent detail |
 |duration |duration of the spinEvent |
 |xFactor | the scale factor(X) for asymmetrical zoom in / zoom out |
 |yFactor |the scale factor(Y) |
 |diagonalFactor |scale factor for symmetrical zoom in / zoom out  |
 |rotation |the difference between start and end spin angles  |
+
+```javascript
+      detail.touchevent = event;
+      detail.duration = event.timeStamp - settings.spinDuration;
+      detail.xFactor = Math.abs(spinStart.width / detail.width);
+      detail.yFactor = Math.abs(spinStart.height / detail.height);
+      detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
+      detail.rotation = spinStart.angle - detail.angle;
+      detail.lastspinMotion = (detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1);
+```
 
  ### Example: swipeGesture
  
