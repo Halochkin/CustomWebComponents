@@ -93,9 +93,8 @@ The main problem is if the center of the pointer 1 is too close to the center of
 This means that the size of the element to which you add a multi-touch gesture must be large enough to fit several touch points freely on its area, and the distance between their centers must be relatively large for easy movement.
       Also, if an item has several small buttons that can be pressed at the same time, the distance between them should be greater than the minimum size at which two touch points will be identified as one. As I mentioned above, in different devices this size is different and it is quite difficult to determine the average value. But our task is to develop universal applications that will be supported by different devices.
 
-[Check your sensor device](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html)<br>
-or<br>
-[Try the desktop demo](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/SimualtingEvent.html)
+[Try the demo by yourself](https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/test/index.html)
+
 
 ### References
 1. [Multi-touch](https://en.wikipedia.org/wiki/Multi-touch)
