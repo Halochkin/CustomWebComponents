@@ -25,7 +25,7 @@ If you using more than 1 finger, details mixin return next details:
 
 In case if user use more than 1 finger, detail will contain an array (`coordArr`) which contain:
 
-| array element | description        | 
+| Array element | description        | 
 | ------------- |:------------------:|
 | distX         | distance between points along the X axis    | 
 | distY         | Y axis |   
