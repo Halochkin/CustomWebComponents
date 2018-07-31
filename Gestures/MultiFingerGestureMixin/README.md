@@ -21,11 +21,17 @@ If you using more than 1 finger, details mixin return next details:
 | ------------- |:------------------:|
 | x             | X coordinates of the point  | 
 | y             | Y coordinates    | 
+| length         | number of active touch points on a target | 
+
+In case if user use more than 1 finger, detail will contain an array (`coordArr`) which contain:
+
+| array element | description        | 
+| ------------- |:------------------:|
 | distX         | distance between points along the X axis    | 
 | distY         | Y axis |   
 | diagonal      | diagonal|   
 
-In case you use only one finger, details will contain only `x` and `y`.
+In case user use only one finger, details will contain only `x` and `y`.
 ###
 
 These values must be added to the `multiFingerSettings()`
