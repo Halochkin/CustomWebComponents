@@ -63,9 +63,11 @@ function makeDetail(touchevent) {
  }
 }
 ```
+
 Where
+
 | Detail        | description        | 
-| ------------- |:------------------:|
+| ------------- |------------------|
 | f1        | first touches detail  | 
 | f2       | second touches detail  | 
 | x1       | first touches pageX |   
@@ -91,12 +93,15 @@ function calcAngle(x, y) {
 }
 ```
 In addition to default details `spinCallback(detail)` has some additional values: 
-- `touchevent` - spinEvent detail
-- `duration` - duration of the spinEvent
-- `xFactor` - the scale factor(X) for asymmetrical zoom in / zoom out
-- `yFactor` - the scale factor(Y)
-- `diagonalFactor` - scale factor for symmetrical zoom in / zoom out 
-- `rotation` - the difference between start and end spin angles <br>
+
+| Detail        | description        | 
+| ------------- |------------------|
+| touchevent  |  spinEvent detail |
+|duration |duration of the spinEvent |
+|xFactor | the scale factor(X) for asymmetrical zoom in / zoom out |
+|yFactor |the scale factor(Y) |
+|diagonalFactor |scale factor for symmetrical zoom in / zoom out  |
+|rotation |the difference between start and end spin angles  |
 
  ### Example: swipeGesture
  
