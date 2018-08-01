@@ -1,6 +1,5 @@
  ## PinchSpinMixin
- This mixin records a sequence of **two-finger** `"touchstart"`, `"touchmove"`, `"touchend"` and `"touchcancel"` to callback/event. This mixin works only with touch events, because the pinch gesture can only be done with our fingers. The `pinchstart`, `pinch`, `pinchend` timeline correspond to 
-`touchstart`, `touchmove`, and `touchend/touchcancel`.
+ This mixin records a sequence of **two-finger** `"touchstart"`, `"touchmove"`, `"touchend"` and `"touchcancel"` to callback/event. 
  [`PinchSpinMixin`](https://github.com/Halochkin/Components/blob/master/Gestures/PinchGestureMixin/src/PinchMixin.js) can be used for two finger gestures such as:
  * pinch
  * expand
@@ -8,15 +7,13 @@
  * zoom-in/out 
  * two-finger drag 
  #### "Can you imagine the difference between pinch and spin?" 
-* `Pinch` are mainly used to zoom in/out images, zoom in/out maps, zoom in/out web pages. A `pinch` gesture reports changes to the distance between two fingers touching the screen. Pinch gestures are continuous, so action method is called each time the distance between the fingers changes. <br>
- In addition to the default list of details, `pinchEndCallback(detail)/"pinchend"` has `duration` value which is equal to the time(ms) between the last and "touchend"/"touchcancel" events.
+* `Pinch` are mainly used to zoom in/out images, maps, web pages. It reports changes to the distance between two touches points. Pinch gesture are continuous, so action method is called each time the distance between the fingers changes. <br>
 * `Spin` gesture is a continuous gesture that occurs when two fingers that touch the screen move around each other and
   used to control objects on the screen it `only` can  be triggered by an `spinCallback(detail)` or a `spin` event.
 For example, you can use them to rotate or change the scale of an element.<br>
 <p align="center">
   <img src="https://www.multiswipe.com/assets/ACgest-1x-6a7dd8c9c7e611512de9ea7a041ea0a2.gif">
 </p><br>
-
 The benefit of `spin` over a `pinch` is that the `spinCallback()` is only triggered with certain conditions: 
 one or both fingers have moved more than a minimum `spinMotion`(px) for more than minimum `spinDuration`(ms) this allows 
 prevent accidental calls.
@@ -92,7 +89,7 @@ function calcAngle(x, y) {
   return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
 }
 ```
-In addition to default details `spinCallback(detail)` has some additional values: 
+In addition to the default list of details, `pinchEndCallback(detail)/"pinchend"` has `duration` value which is equal to the time(ms) between the last and "touchend"/"touchcancel" events. And `spinCallback(detail)/"spin"` has several additional values: 
 
 | Detail        | description        | 
 | ------------- |------------------|
@@ -102,16 +99,6 @@ In addition to default details `spinCallback(detail)` has some additional values
 |yFactor |the scale factor(Y) |
 |diagonalFactor |scale factor for symmetrical zoom in / zoom out  |
 |rotation |the difference between start and end spin angles  |
-
-```javascript
-      detail.touchevent = event;
-      detail.duration = event.timeStamp - settings.spinDuration;
-      detail.xFactor = Math.abs(spinStart.width / detail.width);
-      detail.yFactor = Math.abs(spinStart.height / detail.height);
-      detail.diagonalFactor = Math.abs(spinStart.diagonal / detail.diagonal);
-      detail.rotation = spinStart.angle - detail.angle;
-      detail.lastspinMotion = (detail.x1 - spinStart.x1) + (detail.y1 - spinStart.y1);
-```
 
  ### Example: swipeGesture
  
