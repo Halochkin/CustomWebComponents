@@ -1,7 +1,3 @@
-//MultiFingerGestureMixin allows you to add a multi-touch event to a callback or event. 
-// The features of this mixin is that you can set the required number of touches (when pressed at the same time, 
-// will be trigger callback/event) and the maximum duration (time between the activation of the first and last touch points).
-
 const startListener = Symbol("touchStartListener");
 const moveListener = Symbol("touchMoveListener");
 const endListener = Symbol("touchEndListener");
@@ -10,6 +6,7 @@ const move = Symbol("touchMove");
 const end = Symbol("touchEnd");
 const firstTouch = Symbol("firstTouch");
 const oneHit = Symbol("firstTouchIsAHit");
+
 
 function makeDetail(touchevent) {
   const coordArr = [];
@@ -27,14 +24,8 @@ function makeDetail(touchevent) {
 
   return {touchevent, coordArr, length};
 }
-// Where
-//  x - X coordinates of the point  
-//  y - Y coordinates   
-//  distX -distance between points along the X axis   
-//  distY - Y axis 
-//  diagonal - diagonal  
 
-export const TriplePinchGesture = function (Base) {
+export const MultiTouchGesture = function (Base) {
   return class extends Base {
     constructor() {
       super();
@@ -42,7 +33,7 @@ export const TriplePinchGesture = function (Base) {
       this[startListener] = (e) => this[start](e);
       this[moveListener] = (e) => this[move](e);
       this[endListener] = (e) => this[end](e);
-       this[firstTouch] = undefined;
+      this[firstTouch] = undefined;
     }
 
     connectedCallback() {
@@ -91,7 +82,7 @@ export const TriplePinchGesture = function (Base) {
     }
 
     [end](e) {
-      e.preventDefault();                                       
+      e.preventDefault();
       window.removeEventListener("touchmove", this[moveListener]);
       window.removeEventListener("touchend", this[endListener]);
       window.removeEventListener("touchcancel", this[endListener]);
