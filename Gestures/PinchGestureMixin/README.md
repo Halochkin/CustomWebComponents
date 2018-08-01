@@ -44,7 +44,7 @@ static get pinchEvent() {
 ```
 All callbacks/events contain a set of default details, based on `makeDetail()`, where:
 
-| Detail        | description        | 
+| Detail        | Description        | 
 | ------------- |------------------|
 | f1        | first touches detail  | 
 | f2       | second touches detail  | 
