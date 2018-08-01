@@ -1,5 +1,5 @@
 ## DragFlingGestureMixin
-This mixin allows to translate a sequence of mouse or touch events to callback/event. The advantage of using this mixin is that it can be used for both desktop and mobile versions of the web application. Also, to prevent the selection of text that was in the moved object, it was added `"selectstart"` event which fire `e.preventDefault` and prevented selection of the text.<br>
+This mixin allows to translate a sequence of mouse or touch events to callback/event. Also, to prevent the selection of text that was in the moved object, `"selectstart"` event has been added which fire `e.preventDefault` and prevented selection of the text.<br>
 ### What is a 'Drag' and what is 'Fling'. What is common and what is the difference? 
 * `Drag` is used to scroll the page/content and, at the same time, but the ability to select text does not supported. <br>
 * `Fling` event similar to the [`drag-and-drop`](https://ru.wikipedia.org/wiki/Drag-and-drop) if simply this is a more advanced version of `drag`. <br>
@@ -50,9 +50,8 @@ Parameters described in the next table:<br>
 this.draggingStartCallback && this.draggingStartCallback(detail); 
 this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("draggingstart", {bubbles: true, detail}));
 ```
-##### If they are missed, add them, otherwise the mixin will not respond to the action.<br>
-In addition to the default list of details, `flingCallback(detail)` has a new value of detail - `angle`.
-`Angle` - equal to the angle between two touch points and gets from `flingAngle()`.
+##### If they are missed, add them, otherwise the mixin will not respond to the action.
+In addition to the default list of details, `flingCallback(detail)` has a new value of the `angle` which equal to the angle between two touch points and gets from `flingAngle()`.
 
 ```javascript
 function flingAngle(x = 0, y = 0) {
@@ -71,7 +70,7 @@ The angle starts at 12 o'clock and counts clockwise from 0 to 360 degrees.
 ### Example
 To resolve conflicts, it is good practice to use a [InvadeAndRetreat Pattern](https://github.com/orstavik/JoiComponents/blob/master/book/chapter3/Pattern2_InvadeAndRetreat.md). 
 I want to remind that when you are using a [functional mixin](https://github.com/orstavik/JoiComponents/blob/master/book/chapter2/Pattern2_FunctionalMixin.md) that uses `connectedCallback` and `disconnectedCallback`,
-**you must remember to call `super.connectedCallback` and `super.disconnectedCallback`** in the component itself. 
+**Also you must remember to call `super.connectedCallback` and `super.disconnectedCallback`** in the component itself. 
 If you forget this, you will not get an Error, but the functional mixin will not be activated or deactivated.
 This closely resemble the compulsory call to `super()` in the `constructor()` of any class that extends another class. 
 ```html
