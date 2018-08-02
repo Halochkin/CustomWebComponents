@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width">
+    <title>Multi Finger Pattern</title>
+
+    <style>
+        test-block {
+            height: 200px;
+            width: 200px;
+            background-color: #4cd2e4;
+            display: block;
+            border-radius: 10px;
+            touch-action: none;
+            margin: auto;
+            margin-top: 30px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="touch-emulator.js"></script>
+<script> TouchEmulator(); </script>
+
+
+<test-block></test-block>
+
+
+<script type="module">
+    
+
+  class TestBlock extends (HTMLElement) {
+
+    constructor() {
+      super();
+      this._start = e => this.startTouch(e);
+      this._action = e => this.actionTouch(e);
+      this._end = e => this.endTouch(e);
+      this.settings = {
+        fingers: 4
+      };
+    }
+      
+    connectedCallback() {
+      this.addEventListener("touchstart", this._start);
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener("touchstart", this._start);
+    }
+
+
+    startTouch(e) {
+      if (e.targetTouches.length < this.settings.fingers) {
+        this.style.backgroundColor = "blue";
+        return;
+      }
+      if (e.targetTouches.length > this.settings.fingers)
+        this.changeTriggerFromStartToEnd();
+      if (e.targetTouches.length === this.settings.fingers)
+        this.changeTriggerFromStartToAction();
+    };
+
+    endTouch(e) {
+      if (e.targetTouches.length < this.settings.fingers)
+        this.changeTriggerFromEndToStart();
+      if (e.targetTouches.length > this.settings.fingers)
+        this.changeTriggerFromEndToAction();
+    };
+
+    actionTouch(e) {
+      if (e.type === "touchstart")
+        this.changeTriggerFromActionToEnd();
+      if (e.type === "touchend")
+        this.changeTriggerFromActionToStart();
+    }
+      
+    changeTriggerFromStartToEnd() {
+      this.removeEventListener("touchstart", this._start);
+      this.addEventListener("touchend", this._end);
+      this.style.backgroundColor = "red";
+    }
+
+    changeTriggerFromEndToStart() {
+      this.removeEventListener("touchend", this._end);
+      this.addEventListener("touchstart", this._start);
+    }
+
+    changeTriggerFromActionToEnd() {
+      this.removeEventListener("touchmove", this._action);
+      this.addEventListener("touchend", this._end);
+    }
+
+    changeTriggerFromActionToStart() {
+      this.removeEventListener("touchmove", this._action);
+      this.addEventListener("touchstart", this._start);
+    }
+
+    changeTriggerFromStartToAction() {
+      this.removeEventListener("touchstart", this._start);
+      this.addEventListener("touchmove", this._action);
+      this.style.backgroundColor = "green";
+    }
+
+    changeTriggerFromEndToAction() {
+      this.removeEventListener("touchend", this._end);
+      this.addEventListener("touchmove", this._action);
+    }
+  }
+
+  customElements.define("test-block", TestBlock);
+
+
+</script>
+</body>
+</html>
