@@ -66,7 +66,7 @@ what can activate other gestures at the same time.
 ```
 
 ```javascript
-import {TriplePinchGesture} from "./TripleFingerGtureMixin.js";
+import {TriplePinchGesture} from "./MultiFingerGestureMixin.js";
 
   class TestBlock extends TriplePinchGesture(HTMLElement) {
 
