@@ -45,16 +45,19 @@
       this.removeEventListener("touchstart", this._start);
     }
 
-
-    startTouch(e) {
+     startTouch(e) {
       if (e.targetTouches.length < this.settings.fingers) {
         this.style.backgroundColor = "blue";
         return;
       }
-      if (e.targetTouches.length > this.settings.fingers)
+      if (e.targetTouches.length > this.settings.fingers) {
+        this.style.backgroundColor = "red";
         this.changeTriggerFromStartToEnd();
-      if (e.targetTouches.length === this.settings.fingers)
+      }
+      if (e.targetTouches.length === this.settings.fingers) {
+        this.style.backgroundColor = "green";
         this.changeTriggerFromStartToAction();
+      }
     };
 
     endTouch(e) {
@@ -70,11 +73,10 @@
       if (e.type === "touchend")
         this.changeTriggerFromActionToStart();
     }
-      
+
     changeTriggerFromStartToEnd() {
       this.removeEventListener("touchstart", this._start);
       this.addEventListener("touchend", this._end);
-      this.style.backgroundColor = "red";
     }
 
     changeTriggerFromEndToStart() {
@@ -93,9 +95,8 @@
     }
 
     changeTriggerFromStartToAction() {
-      this.removeEventListener("touchstart", this._start);
+      // this.removeEventListener("touchstart", this._start);
       this.addEventListener("touchmove", this._action);
-      this.style.backgroundColor = "green";
     }
 
     changeTriggerFromEndToAction() {
