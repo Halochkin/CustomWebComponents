@@ -22,28 +22,37 @@
 <test-block></test-block>
 <script type="module">
     
-   class TestBlock extends (HTMLElement) {
+  class TestBlock extends (HTMLElement) {
 
     constructor() {
       super();
       this._start = e => this.startTouch(e);
       this._action = e => this.actionTouch(e);
       this._end = e => this.endTouch(e);
+      this._deleteElem = e => this.deleteCustomElemen(e);
       this.settings = {
-        fingers: 2
+        fingers: 4
       };
     }
 
     connectedCallback() {
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchend", this._end);
+      document.querySelector("input").addEventListener("click", this._deleteElem);
     }
 
     disconnectedCallback() {
       this.removeEventListener("touchstart", this._start);
       this.removeEventListener("touchend", this._end);
+      if (this._actionMode) {
+        this._actionMode = false;
+        window.removeEventListener("touchmove", this._action);
+      }
     }
 
+    deleteCustomElemen(e) {
+      document.querySelector("test-block").parentNode.removeChild(document.querySelector("test-block"));
+    }
 
     startTouch(e) {
       if (e.targetTouches.length < this.settings.fingers) {
@@ -62,43 +71,28 @@
 
     endTouch(e) {
       if (e.targetTouches.length < this.settings.fingers)
-        this.changeTriggerFromEndToStart();
+        this.addEventListener("touchstart", this._start);
       if (e.targetTouches.length > this.settings.fingers)
-        this.changeTriggerFromEndToAction();
+        this.addEventListener("touchmove", this._action);
     };
 
     actionTouch(e) {
-      if (e.type === "touchstart")
-        this.changeTriggerFromActionToEnd();
-      if (e.type === "touchend")
-        this.changeTriggerFromActionToStart();
+      this.removeEventListener("touchmove", this._action);
     }
 
     changeTriggerFromStartToEnd() {
+      this.removeEventListener("touchstart", this._start);
       this.addEventListener("touchend", this._end);
-    }
-
-    changeTriggerFromEndToStart() {
-      this.addEventListener("touchstart", this._start);
-    }
-
-    changeTriggerFromActionToEnd() {
-      this.removeEventListener("touchmove", this._action);
-    }
-
-    changeTriggerFromActionToStart() {
-      this.removeEventListener("touchmove", this._action);
     }
 
     changeTriggerFromStartToAction() {
       this.addEventListener("touchmove", this._action);
-    }
-
-    changeTriggerFromEndToAction() {
-      this.addEventListener("touchmove", this._action);
+      this._actionMode = true;
     }
   }
+
   customElements.define("test-block", TestBlock);
+
 
 </script>
 </body>
