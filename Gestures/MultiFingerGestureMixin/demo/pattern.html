@@ -36,10 +36,12 @@
 
     connectedCallback() {
       this.addEventListener("touchstart", this._start);
+      this.addEventListener("touchend", this._end);
     }
 
     disconnectedCallback() {
       this.removeEventListener("touchstart", this._start);
+      this.removeEventListener("touchend", this._end);
     }
 
 
