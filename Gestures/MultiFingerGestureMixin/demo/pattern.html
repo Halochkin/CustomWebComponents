@@ -73,38 +73,30 @@
     }
 
     changeTriggerFromStartToEnd() {
-      // this.removeEventListener("touchstart", this._start);
       this.addEventListener("touchend", this._end);
     }
 
     changeTriggerFromEndToStart() {
-      // this.removeEventListener("touchend", this._end);
       this.addEventListener("touchstart", this._start);
     }
 
     changeTriggerFromActionToEnd() {
       this.removeEventListener("touchmove", this._action);
-      // this.addEventListener("touchend", this._end);
     }
 
     changeTriggerFromActionToStart() {
       this.removeEventListener("touchmove", this._action);
-      // this.addEventListener("touchstart", this._start);
     }
 
     changeTriggerFromStartToAction() {
-      // this.removeEventListener("touchstart", this._start); //
       this.addEventListener("touchmove", this._action);
     }
 
     changeTriggerFromEndToAction() {
-      // this.removeEventListener("touchend", this._end);
       this.addEventListener("touchmove", this._action);
     }
   }
-
   customElements.define("test-block", TestBlock);
-
 
 </script>
 </body>
