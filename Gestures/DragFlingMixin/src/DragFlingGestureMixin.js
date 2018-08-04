@@ -179,6 +179,7 @@ export const DragFlingGesture = function (Base) {
       const prevDetail = this[cachedEvents][this[cachedEvents].length - 1];
       const detail = makeDetail(event, x, y, prevDetail);
       this[cachedEvents].push(detail);
+      detail.cachedEvents = this[cachedEvents];
       this.draggingCallback && this.draggingCallback(detail);
       this.constructor.dragEvent && this.dispatchEvent(new CustomEvent("dragging", {bubbles: true, detail}));
     }
@@ -219,6 +220,7 @@ export const DragFlingGesture = function (Base) {
       if (!flingStart)
         return;
       const detail = makeDetail(e, x, y, flingStart);
+      detail.cachedEvents = this[cachedEvents];
       if (detail.distDiag >= settings.minDistance) {
         detail.angle = flingAngle(detail.distX, detail.distY);
         this.flingCallback && this.flingCallback(detail);
