@@ -78,7 +78,8 @@
 
     actionTouch(e) {
       this.removeEventListener("touchmove", this._action);
-
+      if (e.targetTouches.length === this.settings.fingers)
+        this.style.backgroundColor = "green";
     }
 
     changeTriggerFromStartToEnd() {
