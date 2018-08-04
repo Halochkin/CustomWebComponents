@@ -22,7 +22,7 @@
 <test-block></test-block>
 <script type="module">
     
-  class TestBlock extends (HTMLElement) {
+   class TestBlock extends (HTMLElement) {
 
     constructor() {
       super();
@@ -31,7 +31,7 @@
       this._end = e => this.endTouch(e);
       this._deleteElem = e => this.deleteCustomElemen(e);
       this.settings = {
-        fingers: 2
+        fingers: 4
       };
     }
 
@@ -70,14 +70,15 @@
     };
 
     endTouch(e) {
-      if (e.targetTouches.length < this.settings.fingers)
+      if (e.changedTouches.length < this.settings.fingers)
         this.addEventListener("touchstart", this._start);
-      if (e.targetTouches.length > this.settings.fingers)
+      if (e.changedTouches.length > this.settings.fingers)
         this.addEventListener("touchmove", this._action);
     };
 
     actionTouch(e) {
       this.removeEventListener("touchmove", this._action);
+
     }
 
     changeTriggerFromStartToEnd() {
@@ -85,10 +86,12 @@
       this.addEventListener("touchend", this._end);
     }
 
+
     changeTriggerFromStartToAction() {
       this.addEventListener("touchmove", this._action);
       this._actionMode = true;
     }
+
   }
 
   customElements.define("test-block", TestBlock);
