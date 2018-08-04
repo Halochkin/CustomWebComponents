@@ -54,7 +54,7 @@
       document.querySelector("test-block").parentNode.removeChild(document.querySelector("test-block"));
     }
 
-    startTouch(e) {
+     startTouch(e) {
       if (e.targetTouches.length < this.settings.fingers) {
         this.style.backgroundColor = "blue";
         return;
@@ -74,12 +74,13 @@
         this.addEventListener("touchstart", this._start);
       if (e.changedTouches.length > this.settings.fingers)
         this.addEventListener("touchmove", this._action);
+      if (e.targetTouches.length === this.settings.fingers) 
+        this.style.backgroundColor = "green";
     };
 
     actionTouch(e) {
       this.removeEventListener("touchmove", this._action);
-      if (e.targetTouches.length === this.settings.fingers)
-        this.style.backgroundColor = "green";
+
     }
 
     changeTriggerFromStartToEnd() {
