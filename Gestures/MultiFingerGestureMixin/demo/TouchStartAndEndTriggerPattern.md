@@ -6,7 +6,7 @@ The `TouchStartAndEndTrigger` pattern is made to make it easier for the app to t
 Sometimes, a user might accidentally touch the screen while active and then remove the finger again to correct his error. 
 If the mixin does not then switch into "touchend trigger mode", then the user will be confused as to why the app now does not respond 
 any longer to his or her gesture.<br>
-#### 2. How to remove all event listeners
+#### 2. How to remove all event listeners when user close a tab?
 Also, all listeners are subject to the same problem - when an element is deleted, `disconnectedCallback` is not called.<br>
 This means that if the user closes the tab - `disconnectedCallback` is not called and event listeners will not be removed (More detailed description of the problem in [unloadCallbackMixin](https://github.com/Halochkin/Components/tree/master/unloadCallbackMixin);
 
@@ -108,9 +108,9 @@ Let's look at an example that will change the color of the block depending on th
 
   customElements.define("test-block", TestBlock);
 ```
-1. Adding the necessary number of points
-2. Add an event listener for the first call to the start function
-3. Add an unloadCallback() which will call `disconnectedCallback()` when the user closes the tab
+1. Adding the necessary number of points.
+2. Add an event listener for the first call to the start function.
+3. Add an `unloadCallback()` which will call `disconnectedCallback()` when the user closes the tab.
 4. The function that is called as a result of activation "touchstart" event. It checks the number of active touch starting points and changes their color.
 5. "touchend" event function - checks the number of active points that have been changed.
 6. "touchmove" event function - it just remove an event listener.
