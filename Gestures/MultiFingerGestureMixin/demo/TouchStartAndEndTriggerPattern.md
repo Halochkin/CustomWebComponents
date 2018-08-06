@@ -108,6 +108,7 @@ Let's look at an example that will change the color of the block depending on th
 
   customElements.define("test-block", TestBlock);
 ```
+***
 1. Adding the necessary number of points.
 2. Add an event listener for the first call to the start function.
 3. Add an `unloadCallback()` which will call `disconnectedCallback()` when the user closes the tab.
