@@ -83,13 +83,13 @@
 
     endTouch(e) {
       if (e.targetTouches.length < this.settings.fingers) {
-//         this.style.backgroundColor = "blue";
+        this.style.backgroundColor = "blue";
         this.addEventListener("touchstart", this._start);
       }
       if (e.targetTouches.length > this.settings.fingers)
         this.actionMode();
-//       if (e.targetTouches.length === this.settings.fingers)
-//         this.style.backgroundColor = "green";
+      if (e.targetTouches.length === this.settings.fingers)
+        this.style.backgroundColor = "green";
     };
 
     actionTouch(e) {
