@@ -23,12 +23,10 @@
       super();
     }
 
-
     unloadCallback() {
-      this.style.backgroundColor = "red";
+      alert("Test alert");
       super.disconnectedCallback();
     }
-
   }
 
   customElements.define("unload-element", unloadElement);
