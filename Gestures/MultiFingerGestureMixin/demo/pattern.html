@@ -15,14 +15,26 @@
             margin: auto;
             margin-top: 30px;
         }
+
+
     </style>
 </head>
 <body>
+
+
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script src="touch-emulator.js"></script>
+<script> TouchEmulator(); </script>
+
 <input type="button" value="Remove element">
+
 <test-block></test-block>
+
+
 <script type="module">
-    
-   class TestBlock extends (HTMLElement) {
+
+
+  class TestBlock extends (HTMLElement) {
 
     constructor() {
       super();
@@ -31,7 +43,7 @@
       this._end = e => this.endTouch(e);
       this._deleteElem = e => this.deleteCustomElemen(e);
       this.settings = {
-        fingers: 2
+        fingers: 4
       };
     }
 
@@ -65,7 +77,7 @@
       }
       if (e.targetTouches.length === this.settings.fingers) {
         this.style.backgroundColor = "green";
-        this.changeTriggerFromStartToAction();
+        this.addActionMode();
       }
     };
 
@@ -74,10 +86,12 @@
         this.style.backgroundColor = "blue";
         this.addEventListener("touchstart", this._start);
       }
-      if (e.changedTouches.length > this.settings.fingers)
-        this.addEventListener("touchmove", this._action);
-      if (e.targetTouches.length === this.settings.fingers)
+      // if (e.changedTouches.length > this.settings.fingers)
+
+      if (e.targetTouches.length === this.settings.fingers) {
         this.style.backgroundColor = "green";
+        this.addActionMode();
+      }
     };
 
     actionTouch(e) {
@@ -89,8 +103,7 @@
       this.addEventListener("touchend", this._end);
     }
 
-
-    changeTriggerFromStartToAction() {
+    addActionMode() {
       this.addEventListener("touchmove", this._action);
       this._actionMode = true;
     }
