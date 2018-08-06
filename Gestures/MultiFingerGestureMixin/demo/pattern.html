@@ -47,7 +47,7 @@
       };
     }
 
-    connectedCallback() {
+       connectedCallback() {
       this.addEventListener("touchstart", this._start);
       this.addEventListener("touchend", this._end);
       document.querySelector("input").addEventListener("click", this._deleteElem);
@@ -77,7 +77,7 @@
       }
       if (e.targetTouches.length === this.settings.fingers) {
         this.style.backgroundColor = "green";
-        this.actionMode();
+        this.changeTriggerFromStartToAction();
       }
     };
 
@@ -85,7 +85,7 @@
       if (e.changedTouches.length < this.settings.fingers)
         this.addEventListener("touchstart", this._start);
       if (e.changedTouches.length > this.settings.fingers)
-        this.actionMode();
+        this.addEventListener("touchmove", this._action);
       if (e.targetTouches.length === this.settings.fingers)
         this.style.backgroundColor = "green";
     };
@@ -102,7 +102,7 @@
 
 
 
-    actionMode() {
+    changeTriggerFromStartToAction() {
       this.addEventListener("touchmove", this._action);
       this._actionMode = true;
     }
