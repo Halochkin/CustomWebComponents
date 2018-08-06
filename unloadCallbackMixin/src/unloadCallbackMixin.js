@@ -1,12 +1,14 @@
 const unloadEvent = Symbol("unloadEvent");
 
-window.closeArray = [];
-window.addEventListener("unload", function () {
+const closeArray = [];
+
+const handler = function () {
   for (let entry of closeArray) {
     if (entry.unloadCallback)
       entry.unloadCallback();
   }
-});
+};
+window.addEventListener("unload", handler);
 
 export const UnloadCallbackMixin = (Base) => {
   return class extends Base {
@@ -23,8 +25,8 @@ export const UnloadCallbackMixin = (Base) => {
 
     disconnectedCallback() {
       if (super.disconnectedCallback) super.disconnectedCallback();
+      window.removeEventListener("unload", handler);
       if (!this[unloadEvent]) return;
-      this.unloadCallback();
       for (let entry of closeArray) {
         closeArray.remove(entry);
       }
