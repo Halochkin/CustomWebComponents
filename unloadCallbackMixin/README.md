@@ -2,7 +2,7 @@
  This mixin registers an `unloadCallback()` which will call `disconnectedCallback()` when the user closes the tab. It based on `unload` event which fired when the document or a child resource is being unloaded.
 ### Problem: 
 This "bug" that `disconnectedCallback` is not called when the user close a tab - event listeners will not be removed, then your element might leave a lot of old event listeners still registered, gumming up the system if the browser does not automatically clean up such things. Which old browser might not be able to do. 
-### Why do I need to delete event listeners?
+### Why do we should to delete event listeners?
 Historically, it has been good practice to remove unnecessary more event listeners. In particular, the ancient IE did not know how to work correctly with event listeners, and if you removed the DOM element from the event listeners, and did not remove this event listeners first, because of cyclic references to each other in the dom element and event listeners, they remained in memory, which led to errors.
 ***
 
