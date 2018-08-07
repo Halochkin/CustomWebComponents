@@ -8,7 +8,7 @@ Each database connection is an open socket plus on both sides (client and server
 But this is not the worst. Much worse is that in the configs almost any database is marked limit active connections, after which the server stops accepting new connections. And this limit is set with the expectation that the server copes with the corresponding number of really active (that is, relatively loaded) connections, does not hang at the same time and would not use all the memory when trying to execute requests from all connections simultaneously. Accordingly, this limit is set quite low and is not designed to ensure that hung connections accumulate tens of thousands.
 
 <p align="center">
- <img src="https://preview.ibb.co/j8oXJz/Corel_DRAW_X7_Graphic.png" alt="Corel_DRAW_X7_Graphic" border="0">
+ <img src="https://preview.ibb.co/nHqPyz/Corel_DRAW_X7_Graphic.png" border="0">
 </p><br>
 
 ### Solution
