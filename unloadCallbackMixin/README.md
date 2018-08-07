@@ -1,9 +1,21 @@
 ## unloadCallbackMixin
  This mixin registers an `unloadCallback()` which will call `disconnectedCallback()` when the user closes the tab. It based on `unload` event which fired when the document or a child resource is being unloaded.
-### Problem: 
+### Problem 1 
 This "bug" that `disconnectedCallback` is not called when the user close a tab - event listeners will not be removed, then your element might leave a lot of old event listeners still registered, gumming up the system if the browser does not automatically clean up such things. Which old browser might not be able to do. 
-### Why should we delete event listeners?
-Historically, it has been good practice to remove unnecessary more event listeners. In particular, the ancient IE did not know how to work correctly with event listeners, and if you removed the DOM element from the event listeners, and did not remove this event listeners first, because of cyclic references to each other in the dom element and event listeners, they remained in memory, which led to errors.
+### Problem 2
+Quite often, you have to establish a connection to a database or some other third-party installation that you want to guarantee is always closed. But what can happen if people just open your page and then close it immediately? 
+Each database connection is an open socket plus on both sides (client and server) of the data structure that stores the state of that connection, and (most importantly) data caches that can grow to quite large sizes.<br>
+But this is not the worst. Much worse is that in the configs almost any database is marked limit active connections, after which the server stops accepting new connections. And this limit is set with the expectation that the server copes with the corresponding number of really active (that is, relatively loaded) connections, does not hang at the same time and would not use all the memory when trying to execute requests from all connections simultaneously. Accordingly, this limit is set quite low and is not designed to ensure that hung connections accumulate tens of thousands.
+
+<p align="center">
+ <img src="https://preview.ibb.co/j8oXJz/Corel_DRAW_X7_Graphic.png" alt="Corel_DRAW_X7_Graphic" border="0">
+</p><br>
+
+### Solution
+Each time the user closes the tab, `unloadCallback()` activates the function responsible for deactivating the connection to database. This means that the user will deactivate the connection in any case, and the probability that your database will stop responding to requests due to the exhaustion of the connection limit is significantly reduced.
+
+
+
 ***
 
 ```javascript
