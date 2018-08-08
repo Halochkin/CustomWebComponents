@@ -18,7 +18,7 @@
 <test-block></test-block>
 
 <script src="https://hammerjs.github.io/dist/hammer.js"></script>
-<script src="https://rawgit.com/Halochkin/Components/master/Gestures/MultiFingerGestureMixin/src/touch-emulator.js"></script>
+<script src="https://rawgit.com/Halochkin/Components/master/TouchEmulator/touch.js"></script>
 <script> TouchEmulator(); </script>
 
 <style>
@@ -35,14 +35,13 @@
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
 <style>
-        :host([active-fingers="0"]) {
-             border: none;
+         :host([active-fingers="0"]) {
+            border: 3px solid blue;
         }
          :host([active-fingers="1"]) {
             border: 3px solid yellow;
         }
-
-        :host([active-fingers="3"]) {
+        :host([active-fingers="2"]) {
             border: 6px solid red;
         }
 </style>
