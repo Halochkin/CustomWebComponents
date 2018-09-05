@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .red {
+            fill: orange;
+        }
+    </style>
+</head>
+<body>
+<input id="btn" type="button" value="Start"/>
+<script>
+  document.querySelector("#btn").addEventListener("click", function () {
+    let light = document.getElementsByClassName("red");
+    for (let a of light) {
+      a.style.fill = "green";
+    }
+  });
+
+</script>
+<object>
+    <?xml version="1.0" standalone="no"?><!-- Generator: Gravit.io -->
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate"
+         viewBox="0 0 560 315" width="560" height="315">
+        <defs>
+            <clipPath id="_clipPath_veJdyb7jLGRvSwvpJCGZYJTLO5UyfWyA">
+                <rect width="560" height="315"/>
+            </clipPath>
+        </defs>
+        <g clip-path="url(#_clipPath_veJdyb7jLGRvSwvpJCGZYJTLO5UyfWyA)">
+            <rect x="17.5" y="3" width="188.5" height="61" transform="matrix(1,0,0,1,0,0)" fill="rgb(0,0,0)"/>
+            <circle class="red" vector-effect="non-scaling-stroke" cx="47" cy="36.000000000000014" r="23"
+                    fill="rgb(255,0,0)"/>
+            <circle class="red" vector-effect="non-scaling-stroke" cx="108.5" cy="36.000000000000014"
+                    r="22.999999999999993"
+                    fill="rgb(255,0,0)"/>
+            <circle class="red" vector-effect="non-scaling-stroke" cx="170" cy="36.000000000000014" r="23"
+                    fill="rgb(255,0,0)"/>
+            <path d=" M 70 36 L 76 36 C 76 20.546 63.006 8 47 8 C 30.994 8 18 20.546 18 36 L 24 36 C 24 23.306 34.306 13 47 13 C 59.694 13 70 23.306 70 36 Z "
+                  fill-rule="evenodd" fill="rgb(255,255,255)"/>
+            <path d=" M 131.5 36 L 137.5 36 C 137.5 20.546 124.506 8 108.5 8 C 92.494 8 79.5 20.546 79.5 36 L 85.5 36 C 85.5 23.306 95.806 13 108.5 13 C 121.194 13 131.5 23.306 131.5 36 Z "
+                  fill-rule="evenodd" fill="rgb(255,255,255)"/>
+            <path d=" M 193 36 L 199 36 C 199 20.546 186.006 8 170 8 C 153.994 8 141 20.546 141 36 L 147 36 C 147 23.306 157.306 13 170 13 C 182.694 13 193 23.306 193 36 Z "
+                  fill-rule="evenodd" fill="rgb(255,255,255)"/>
+        </g>
+    </svg>
+</object>
+</body>
+</html>
