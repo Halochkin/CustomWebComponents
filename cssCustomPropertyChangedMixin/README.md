@@ -82,9 +82,9 @@ import {cssCustomPropertyChangedMixin} from "./src/cssCustomPropertyChangedMixin
   3. Change the default background color for the first property (--custom-prop1).
   4. Let's make sure that if you change the parameter to the same value, the callback will not work.
   5. Check the results: `--custom-prop1 blue orange`.
- #### Try it yourself on [codepen](https://codepen.io/Halochkin/pen/QVZgEw?editors=1111)
+ ### Try it yourself on [codepen](https://codepen.io/Halochkin/pen/QVZgEw?editors=1111)
  
  ### References
- 1.[Custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
+ 1. [Custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
   
   
