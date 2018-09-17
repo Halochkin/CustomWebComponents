@@ -76,7 +76,7 @@ import {cssCustomPropertyChangedMixin} from "./src/cssCustomPropertyChangedMixin
 
   customElements.define("test-block", TestBlock)
   ```
-  1.  Define the default values of custom properties.
+  1.  Define the default values of custom properties.<br>
   1a. Instead of the standard color for the background, we use a custom property.
   2. Let's add an event listener for "click" events that will call the background change function.
   3. Change the default background color for the first property (--custom-prop1).
