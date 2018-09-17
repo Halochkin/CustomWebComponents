@@ -1,4 +1,4 @@
-### cssCustomPropertyChangedMixin 
+## cssCustomPropertyChangedMixin 
 cssCustomPropertyChangedMixin provides `styleChangedCallback(name, newValue, oldValue)` which is called every
  time custom CSS properties are changed.
  ###
