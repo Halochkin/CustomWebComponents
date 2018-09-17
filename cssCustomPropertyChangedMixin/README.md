@@ -20,7 +20,7 @@ cssCustomPropertyChangedMixin provides `styleChangedCallback(name, newValue, old
  One for each changed parameter.<br>
  In the case if the new value of the property is equal to the previous one - `styleChangedCallback`, `will not` be called.
 
-#### Example
+### Example
 Let's look at a simple example of using custom CSS properties. When you click on the object, it will change color to random.
 ```css
   test-block {
