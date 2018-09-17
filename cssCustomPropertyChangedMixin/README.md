@@ -23,14 +23,14 @@ cssCustomPropertyChangedMixin provides `styleChangedCallback(name, newValue, old
 #### Example
 Let's look at a simple example of using custom CSS properties. When you click on the object, it will change color to random.
 ```css
-  test-css {
-            background-color: var(--custom-prop1);            [1a]
+  test-block {
+            background-color: var(--custom-prop1);            //[1a]
         }
 
   #first {
             height: 40px;
             width: 40px;
-            background-color: var(--custom-prop2);            [1a]
+            background-color: var(--custom-prop2);            //[1a]
         }
 ```
 
@@ -50,7 +50,7 @@ import {cssCustomPropertyChangedMixin} from "./src/cssCustomPropertyChangedMixin
       this.style.height = "50px";
       this.style.width = "50px";
       this.style.display = "block";
-      this.style.setProperty("--custom-prop1", "orange");         [1]
+      this.style.setProperty("--custom-prop1", "orange");         //[1]
       this.style.setProperty("--custom-prop2", "red");
       this.changeStyletrigger = e => this.changeStyle();
     }
@@ -61,17 +61,17 @@ import {cssCustomPropertyChangedMixin} from "./src/cssCustomPropertyChangedMixin
 
     connectedCallback() {
       if (super.connectedCallback) super.connectedCallback();
-      this.addEventListener("click", this.changeStyletrigger);    [2]
+      this.addEventListener("click", this.changeStyletrigger);    //[2]
     }
 
     styleChangedCallback(name, newValue, oldValue) {
-      console.log(name, newValue, oldValue);                      [5]           
+      console.log(name, newValue, oldValue);                      //[5]           
     }
 
 
     changeStyle() {
-      this.style.setProperty("--custom-prop1", "blue");           [3]
-      this.style.setProperty("--custom-prop2", "red");            [4]
+      this.style.setProperty("--custom-prop1", "blue");           //[3]
+      this.style.setProperty("--custom-prop2", "red");            //[4]
     }
   }
 
@@ -83,5 +83,9 @@ import {cssCustomPropertyChangedMixin} from "./src/cssCustomPropertyChangedMixin
   3. Change the default background color for the first property (--custom-prop1).
   4. Let's make sure that if you change the parameter to the same value, the callback will not work.
   5. Check the results: `--custom-prop1 blue orange`.
+ #### Try it yourself on [codepen](https://codepen.io/Halochkin/pen/QVZgEw?editors=1111);
+ 
+ ### References
+ 1.[Custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*);
   
   
