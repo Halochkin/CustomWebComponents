@@ -1,4 +1,4 @@
-import {StyleChangedMixin} from "https://rawgit.com/Halochkin/Components/master/cssCustomPropertyChangedMixin/src/cssCustomPropertyChangedMixin.js"
+import {StyleChangedMixin} from "https://rawgit.com/Halochkin/Components/master/cssCustomPropertyChangedMixin/src/StyleChangedMixin.js"
 
 const raf_x = (counter, cb) => requestAnimationFrame(counter === 1 ? cb : () => raf_x(counter - 1, cb));
 
