@@ -88,7 +88,7 @@ import {cssCustomPropertyChangedMixin} from "./src/StyleChangedMixin.js";
   4. Let's make sure that if you change the parameter to the same value, the callback will not work.
   5. Let's try adding a number.
   6. What about the boolean value.
-  7. Check the results: 
+  7. Check the results: <br>
   `--custom-css-prop-1 blue orange`.<br>
   `--custom-css-prop-3  22`<br>
   `--custom-css-prop-4  44 true`<br>
