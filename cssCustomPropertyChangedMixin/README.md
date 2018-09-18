@@ -90,8 +90,8 @@ import {cssCustomPropertyChangedMixin} from "./src/StyleChangedMixin.js";
   6. What about the boolean value.
   7. Check the results: 
   `--custom-css-prop-1 blue orange`.<br>
-  `--custom-css-prop-3  22`
-  `--custom-css-prop-4  44 true`
+  `--custom-css-prop-3  22`<br>
+  `--custom-css-prop-4  44 true`<br>
  ### Try it yourself on [codepen](https://codepen.io/Halochkin/pen/QVZgEw?editors=1111)
  
  ### Discussion: problems of using the getComputedStyle() method
