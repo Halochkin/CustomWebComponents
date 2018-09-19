@@ -1,41 +1,23 @@
-import {StyleChangedMixin} from "https://rawgit.com/Halochkin/Components/master/cssCustomPropertyChangedMixin/src/StyleChangedMixin.js"
+import {StyleChangedMixin} from "https://rawgit.com/orstavik/JoiComponents/master/src/StyleChangedMixin.js"
+import {StyleChangedMixin} from "https://rawgit.com/orstavik/JoiComponents/master/src/StyleChangedMixin.js"
+import {StyleChangedMixin} from "https://rawgit.com/orstavik/JoiComponents/master/src/StyleChangedMixin.js"
 
 const raf_x = (counter, cb) => requestAnimationFrame(counter === 1 ? cb : () => raf_x(counter - 1, cb));
 
-// before(() => {
-class TestFlag extends StyleChangedMixin(HTMLElement) {
+class StyleCallback extends StyleChangedMixin(HTMLElement) {
 
   static get observedStyles() {
-    return ["--color-palette"];
-  }
-
-  constructor() {
-    super();
-    this.attachShadow({mode: "open"});
-    this.style.setProperty("--color-palette", "red orange yellow");
-    this.shadowRoot.innerHTML =
-      ` <div id='one'>_</div>
-        <div id='two'>_</div>
-        <div id='three'>_</div>`;
-    this._divs = this.shadowRoot.querySelectorAll("div");
-  }
-
-  connectedCallback() {
-    if (super.connectedCallback) super.connectedCallback();
+    return ["--custom-css-prop-1", "--custom-css-prop-2"];
   }
 
   styleChangedCallback(name, newValue, oldValue) {
-    if (name === "--color-palette") {
-      const colors = newValue.split(" ");
-      for (let i = 0; i < colors.length; i++)
-        this._divs[i].style.background = colors[i];
-    }
     this.testValue = this.testValue || [];
     this.testValue.push({name, newValue, oldValue});
   }
 }
 
-customElements.define("test-flag", TestFlag);
+
+customElements.define("style-callback", StyleCallback);
 
 
 describe('StyleChangedMixin basics', function () {
@@ -71,9 +53,9 @@ describe('StyleChangedMixin basics', function () {
     expect(el.test()).to.be.equal("abc");
   });
   it("extend HTMLElement class correctly and make an element", function () {
-    const el = new TestFlag();
+    const el = new StyleCallback();
     let proto = el.constructor;
-    expect(proto.name).to.be.equal("TestFlag");
+    expect(proto.name).to.be.equal("StyleCallback");
     proto = Object.getPrototypeOf(proto);
     expect(proto.name).to.be.equal(StyleChangedMixin.name);
     proto = Object.getPrototypeOf(proto);
@@ -81,46 +63,122 @@ describe('StyleChangedMixin basics', function () {
   });
 });
 
-describe("StyleChangedMixin change  the style", function () {
+describe("StyleChangedMixin. Set el.style and change el.style 1 time", function () {
 
   it("Set default css property value and startup trigger", function (done) {
-    let el = new TestFlag();
+    let el = new StyleCallback();
+    el.style.setProperty("--custom-css-prop-1", "one");
     document.querySelector("body").appendChild(el);
-    setTimeout(function () {
-      // Promise.resolve().then(() => {
-      expect(el.testValue[0].name).to.be.equal("--color-palette");
-      expect(el.testValue[0].newValue).to.be.equal("red orange yellow");
-      expect(el.testValue[0].oldValue).to.be.equal(undefined);
+    requestAnimationFrame(function () {
+      expect(el.testValue[0].name).to.be.equal("--custom-css-prop-1");
+      expect(el.testValue[0].newValue).to.be.equal("one");
+      expect(el.testValue[0].oldValue).to.be.equal("");
       document.querySelector("body").removeChild(el);
       done();
-      // });
-    }, 50)
+    })
   });
 
-
-  it("Change css property value and check new values several times", function (done) {
-    let el = new TestFlag();
+  it("numbers and boolean", function (done) {
+    let el = new StyleCallback();
+    el.style.setProperty("--custom-css-prop-1", 12);
+    el.style.setProperty("--custom-css-prop-2", true);
     document.querySelector("body").appendChild(el);
-    setTimeout(function () {
-      el.style.setProperty("--color-palette", "green yellow blue");
-    }, 50);
-    setTimeout(function () {
-      el.style.setProperty("--color-palette", "yellow blue white");
-    }, 100);
-    setTimeout(function () {
+    requestAnimationFrame(function () {
+      expect(el.testValue[0].name).to.be.equal("--custom-css-prop-1");
+      expect(el.testValue[0].newValue).to.be.equal("12");
+      expect(el.testValue[0].oldValue).to.be.equal("");
+      expect(el.testValue[1].name).to.be.equal("--custom-css-prop-2");
+      expect(el.testValue[1].newValue).to.be.equal("true");
+      expect(el.testValue[1].oldValue).to.be.equal("");
+      document.querySelector("body").removeChild(el);
+      done();
+    })
+  });
+
+  it("StyleChangedMixin. Set el.style and change el.style 4 times", function (done) {
+    let el = new StyleCallback();
+    el.style.setProperty("--custom-css-prop-1", "one");
+    document.querySelector("body").appendChild(el);
+    setTimeout(() => el.style.setProperty("--custom-css-prop-1", "two"), 50);
+    setTimeout(() => el.style.setProperty("--custom-css-prop-1", "three"), 100);
+    setTimeout(() => {
       Promise.resolve().then(() => {
-        expect(el.testValue[0].name).to.be.equal("--color-palette");
-        expect(el.testValue[0].newValue).to.be.equal("red orange yellow");
-        expect(el.testValue[0].oldValue).to.be.equal(undefined);
-        expect(el.testValue[1].name).to.be.equal("--color-palette");
-        expect(el.testValue[1].newValue).to.be.equal("green yellow blue");
-        expect(el.testValue[1].oldValue).to.be.equal("red orange yellow");
-        expect(el.testValue[2].name).to.be.equal("--color-palette");
-        expect(el.testValue[2].newValue).to.be.equal("yellow blue white");
-        expect(el.testValue[2].oldValue).to.be.equal("green yellow blue");
+        expect(el.testValue[0].name).to.be.equal("--custom-css-prop-1");
+        expect(el.testValue[0].oldValue).to.be.equal("");
+        expect(el.testValue[0].newValue).to.be.equal("one");
+        expect(el.testValue[1].name).to.be.equal("--custom-css-prop-1");
+        expect(el.testValue[1].oldValue).to.be.equal("one");
+        expect(el.testValue[1].newValue).to.be.equal("two");
+        expect(el.testValue[2].name).to.be.equal("--custom-css-prop-1");
+        expect(el.testValue[2].oldValue).to.be.equal("two");
+        expect(el.testValue[2].newValue).to.be.equal("three");
         document.querySelector("body").removeChild(el);
         done();
       });
     }, 150)
+  });
+
+  it("StyleChangedMixin. Stylesheet, then style, then stylesheet", function (done) {
+    let div = document.createElement("div");
+    div.id = "tempStyled";
+    div.innerHTML = `
+<style>
+  style-callback {
+    --custom-css-prop-1: one;
+  }
+</style> 
+<style-callback></style-callback>`;
+    const el = div.children[1];
+    document.querySelector("body").appendChild(div);
+    setTimeout(() => el.style.setProperty("--custom-css-prop-1", "two"), 50);
+    setTimeout(() => el.style.removeProperty("--custom-css-prop-1"), 100);
+    setTimeout(() => {
+      Promise.resolve().then(() => {
+        expect(el.testValue[0].name).to.be.equal("--custom-css-prop-1");
+        expect(el.testValue[0].oldValue).to.be.equal("");
+        expect(el.testValue[0].newValue).to.be.equal("one");
+        expect(el.testValue[1].name).to.be.equal("--custom-css-prop-1");
+        expect(el.testValue[1].oldValue).to.be.equal("one");
+        expect(el.testValue[1].newValue).to.be.equal("two");
+        expect(el.testValue[2].name).to.be.equal("--custom-css-prop-1");
+        expect(el.testValue[2].oldValue).to.be.equal("two");
+        expect(el.testValue[2].newValue).to.be.equal("one");
+        document.querySelector("body").removeChild(div);
+        done();
+      });
+    }, 150)
+  });
+
+  it("pauseStyleChangeCallbacks() test", function (done) {
+    let el = new StyleCallback();
+    el.style.setProperty("--custom-css-prop-1", "red");
+    document.querySelector("body").appendChild(el);
+    setTimeout(() => {
+      Promise.resolve().then(() => {
+        expect(el.testValue[0].name).to.be.equal("--custom-css-prop-1");
+        expect(el.testValue[0].newValue).to.be.equal("red");
+        expect(el.testValue[0].oldValue).to.be.equal("");
+        pauseStyleChangeCallbacks();
+      });
+    }, 10);
+    setTimeout(function () {
+      el.style.setProperty("--custom-css-prop-1", "stop");
+      el.style.setProperty("--custom-css-prop-1", "stop2");
+      }, 100);
+    setTimeout(() => {
+      Promise.resolve().then(() => {
+        expect(el.testValue.length).to.be.equal(1);
+        restartStyleChangeCallbacks();
+      });
+      },150);
+    setTimeout(() => {
+      Promise.resolve().then(() => {
+        expect(el.testValue.length).to.be.equal(2);
+        expect(el.testValue[1].newValue).to.be.equal("stop2");
+        expect(el.testValue[1].oldValue).to.be.equal("red");
+        document.querySelector("body").removeChild(el);
+        done();
+      });
+    },200);
   });
 });
