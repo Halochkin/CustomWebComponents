@@ -49,13 +49,16 @@ class ShoppingList extends HTMLElement {
     ::slotted(b[slot="title"]){                                                   [5a]
           color: blue;
     } 
-    ::slotted(list-item[id="first"]){                                             [5b]
+    ::slotted(b[slot="title"]:hover){                                             [5b]
+          color: red;
+    }
+    ::slotted(list-item[id="first"]){                                             [5c]
         color: gold;
     }
-    ::slotted(list-item[someattribute="somevalue"]){                              [5c]
+    ::slotted(list-item[someattribute="somevalue"]){                              [5d]
         color: #ff3d31;
     }
-    ::slotted(list-item[slot="item"][ id="third"]){                               [5d]
+    ::slotted(list-item[slot="item"][ id="third"]){                               [5e]
         color: #19f710;
     }
 </style>
