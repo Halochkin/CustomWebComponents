@@ -11,6 +11,7 @@ will consider how to use the pseudo-element `::slotted` and the result of their 
 3. `::slotted(b[slot="title"])` - application to slotted elements with a specific tagname and attribute
 4. `::slotted(list-item[someattribute="somevalue"])` - you can also use custom attributes
 5. `::slotted(list-item[slot="item"][ id="someid"])` - or multiple attributes
+6.  `::slotted(list-item[id="first"]:hover)` - it is also possible to assist with other pseudo-elements
 
 ### Example
 This example demonstrates how to apply selectors to a pseudo-element :slotted and also demonstrates the result of applying them.
