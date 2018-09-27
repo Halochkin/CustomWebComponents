@@ -1,4 +1,4 @@
-### ::slotted()
+# ::slotted() pseudo-element
 The :slotted() CSS pseudo-element represents any element that has been placed into a slot inside an HTML template.This only works when used inside CSS placed within a shadow DOM.
 
 Despite the fact that the speed with which the elements of the slot is almost instantaneous-the human eye
@@ -75,7 +75,7 @@ class ShoppingList extends HTMLElement {
 4. Remember that `::slotted()` works when used inside CSS placed within a shadow DOM.
 5. A variety of applications of selectors.
 6. A function that is activated by pressing the button and activates the slot for the elements.
-#### Try it on [Codepen](https://codepen.io/Halochkin/pen/QVovwK?editors=0010)
+### Try it on [Codepen.io](https://codepen.io/Halochkin/pen/QVovwK?editors=0010)
 
 ### References 
 1. [MDN `::Slotted()`](https://developer.mozilla.org/en-US/docs/Web/CSS/::slotted);
