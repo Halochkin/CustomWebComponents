@@ -5,6 +5,13 @@ Despite the fact that the speed with which the elements of the slot is almost in
 does not perceive the moment of applying the style to the slot element and therefore it seems that the 
 style was applied from the beginning. To better understand, let's look at an example in which we 
 will consider how to use the pseudo-element `::slotted` and the result of their application.
+### Selectors
+1. `::slotted(*)` - application to all slotted elements
+2. `::slotted(h1)` - application to slotted elements with a specific tagname
+3. `::slotted(b[slot="title"])` - application to slotted elements with a specific tagname and attribute
+4. `::slotted(list-item[someattribute="somevalue"])` - you can also use custom attributes
+5. `::slotted(list-item[slot="item"][ id="someid"])` - or multiple attributes
+
 ### Example
 This example demonstrates how to apply selectors to a pseudo-element :slotted and also demonstrates the result of applying them.
 ```html
@@ -34,6 +41,9 @@ class ShoppingList extends HTMLElement {
     }
     slot[name="item"] {                                                           [5]
         display: grid;
+    }
+    ::slotted(*){
+    color: black;
     }
     ::slotted(b[slot="title"]){                                                   [5a]
           color: blue;
