@@ -1,4 +1,4 @@
-### Css priority of the slots
+## Css priority of the slots
 CSS cascading is a mechanism by which more than one CSS rule can be applied to an HTML document element. 
 ####
 
