@@ -48,8 +48,8 @@ In this example, we'll look at the priorities of applying CSS styles to slots
       this.shadowRoot.appendChild(document.importNode(t.content, true));
       this.shadowRoot.innerHTML +=`
       <style>
-        slot {color:blue;}                        //[1.1] 
-        ::slotted(span) {color: green; }          //[1.2] 
+        slot {color:blue;}                                  //[1.1] 
+        ::slotted(span) {color: green; }                    //[1.2] 
       </style>`;
     }
   }
@@ -69,13 +69,13 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 <h1>GreenBook.html</h1>
 <h2>Page 1</h2>
 
-<style>                                             //[3]
-  slot {color:red;}                                 //[3.1]
-  .slotClassName {color: yellow;}                   //[3.2]
-  slot:not([name]) { color: aqua; }                 //[3.3]
-  #slotID {color: green;}                           //[3.4]
-  ::slotted(*) {color: azure; }                     //[3.5]
-//span { color: green; background: lightgreen; }    //[3.6]
+<style>                                                     //[3]
+  slot {color:red;}                                         //[3.1]
+  .slotClassName {color: yellow;}                           //[3.2]
+  slot:not([name]) { color: aqua; }                         //[3.3]
+  #slotID {color: green;}                                   //[3.4]
+  ::slotted(*) {color: azure; }                             //[3.5]
+//span { color: green; background: lightgreen; }            //[3.6]
 </style>
 
 <red-page id="gentleMom">
