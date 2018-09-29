@@ -1,4 +1,4 @@
-## Css priority of the slots
+# CSS priority of the slots
 CSS cascading is a mechanism by which more than one CSS rule can be applied to an HTML document element. 
 ####
  Rules can originate from various sources: internal and external style sheets, by inheritance, from parent elements, classes or ID to the selector tag, style attribute, etc., Because in these cases often there is a conflict of styles was created a system of priorities: in the end, apply the style, which comes from a source with a higher priority.
