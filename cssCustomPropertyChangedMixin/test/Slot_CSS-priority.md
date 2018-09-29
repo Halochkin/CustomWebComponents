@@ -25,32 +25,17 @@ It is important to note that !important does not work with`slot'.
 ### Example
 In this example, we'll look at the priorities of applying CSS styles to slots
 ```html
-<template id="blue">                                          //[1] 
-  <slot><span>Blue title</span></slot>
-</template>
-
-<template id="red">
-  <style>                                                    //[2]
-    slot{color: red;}                                        //[2.1] 
-    ::slotted(span) {color: green; }                         //[2.2]    
-  </style>                                                 
-  ## <blue-header><slot name="header">Red title</slot></blue-header>
-  <br>
-  <slot>red content</slot>
-</template>
-
 <script>
   class BlueHeader extends HTMLElement {
     constructor(){
       super();
       this.attachShadow({mode: "open"});
-      const t = document.querySelector("#blue");
-      this.shadowRoot.appendChild(document.importNode(t.content, true));
-      this.shadowRoot.innerHTML +=`
-      <style>
-        slot {color:blue;}                                  //[1.1] 
-        ::slotted(span) {color: green; }                    //[1.2] 
-      </style>`;
+      this.shadowRoot.innerHTML +=`                         //[1] 
+       <style> 
+            slot {color: blue;}                             //[1.1] 
+            ::slotted(span) {color: green; }                //[1.2] 
+       </style>
+      <slot><span>Blue title</span></slot>`;
     }
   }
   customElements.define("blue-header", BlueHeader);
@@ -59,15 +44,17 @@ In this example, we'll look at the priorities of applying CSS styles to slots
     constructor(){
       super();
       this.attachShadow({mode: "open"});
-      const t = document.querySelector("#red");
-      this.shadowRoot.appendChild(document.importNode(t.content, true));
+       this.shadowRoot.innerHTML +=`                        //[2]
+        <style> 
+            slot {color: red;}                              //[2.1]
+            ::slotted(span) {color: green; }                //[2.2]
+        </style>
+       <blue-header><slot name="header">Red title</slot></blue-header>
+       <slot>red content</slot>`;
     }
   }
   customElements.define("red-page", RedPage); 
 </script>
-
-<h1>GreenBook.html</h1>
-<h2>Page 1</h2>
 
 <style>                                                     //[3]
   slot {color:red;}                                         //[3.1]
@@ -78,11 +65,12 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 //span { color: green; background: lightgreen; }            //[3.6]
 </style>
 
+<h1>GreenBook.html</h1>
+<h2>Page 1</h2>
 <red-page id="gentleMom">
   <span slot="header">Green title</span>
   <span>green content.</span>
 </red-page>
-
 <h2>Page 2</h2>
 <red-page id="gentleMom2"></red-page>
 <h2>Headers</h2>
@@ -90,10 +78,10 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 <blue-header><span>Green header 1</span></blue-header>
 <blue-header><slot class="slotClassName" id="slotID" ><span>Green header 2</span></slot></blue-header>
 ```
-1. Add a style using the shadowRoot; 
+1. Add a style using the shadowRoot of the custom element; 
 1.1. Applied to "Blue title" because they are nested slots inside `blue-header` element,  and the nested elements inherit properties from their parents.
 1.2. Will be apply to the "Green header 1". It also applies the style from step 1.1. but because the pseudo-element has the highest priority, "Green header 1" will be green;
-2. We can also add the style directly in DOM;
+2. Make the same as with previous one
 2.1. Will be applied to "Red title" and "red content";
 2.2. Applied to "Green title" and "green content", because they was slotted in the span.
 3. The priority of applying styles described above. Let's try applying styles to "Green header 2";
