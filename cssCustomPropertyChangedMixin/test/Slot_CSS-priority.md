@@ -87,7 +87,6 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 <blue-header><span>Green header 1</span></blue-header>
 <blue-header><slot class="slotClassName" id="slotID" ><span>Green header 2</span></slot></blue-header>
 ```
-***
 1. Add a style using the shadowRoot; 
 1.1. Applied to "Blue title" because they are nested slots inside `blue-header` element,  and the nested elements inherit properties from their parents.
 1.2. Will be apply to the "Green header 1". It also applies the style from step 1.1. but because the pseudo-element has the highest priority, "Green header 1" will be green;
@@ -102,8 +101,7 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 3.5. If there are no matches, the lowest priority selector will be applied
 3.6. We have specifically commented out the selector to demonstrate the priority sequence of the `slot`;
 See example and try to uncomment the selector on [Codepen.io](https://codepen.io/Halochkin/pen/oagZYa?editors=1000);
-
-
+***
 ### Reference
 1. [Pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements)
 2. [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/::slotted)
