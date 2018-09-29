@@ -65,8 +65,10 @@ In this example, we'll look at the priorities of applying CSS styles to slots
   }
   customElements.define("red-page", RedPage); 
 </script>
+
 <h1>GreenBook.html</h1>
 <h2>Page 1</h2>
+
 <style>                                             //[3]
   slot {color:red;}                                 //[3.1]
   .slotClassName {color: yellow;}                   //[3.2]
@@ -75,13 +77,14 @@ In this example, we'll look at the priorities of applying CSS styles to slots
   ::slotted(*) {color: azure; }                     //[3.5]
 //span { color: green; background: lightgreen; }    //[3.6]
 </style>
+
 <red-page id="gentleMom">
   <span slot="header">Green title</span>
   <span>green content.</span>
 </red-page>
+
 <h2>Page 2</h2>
 <red-page id="gentleMom2"></red-page>
-
 <h2>Headers</h2>
 <blue-header></blue-header>
 <blue-header><span>Green header 1</span></blue-header>
