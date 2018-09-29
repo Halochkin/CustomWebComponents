@@ -102,8 +102,8 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 3.3. The same;
 3.4. Green color will be applied, because there are no items matching the `::slotted(*)` pseudo-element;
 3.5. If there are no matches, the lowest priority selector will be applied
-3.6. We have specifically commented out the selector to demonstrate the priority sequence of the `slot`;
-See example and try to uncomment the selector on [Codepen.io](https://codepen.io/Halochkin/pen/oagZYa?editors=1000);
+3.6. We have specifically commented out the selector to demonstrate the priority sequence of the `slot`;<br>
+[See example and try to uncomment the selector on Codepen.io](https://codepen.io/Halochkin/pen/oagZYa?editors=1000);
 ***
 ### Reference
 1. [Pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements)
