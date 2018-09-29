@@ -18,6 +18,7 @@ But the above priority rules for the` slot ' element work a bit differently. If 
 5. Slot with preudo-element : `slot:not([name]){color: red}`
 6. Inline style : `<slot style="color: red;"></slot>`
 7. Spetial slot pseudo-element ::slotted(element) : `::slotted(span)`
+####
 It is important to note that !important does not work with`slot'
 ### Reference
 1. [Pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements)
