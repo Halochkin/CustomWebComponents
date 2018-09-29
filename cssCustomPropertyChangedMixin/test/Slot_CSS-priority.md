@@ -72,9 +72,9 @@ In this example, we'll look at the priorities of applying CSS styles to slots
   <span>green content.</span>
 </red-page>
 <h2>Page 2</h2>
-<red-page id="gentleMom2"></red-page>
+<red-page id="gentleMom2"></red-page>     // It will be "Red title red content" here because it is in the slot inside the innerHTML
 <h2>Headers</h2>
-<blue-header></blue-header>
+<blue-header></blue-header>               // It will be slotted "Blue title"
 <blue-header><span>Green header 1</span></blue-header>
 <blue-header><slot class="slotClassName" id="slotID" ><span>Green header 2</span></slot></blue-header>
 ```
