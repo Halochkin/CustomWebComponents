@@ -79,18 +79,19 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 <blue-header><slot class="slotClassName" id="slotID" ><span>Green header 2</span></slot></blue-header>
 ```
 1. Add a style using the shadowRoot of the custom element; 
-1.1. Applied to "Blue title" because they are nested slots inside `blue-header` element,  and the nested elements inherit properties from their parents.
-1.2. Will be apply to the "Green header 1". It also applies the style from step 1.1. but because the pseudo-element has the highest priority, "Green header 1" will be green;
+    1.1 Applied to "Blue title" because they are nested slots inside `blue-header` element,  and the nested elements inherit properties from their parents.<br>
+    1.2. Will be apply to the "Green title" and "Green header 1". To "Green header 1" also applies the style from step 1.1. but because the pseudo-element has the highest priority, so will be green;
 2. Make the same as with previous one
-2.1. Will be applied to "Red title" and "red content";
-2.2. Applied to "Green title" and "green content", because they was slotted in the span.
+    2.1. Will be applied to "Red title" and "red content";<br>
+    2.2. Applied to "green content", because it was slotted in the span.
 3. The priority of applying styles described above. Let's try applying styles to "Green header 2";
-3.1. It has the lowest priority, so it will be applied only if there are no style selectors with the highest priority;
-3.2. Will not be applied because there are selectors with the highest priority;
-3.3. The same;
-3.4. Green color will be applied, because there are no items matching the `::slotted(*)` pseudo-element;
-3.5. If there are no matches, the lowest priority selector will be applied
-3.6. We have specifically commented out the selector to demonstrate the priority sequence of the `slot`;<br>
+    3.1. It has the lowest priority, so it will be applied only if there are no style selectors with the highest priority;<br>
+    3.2. Will not be applied because there are selectors with the highest priority;<br>
+    3.3. The same;<br>
+    3.4. Green color will be applied, because there are no items matching the `::slotted(*)` pseudo-element;<br>
+    3.5. If there are no matches, the lowest priority selector will be applied<br>
+    3.6. We have specifically commented out the selector to demonstrate the priority sequence of the `slot`;<br>
+    
 ### [See example and try to uncomment the selector on Codepen.io](https://codepen.io/Halochkin/pen/oagZYa?editors=1000);
 ***
 ### Reference
