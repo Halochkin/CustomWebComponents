@@ -78,13 +78,13 @@ In this example, we'll look at the priorities of applying CSS styles to slots
 <blue-header><span>Green header 1</span></blue-header>
 <blue-header><slot class="slotClassName" id="slotID" ><span>Green header 2</span></slot></blue-header>
 ```
-1. Add a style using the shadowRoot of the custom element; 
+1. Add a style using the shadowRoot of the custom element; <br>
     1.1 Applied to "Blue title" because they are nested slots inside `blue-header` element,  and the nested elements inherit properties from their parents.<br>
     1.2. Will be apply to the "Green title" and "Green header 1". To "Green header 1" also applies the style from step 1.1. but because the pseudo-element has the highest priority, so will be green;
-2. Make the same as with previous one
+2. Make the same as with previous one<br>
     2.1. Will be applied to "Red title" and "red content";<br>
     2.2. Applied to "green content", because it was slotted in the span.
-3. The priority of applying styles described above. Let's try applying styles to "Green header 2";
+3. The priority of applying styles described above. Let's try applying styles to "Green header 2";<br>
     3.1. It has the lowest priority, so it will be applied only if there are no style selectors with the highest priority;<br>
     3.2. Will not be applied because there are selectors with the highest priority;<br>
     3.3. The same;<br>
