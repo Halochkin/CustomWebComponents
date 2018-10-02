@@ -1,10 +1,10 @@
-# How to style slot.childNodes?
+# How to style slot.childNodes
 
 There are two main methods to stylize a slot element:
 1. Regular css rules;
 2. `:slotted()` CSS pseudo-element.
 
-//They both can be used, but it is worth paying attention to their features and priorities of their combined application.
+It is worth paying attention to their features and priorities of their combined application.
 
 Let's consider their application on the example of a slotted span-element.
 
@@ -74,7 +74,7 @@ Consider an example in which a new class uses an existing class as part of `inne
 5:,6: The same as in previous example.
 
 ### Example 1.3
-Let's change the previous example and add a span element inside the slot in innerHTML
+Let's change the previous example and add a span element inside the slot in the innerHTML of the element.
 ```javascript 
  class MiddlePap extends HTMLElement {
     constructor(){
@@ -104,8 +104,8 @@ Let's change the previous example and add a span element inside the slot in inne
 ### Summary of usage regular CSS rules.
 Regular CSS rules apply directly to an element depending on its scope. You cannot directly style an element that is in the shadowDOM from the lightDOM and vice versa. 
 *** 
-## 2. ::slotted() CSS pseudo-element
-The :slotted() CSS pseudo-element represents any element that has been placed into a slot inside an HTML template.This only works when used inside CSS placed within a shadow DOM.
+## 2. `::slotted()` CSS pseudo-element
+The :slotted() CSS pseudo-element represents any element that has been placed into a slot inside an HTML template. This only works when used inside CSS placed within a shadow DOM.
 
 Despite the fact that the speed with which the elements of the slot is almost instantaneous-the human eye
 does not perceive the moment of applying the style to the slot element and therefore it seems that the 
