@@ -10,7 +10,6 @@ Adding this parameter inside shadowRoot causes the style to be applied to all el
 This effect will apply even to other classes that use this class in shadowDOM. It is worth noting that this effect is applied only to non-inherited parameters. It is most noticeable when you use the general selector `(*)` independently regular CSS or:: slotted
 
 Let's look at an example:
-
      
 ```javascript
  class Inner extends HTMLElement {
@@ -50,8 +49,9 @@ span {
 2:,3: Will have both lightblue border bottom and lightgreen top border despite the fact that should have only top border.<br>
 ### What is the reason?
 The reason is that the `display: block` increases the style scope from shadowDOM to lightDOM. 
+Try it on [Codepen.io](https://codepen.io/Halochkin/pen/Edyqmq?editors=1000)
 ***
-Let's look at another simple example of styling using: host; We have two elements, the second uses the first in the shadowRoot.
+Let's look at another simple example of styling using: host. Now we have two elements, the second uses the first in the shadowRoot.
 
 ```javascript
  class Inner extends HTMLElement {
@@ -100,4 +100,4 @@ This property transfers an empty text node located in the innerHTML MiddleMom cl
 ### Solution
 If you cannot avoid using display: block, add this parameter to all classes that use the element inside of which this parameter is set.
 But note that this does not completely solve the problem. Because the boundary values will be applied to different elements. You may notice that the transition between the two borders looks like a diagonal rather than a vertical or horizontal as shown in the example<br>
-### Try it on [Codepen](https://codepen.io/Halochkin/pen/JmGzNg?editors=1000);
+### Try it on [Codepen.io](https://codepen.io/Halochkin/pen/JmGzNg?editors=1000)
