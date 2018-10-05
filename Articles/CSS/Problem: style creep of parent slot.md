@@ -1,13 +1,11 @@
 # Problem: style creep of parent slot
 
 In the previous [article](https://github.com/Halochkin/Components/blob/master/Articles/CSS/How%20to%20style%20slot.childNodes%3F.md) we
-described the ways of styling `slot.childNodes`. This article describes the problem of unwanted styles (creep) that come from somewhere you 
-don't expect.
-
+described the ways of styling `slot.childNodes`. This article describes the problem of unwanted styles (creep) that come from somewhere you don't expect.
 
 #### 1. `dispalay: block`
 Adding this parameter inside shadowRoot causes the style to be applied to all elements that match the selector outside of shadowRoot.<br>
-This effect will apply even to other classes that use this class in shadowDOM. It is worth noting that this effect is applied only to non-inherited parameters. It is most noticeable when you use the general selector `(*)` independently regular CSS or:: slotted
+This effect will apply even to other classes that use this class in the shadowDOM. It is worth noting that this effect is applied only to non-inherited parameters. It is most noticeable when you use the general selector `(*)` independently regular CSS or:: slotted
 
 Let's look at an example:
      
@@ -101,3 +99,103 @@ This property transfers an empty text node located in the innerHTML MiddleMom cl
 If you cannot avoid using display: block, add this parameter to all classes that use the element inside of which this parameter is set.
 But note that this does not completely solve the problem. Because the boundary values will be applied to different elements. You may notice that the transition between the two borders looks like a diagonal rather than a vertical or horizontal as shown in the example<br>
 ### Try it on [Codepen.io](https://codepen.io/Halochkin/pen/JmGzNg?editors=1000)
+
+
+
+
+
+
+
+# NOT Finished
+
+
+### Example 
+
+```html
+<script>
+  class Inner extends HTMLElement {
+    constructor(){
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML= `
+<style>
+  * { 
+    color: blue;
+    // display: block;
+    font-weight: bold;
+    border-bottom: 5px solid lightblue; 
+  }
+</style>
+-><slot><span>inner fallback title</span></slot>
+`;
+    }
+  }
+
+  class MiddleMom extends HTMLElement {
+    constructor(){
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML= `
+<style>
+  * { 
+    color: red;
+    font-style: italic;
+    border-right: 5px solid red; 
+  }
+</style>
+<inner-el><slot></slot></inner-el>
+`;
+    }
+  }
+  class MiddlePap extends HTMLElement {
+    constructor(){
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML= `
+<style>
+  * { 
+    color: red;
+    font-style: italic;
+    border-right: 5px solid pink; 
+  }
+</style>
+<inner-el><slot><span>middle fallback title</span></slot></inner-el>
+`;
+    }
+  }
+  customElements.define("inner-el", Inner);
+  customElements.define("middle-mom", MiddleMom); 
+  customElements.define("middle-pap", MiddlePap); 
+</script>
+
+
+<h1>How to style slots 1? regular css rules</h1>
+<style>
+  span { 
+    color: green;
+    text-decoration: underline;
+    border-top: 5px solid lightgreen; 
+  }
+</style>
+<hr>
+1: inner empty <inner-el></inner-el>
+<hr>
+2: inner with span <inner-el><span>top span</span></inner-el>
+<hr>
+3: inner with slot-span <inner-el><slot><span>top slot span</span></slot></inner-el>
+<hr>
+4: gentlemom empty: <middle-mom></middle-mom>
+<hr>
+5: gentlemom top span: <middle-mom><span>top span</span></middle-mom>
+<hr>
+6: gentlemom top slot span: <middle-mom><slot><span>top slot span</span></slot></middle-mom>
+<hr>
+7: gentlepap empty: <middle-pap></middle-pap>
+<hr>
+8: gentlepap top span: <middle-pap><span>top span</span></middle-pap>
+<hr>
+9: gentlepap top slot span: <middle-pap><slot><span>top slot span</span></slot></middle-pap>
+<hr>
+```
+### Result 
+![result](https://github.com/Halochkin/Components/blob/master/Images/Css/result_regular_Css.PNG)
