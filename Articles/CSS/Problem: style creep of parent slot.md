@@ -1,4 +1,4 @@
-# Problem: style creep of parent slot.
+# Problem: style creep of parent slot
 
 In the previous [article](https://github.com/Halochkin/Components/blob/master/Articles/CSS/How%20to%20style%20slot.childNodes%3F.md) we
 described the ways of styling `slot.childNodes`. This article describes the problem of unwanted styles (creep) that come from somewhere you 
@@ -50,4 +50,54 @@ span {
 2:,3: Will have both lightblue border bottom and lightgreen top border despite the fact that should have only top border.<br>
 ### What is the reason?
 The reason is that the `display: block` increases the style scope from shadowDOM to lightDOM. 
+***
+Let's look at another simple example of styling using: host; We have two elements, the second uses the first in the shadowRoot.
 
+```javascript
+ class Inner extends HTMLElement {
+    constructor(){
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML= `
+<style>
+  :host { 
+    color: blue;
+    display: block;
+    height: 30px;
+    background: yellow;
+    font-weight: bold;
+    border-bottom: 5px solid lightblue; 
+  }
+</style>
+-><slot><span>inner fallback title</span></slot>`;
+    }
+  }
+
+  class MiddleMom extends HTMLElement {
+    constructor(){
+     ...
+      this.shadowRoot.innerHTML= `
+<style>
+  :host { 
+    color: red;
+    font-style: italic;
+    border-right: 5px solid red; 
+  }
+</style>
+<inner-el><slot></slot></inner-el>`;
+    }
+  }
+```
+```html
+gentlemom top slot span: <middle-mom><slot><span>top slot span</span></slot></middle-mom>
+```
+### Expectation 
+"top slot span" blue text inside a yellow block with a light blue bottom border and an inherited red right border
+### Reality 
+Right red border located under the element on the left border
+### Reason 
+This property transfers an empty text node located in the innerHTML MiddleMom class under the element and applies the value of the left border to it. Because the node is empty, the right border is in place of the left. 
+### Solution
+If you cannot avoid using display: block, add this parameter to all classes that use the element inside of which this parameter is set.
+But note that this does not completely solve the problem. Because the boundary values will be applied to different elements. You may notice that the transition between the two borders looks like a diagonal rather than a vertical or horizontal as shown in the example<br>
+### Try it on [Codepen](https://codepen.io/Halochkin/pen/JmGzNg?editors=1000);
