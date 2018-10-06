@@ -73,7 +73,7 @@ The reason is that the `display: block` increases the style scope from shadowDOM
         <tr>
             <td>2:</td>
             <td rowspan=2> The green inner text with lightgreen top border</td>
-            <td rowspan=2>they both have a as a child and the style from innerHTML does not apply to the children of the element. And therefore was applied the style with a DOM</td> 
+            <td rowspan=2> They both have a span element as a child and the style from innerHTML does not apply to the children of the element. And therefore was applied the style with a DOM</td> 
             <td rowspan=2> Both lightblue bottom border and lightgreen top border despite the fact that should have only top border</td>
         </tr>
         <tr>
