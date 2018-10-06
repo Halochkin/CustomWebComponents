@@ -3,6 +3,8 @@
 In the previous [article](https://github.com/Halochkin/Components/blob/master/Articles/CSS/How%20to%20style%20slot.childNodes%3F.md) we
 described the ways of styling `slot.childNodes`. This article describes the problem of unwanted styles (creep) that come from somewhere you don't expect.
 
+
+
 #### 1. `dispalay: block`
 Adding this parameter inside shadowRoot causes the style to be applied to all elements that match the selector outside of shadowRoot.<br>
 This effect will apply even to other classes that use this class in the shadowDOM. It is worth noting that this effect is applied only to non-inherited parameters. It is most noticeable when you use the general selector `(*)` independently regular CSS or:: slotted
@@ -41,12 +43,45 @@ span {
 ```
 ### Expectation 
 1: The blue "inner fallback title" text with lightblue border-bottom. Because the element is in the shadowRoot and styled directly from the innerHTML; <br>
-2:,3: The green default text with lightgreen top border. Because they both have a as a child and the style from innerHTML does not apply to the children of the element. And therefore was applied the style with a DOM.
+2:,3: The green default text with lightgreen top border. Because they both have a span as a child and the style from innerHTML does not apply to the children of the element. And therefore was applied the style with a DOM.
 ### Reality 
 1: Will have a double border bottom (One for the slot element that reserves space, and the second directly for the span element that is slotted.)<br>
 2:,3: Will have both lightblue border bottom and lightgreen top border despite the fact that should have only top border.<br>
 ### What is the reason?
 The reason is that the `display: block` increases the style scope from shadowDOM to lightDOM. 
+
+### alternative (test)
+
+<table>
+    <thead>
+        <tr>
+            <th></th> 
+            <th>Expectation</th>
+            <th>Why?</th>
+            <th>Reality</th>
+            <th>Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1:</td>
+            <td> Blue "inner fallback title" text with lightblue bottom border</td>
+            <td>Because the element is in the shadowRoot and styled directly from the innerHTML</td>
+            <td> As expected, but with a **double** lightblue bottom border</td>
+            <td rowspan=4> `display: block` increases the style scope from shadowDOM to lightDOM </td>
+        </tr>
+        <tr>
+            <td>2:</td>
+            <td rowspan=2> The green inner text with lightgreen top border</td>
+            <td rowspan=2>they both have a as a child and the style from innerHTML does not apply to the children of the element. And therefore was applied the style with a DOM</td> 
+            <td rowspan=2> Both lightblue bottom border and lightgreen top border despite the fact that should have only top border</td>
+        </tr>
+        <tr>
+            <td>3:</td>
+        </tr>
+    </tbody>
+</table>
+
 Try it on [Codepen.io](https://codepen.io/Halochkin/pen/Edyqmq?editors=1000)
 ***
 Let's look at another simple example of styling using: host. Now we have two elements, the second uses the first in the shadowRoot.
