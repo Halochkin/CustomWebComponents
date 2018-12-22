@@ -75,6 +75,7 @@ Unfortunately, the official documentation does not mention the reasons why press
 
 When an input element is in focus, it can be activated as a press `Enter` or a shortcut with accesskey or clicking. Buttons can be operated by mouse, touch, and keyboard users. The button's `click` event fires for mouse clicks and when the user presses `Enter` or `Space` while the button has focus.
 <hr>
+
 #### Reference 
 * [MDN: accesskey](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)
 * [Spec: accesskey](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)
