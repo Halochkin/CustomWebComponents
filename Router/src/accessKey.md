@@ -21,14 +21,7 @@ For example, for accesskey = "s", the following combinations work.
 - Internet Explorer: `Alt`+`s`
 - Safari: `Alt`+`s`
 - Firefox: `Alt`+`Alt`+`s`
-
-#### The difference between HTML 4.01 and HTML5
-
-- In HTML5, the accesskey attribute can be used on any HTML element.
-- In HTML 4.01, the accesskey attribute can only be used with the following elements:
-`<a>, <area>, <button>, <input>, <label>, <legend>, and <textarea>`
-
-
+#### Example 
 ```html
 <a href="img/duck.jpg" accesskey="d">
 <input type="checkbox" accesskey="c">
@@ -41,4 +34,12 @@ For example, for accesskey = "s", the following combinations work.
 <area shape="circle" coords="155,93,59" href="./snow.html" target="_blank" alt="what about snow?" accesskey="s">
 </map>
 ```
+#### The difference between HTML 4.01 and HTML5
+
+- In HTML5, the accesskey attribute can be used on any HTML element.
+- In HTML 4.01, the accesskey attribute can only be used with the following elements:
+`<a>, <area>, <button>, <input>, <label>, <legend>, and <textarea>`
+
+
+
 
