@@ -31,15 +31,15 @@ In the case of Chrome, Firefox, and IE, the access key on the web page takes pre
 
 #### Example 
 ```html
-<a href="img/duck.jpg" accesskey="d">
+<a href="./img/duck.jpg" accesskey="d">
 <input type="checkbox" accesskey="c">
 <input type="text" accesskey="t">
 <input type="button" accesskey="b" value="Press Alt + b to bring this button intofocus">
 
 <img src="./img/skiResort.jpg" alt="accesskey map example" usemap="#Resort">
 <map name="Resort">
-<area shape="rect" coords="8,5,100,77" href="./mountains.html" target="_blank" alt="mountains" accesskey="m">
-<area shape="circle" coords="155,93,59" href="./snow.html" target="_blank" alt="what about snow?" accesskey="s">
+<area shape="rect" coords="8,5,100,77" href="./img/mountains.html" target="_blank" alt="mountains" accesskey="m">
+<area shape="circle" coords="155,93,59" href="./img/snow.html" target="_blank" alt="what about snow?" accesskey="s">
 </map>
 ```
 #### The difference between HTML 4.01 and HTML5
