@@ -40,9 +40,35 @@ For example, for accesskey = "s", the following combinations work.
 - In HTML 4.01, the accesskey attribute can only be used with the following elements:
 `<a>, <area>, <button>, <input>, <label>, <legend>, and <textarea>`
 
-#### Reference 
-* [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)
-* [Spec](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)
+#### Enter-on-focus
+Element "has focus" when the visitor focuses on it. Usually, the focus automatically occurs when you click on an element with the mouse, but you can also go to the desired element with the keyboard — via the `Tab` key, pressing the finger on the tablet, and so on.
 
+There are two main ways to submit a form:
+- The first – to click <input type="submit">
+- Go into the text field and press Enter
+- The third – use accesskey by press `Alt`+`s`
+
+Each action lead to submit event on the form. When a form is sent using Enter on an input field, a `click` event triggers on the <input type="submit">
+
+When an input element's type attribute is in the Submit Button state, the rules in this section apply. Buttons can be operated by mouse, touch, and keyboard users. The button's `click` event fires for mouse clicks and when the user presses `Enter` or `Space` while the button has focus.
+
+```html
+<form>
+  <input type="text" name="username">
+  <input type="submit" value="Login" name="loginBtn" accesskey="s">
+</form>
+```
+
+```javascript
+window.addEventListener("submit", function(){console.log("submit")});
+window.addEventListener("keypress", function(){console.log("keypress")});
+window.addEventListener("click", function(){console.log("click")});
+```
+<hr>
+#### Reference 
+* [MDN: accesskey](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)
+* [Spec: accesskey](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)
+* [MDN: focus](https://developer.mozilla.org/en-US/docs/Web/Events/focus)
+* [MDN: button role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role#Required_JavaScript_Features)
 
 
