@@ -40,6 +40,9 @@ For example, for accesskey = "s", the following combinations work.
 - In HTML 4.01, the accesskey attribute can only be used with the following elements:
 `<a>, <area>, <button>, <input>, <label>, <legend>, and <textarea>`
 
+#### Reference 
+* [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)
+* [Spec](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)
 
 
 
