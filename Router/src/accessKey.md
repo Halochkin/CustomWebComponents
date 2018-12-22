@@ -8,19 +8,27 @@ Typically, an element when using a keyboard shortcut gets tricky, but the specif
 - HTML text fields of the form ( input and textarea ), they will receive focus 
 (the cursor will blink inside them), for checkboxes and radio buttons , the state will change from marked to unchecked and vice versa,
 for the a tag, a link will follow.
+  
 #### Features of using
-Using the access key depends on the operating system. For example, on machines running MS Windows, you usually need to press the `Alt`
+  
+##### Using the access key depends on the operating system. 
+For example, on machines running MS Windows, you usually need to press the `Alt`
 key along with the access key. Apple systems typically require the `cmd` key.
 Tip: Each browser responds in its own way to more than one item having the same accesskey:
 - IE, Firefox: The following item will be activated
 - Chrome Safari: The last item will be activated
 
-Browsers use various keyboard shortcuts.
+##### Browsers use various keyboard shortcuts.
 For example, for accesskey = "s", the following combinations work.
 - Chrome: `Alt`+`s`
 - Internet Explorer: `Alt`+`s`
 - Safari: `Alt`+`s`
 - Firefox: `Alt`+`Alt`+`s`
+
+##### Browser conflicts
+One of the obvious problems associated with the idea of `accesskey` itself is that between the keyboard shortcuts of browsers, operating systems, browser extensions, and so on. And the ones defined in the web content inevitably arise conflicts. For example, `Alt` + `F` in the most browsers activates the `File` menu. What happens when a web developer wants to use the same key combination to access parts of a web page, such as the File menu inside a web application? The user’s browser will determine how this type of conflict is managed.
+In the case of Chrome, Firefox, and IE, the access key on the web page takes precedence over the user agent keystroke. This means that the key combination activates the "File" menu but the activation of the element
+
 #### Example 
 ```html
 <a href="img/duck.jpg" accesskey="d">
@@ -42,16 +50,8 @@ For example, for accesskey = "s", the following combinations work.
 
 #### Enter-on-focus
 Element "has focus" when the visitor focuses on it. Usually, the focus automatically occurs when you click on an element with the mouse, but you can also go to the desired element with the keyboard — via the `Tab` key, pressing the finger on the tablet, and so on.
-
-There are two main ways to submit a form:
-- The first – to click <input type="submit">
-- Go into the text field and press Enter
-- The third – use accesskey by press `Alt`+`s`
-
-Each action lead to submit event on the form. When a form is sent using Enter on an input field, a `click` event triggers on the <input type="submit">
-
-When an input element's type attribute is in the Submit Button state, the rules in this section apply. Buttons can be operated by mouse, touch, and keyboard users. The button's `click` event fires for mouse clicks and when the user presses `Enter` or `Space` while the button has focus.
-
+Let's look at an example <form>
+  
 ```html
 <form>
   <input type="text" name="username">
@@ -64,6 +64,16 @@ window.addEventListener("submit", function(){console.log("submit")});
 window.addEventListener("keypress", function(){console.log("keypress")});
 window.addEventListener("click", function(){console.log("click")});
 ```
+There are three ways to submit a form:
+- Click <input type="submit">
+- Focused the text field and press `Enter`
+- Use accesskey by press `Alt`+`s`
+
+Each action lead to submit event on the form. When a form is sent using Enter on an input field, a `click` event triggers on the <input type="submit">
+
+Unfortunately, the official documentation does not mention the reasons why pressing `Enter` button causes a `click` event. But you can be sure of trying it yourself on [codepen.io](https://codepen.io/Halochkin/pen/ebvaQr?editors=1111)
+
+When an input element is in focus, it can be activated as a press `Enter` or a shortcut with accesskey or clicking. Buttons can be operated by mouse, touch, and keyboard users. The button's `click` event fires for mouse clicks and when the user presses `Enter` or `Space` while the button has focus.
 <hr>
 #### Reference 
 * [MDN: accesskey](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)
