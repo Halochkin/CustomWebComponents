@@ -16,7 +16,7 @@ Tip: Each browser responds in its own way to more than one item having the same 
 - Chrome Safari: The last item will be activated
 
 Browsers use various keyboard shortcuts.
-For example, for accesskey = "a", the following combinations work.
+For example, for accesskey = "s", the following combinations work.
 - Chrome: `Alt`+`s`
 - Internet Explorer: `Alt`+`s`
 - Safari: `Alt`+`s`
