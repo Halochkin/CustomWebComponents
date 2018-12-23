@@ -69,17 +69,54 @@ There are three ways to submit a form:
 - Focused the text field and press `Enter`
 - Use accesskey by press `Alt`+`s`
 
-Each action lead to submit event on the form. When a form is sent using Enter on an input field, a `click` event triggers on the <input type="submit">
+#### Implicit submission
+Each action lead to submit event on the form. When a form is sent using `Enter` button on an input field, a `click` event triggers on the <input type="submit"><br>
+But many websites do not have a submit button within the form. In this case if the user agent supports letting the user submit a form *implicitly* (when an input element is in focus, it can be activated as a press `Enter` or a shortcut with accesskey or clicking), then doing so for a form whose default button has a defined activation behavior must cause the user agent to run synthetic `click` activation steps on that default button. The button's `click` event fires for mouse clicks and when the user presses `Enter` or `Space` while the button has focus.<br>
 
-Unfortunately, the official documentation does not mention the reasons why pressing `Enter` button causes a `click` event. But you can be sure of trying it yourself on [codepen.io](https://codepen.io/Halochkin/pen/ebvaQr?editors=1111)
+Make sure of it yourself on [codepen.io](https://codepen.io/Halochkin/pen/ebvaQr?editors=1111)<br>
 
-When an input element is in focus, it can be activated as a press `Enter` or a shortcut with accesskey or clicking. Buttons can be operated by mouse, touch, and keyboard users. The button's `click` event fires for mouse clicks and when the user presses `Enter` or `Space` while the button has focus.
-<hr>
+Basically, ***if the user hits `Enter` when a text field is focused, the browser should find the first submit button in the form and click it.*** If the form has no submit button, then the *implicit submission* mechanism must do nothing if *the form has more than one field that blocks implicit submission*, and must submit the form element from the form element itself otherwise
+
+So, in a form with no submit buttons, *implicit submission* will be done if only **one** input is present. Pressing `Enter` in the textbox will submit the form:
+
+```html
+<form>
+  <input type="text" name="search">
+</form>
+```
+But in the form, which has **several** text fields, it will not work.
+```html
+<form>
+  <input type="text" name="login">
+  <input type="text" name="password">
+  <input type="submit" value="Log In" name="loginBtn">
+</form>
+```
+> __Therefore, if you have a form with more than one input field, always include a submit button.__
+
+#### How to prevent implicit submission
+
+In order to prevent the form from submiting when user press `Enter`, we need to add an event listener that will check the value of `keyCode` of the button. The `keyCode` value of the `Enter` button is 13.
+
+```html
+<form>
+  <input id="field" type="text" name="search">
+</form>
+
+<script>
+    document.getElementById('field').addEventListener('keypress', function(event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+        }
+    });
+</script>
+```
 
 #### Reference 
 * [MDN: accesskey](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)
 * [Spec: accesskey](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)
 * [MDN: focus](https://developer.mozilla.org/en-US/docs/Web/Events/focus)
 * [MDN: button role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role#Required_JavaScript_Features)
-
+* [Spec: implicit submission](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission)
+* [MDN: keyCode](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode)
 
