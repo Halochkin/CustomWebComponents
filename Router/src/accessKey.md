@@ -113,10 +113,10 @@ In order to prevent the form from submiting when user press `Enter`, we need to 
 ```
 
 #### Reference 
+* [The Enter Key should Submit Forms, Stop Suppressing it](https://www.tjvantoll.com/2013/01/01/enter-should-submit-forms-stop-messing-with-that/)
 * [MDN: accesskey](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)
-* [Spec: accesskey](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)
 * [MDN: focus](https://developer.mozilla.org/en-US/docs/Web/Events/focus)
 * [MDN: button role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role#Required_JavaScript_Features)
-* [Spec: implicit submission](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission)
 * [MDN: keyCode](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode)
-
+* [Spec: accesskey](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)
+* [Spec: implicit submission](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission)
