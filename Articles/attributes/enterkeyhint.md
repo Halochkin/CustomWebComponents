@@ -36,6 +36,7 @@ default action label (or icon) to present. Contextual information such as the in
 used to determine which action label (or icon) to present on the virtual keyboard.
 
 // todo demo, more information, description, based on the demo
+// fix the demo https://codepen.io/Halochkin/pen/vvmoYx?editors=1011
 
 ### Reference
 * https://html.spec.whatwg.org/multipage/interaction.html
