@@ -35,7 +35,7 @@ When enterkeyhint is unspecified (or is in a state not supported by the user age
 default action label (or icon) to present. Contextual information such as the inputmode, type, or pattern attributes should be
 used to determine which action label (or icon) to present on the virtual keyboard.
 
-It is similar to `mozenterhint` attribute which specifies an "action hint" used to determine how to label the enter key on mobile devices with virtual keyboards. Supported values are `go`, `done`, `next`, `search`, and `send`; these automatically get mapped to the appropriate string (and are case-insensitive).
+It is similar to `mozactionhint` attribute which specifies an "action hint" used to determine how to label the enter key on mobile devices with virtual keyboards. Supported values are `go`, `done`, `next`, `search`, and `send`; these automatically get mapped to the appropriate string (and are case-insensitive).
 <hr>
 // todo demo, more information, description, based on the demo
 // fix the demo https://codepen.io/Halochkin/pen/vvmoYx?editors=1011
