@@ -36,7 +36,7 @@ default action label (or icon) to present. Contextual information such as the in
 used to determine which action label (or icon) to present on the virtual keyboard.
 
 It is similar to `mozenterhint` attribute which specifies an "action hint" used to determine how to label the enter key on mobile devices with virtual keyboards. Supported values are `go`, `done`, `next`, `search`, and `send`; these automatically get mapped to the appropriate string (and are case-insensitive).
-
+<hr>
 // todo demo, more information, description, based on the demo
 // fix the demo https://codepen.io/Halochkin/pen/vvmoYx?editors=1011
 // Generally it is custom attribute that has been standardized. This attribute similar to  [`mozactionhint`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Using_mozactionhint_on_Firefox_mobile) -> [proof here](https://github.com/whatwg/html/pull/3538#issuecomment-371011876) <br>
