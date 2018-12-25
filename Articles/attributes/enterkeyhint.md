@@ -41,6 +41,14 @@ used to determine which action label (or icon) to present on the virtual keyboar
 
 Mozactionhint [demo](https://robertnyman.com/html5/forms/styling.html) 
 
+// todo figure out why it does not work
+// crying, it does not work
+// perhaps the problem in the virtual keyboard. Nowadays smartphones have virtual keyboards with just "↵" symbol instead text value
+
+// todo I still have no a good demo
+
+
+
 
 
 ### References
