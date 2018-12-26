@@ -35,23 +35,21 @@ When enterkeyhint is unspecified (or is in a state not supported by the user age
 default action label (or icon) to present. Contextual information such as the inputmode, type, or pattern attributes should be
 used to determine which action label (or icon) to present on the virtual keyboard.
 
-It is similar to `mozactionhint` attribute which specifies an "action hint" used to determine how to label the enter key on mobile devices with virtual keyboards. Supported values are `go`, `done`, `next`, `search`, and `send`; these automatically get mapped to the appropriate string (and are case-insensitive).
-<hr>
-// todo demo, more information, description, based on the demo
-// fix the demo https://codepen.io/Halochkin/pen/vvmoYx?editors=1011
-// Generally it is custom attribute that has been standardized. This attribute similar to  [`mozactionhint`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Using_mozactionhint_on_Firefox_mobile) -> [proof here](https://github.com/whatwg/html/pull/3538#issuecomment-371011876) <br>
+It is similar to [`mozactionhint`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Using_mozactionhint_on_Firefox_mobile) attribute which specifies an "action hint" used to determine how to label the enter key on mobile devices with virtual keyboards. Supported values are `go`, `done`, `next`, `search`, and `send`; these automatically get mapped to the appropriate string (and are case-insensitive).
 
-Mozactionhint [demo](https://robertnyman.com/html5/forms/styling.html) 
 
-// todo figure out why it does not work <br>
-// perhaps the problem in the virtual keyboard. Nowadays smartphones have virtual keyboards with just "↵" symbol instead text value
-<br>
-// todo I still have no a good demo
+ demo 
+// Generally it is custom attribute that has been standardized. This attribute similar to  [`mozactionhint`]() -> [proof here](https://github.com/whatwg/html/pull/3538#issuecomment-371011876) <br>
+
+Try `mozactionhint` attribute yourself on [codepen](https://codepen.io/Halochkin/pen/vvmoYx?editors=1011) using smartphone.
+
+ Nowadays smartphones have virtual keyboards with just "↵" symbol instead text value and it is a big chance that you will not see the result.
+
 <br>
 // click event as a result of keypress (https://github.com/medialize/ally.js/issues/162)
 
-
-
 ### References
-* https://html.spec.whatwg.org/multipage/interaction.html
-* https://github.com/whatwg/html/pull/3538
+* [Spec](https://html.spec.whatwg.org/multipage/interaction.html)
+* [Isuue](https://github.com/whatwg/html/pull/3538)
+* [Isuue 2](https://github.com/whatwg/html/pull/3538#issuecomment-371011876)
+
