@@ -43,13 +43,12 @@ It is similar to `mozactionhint` attribute which specifies an "action hint" used
 
 Mozactionhint [demo](https://robertnyman.com/html5/forms/styling.html) 
 
-// todo figure out why it does not work
-// crying, it does not work
+// todo figure out why it does not work <br>
 // perhaps the problem in the virtual keyboard. Nowadays smartphones have virtual keyboards with just "↵" symbol instead text value
-
+<br>
 // todo I still have no a good demo
-
-
+<br>
+// click event as a result of keypress (https://github.com/medialize/ally.js/issues/162)
 
 
 
