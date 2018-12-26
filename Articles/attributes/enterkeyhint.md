@@ -37,16 +37,7 @@ used to determine which action label (or icon) to present on the virtual keyboar
 
 It is similar to [`mozactionhint`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Using_mozactionhint_on_Firefox_mobile) attribute which specifies an "action hint" used to determine how to label the enter key on mobile devices with virtual keyboards. Supported values are `go`, `done`, `next`, `search`, and `send`; these automatically get mapped to the appropriate string (and are case-insensitive).
 
-
- demo 
-// Generally it is custom attribute that has been standardized. This attribute similar to  [`mozactionhint`]() -> [proof here](https://github.com/whatwg/html/pull/3538#issuecomment-371011876) <br>
-
-Try `mozactionhint` attribute yourself on [codepen](https://codepen.io/Halochkin/pen/vvmoYx?editors=1011) using smartphone.
-
- Nowadays smartphones have virtual keyboards with just "↵" symbol instead text value and it is a big chance that you will not see the result.
-
-<br>
-// click event as a result of keypress (https://github.com/medialize/ally.js/issues/162)
+Try `mozactionhint` attribute yourself on [codepen](https://codepen.io/Halochkin/pen/vvmoYx?editors=1011) using smartphone. Nowadays smartphones have virtual keyboards with just "↵" symbol instead text value and it is a big chance that you will not see the result.
 
 ### References
 * [Spec](https://html.spec.whatwg.org/multipage/interaction.html)
