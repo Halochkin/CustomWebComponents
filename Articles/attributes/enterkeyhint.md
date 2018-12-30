@@ -40,7 +40,7 @@ It is similar to [`mozactionhint`](https://developer.mozilla.org/en-US/docs/Web/
 Try `mozactionhint` attribute yourself on [codepen](https://codepen.io/Halochkin/pen/vvmoYx?editors=1011) using smartphone. Nowadays smartphones have virtual keyboards with just "↵" symbol instead text value and it is a big chance that you will not see the result.
 
 ### References
-* [Spec](https://html.spec.whatwg.org/multipage/interaction.html)
+* [Spec](https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-enterkeyhint-attribute)
 * [Isuue](https://github.com/whatwg/html/pull/3538)
 * [Isuue 2](https://github.com/whatwg/html/pull/3538#issuecomment-371011876)
 
