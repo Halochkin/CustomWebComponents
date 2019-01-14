@@ -72,3 +72,7 @@ up / North: 0
 right / East: 90
 down / South: 180
 left / West: 270
+# DragFling event composition gesture
+
+
+Try it on [codepen](https://codepen.io/Halochkin/pen/LMMKGy?editors=1010);
