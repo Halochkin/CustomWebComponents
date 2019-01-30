@@ -83,7 +83,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
           touchActionStart: body.style.touchAction,
         };
         body.style.userSelect = "none";
-        window.addEventListener("mousemove", onMousemoveListener, {capture: true});      //7. ListenUp
+        window.addEventListener("mousemove", onMousemoveListener, {capture: true});       //7. ListenUp
         window.addEventListener("mouseup", onMouseupListener, {capture: true});
         !sequence.cancelMouseout && window.addEventListener("mouseout", onMouseoutListener, {capture: true});
         return sequence;
@@ -135,7 +135,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
       }
 
-      function onMousedown(trigger) {                                               //2. CallShotgun
+      function onMousedown(trigger) {                                                     //2. CallShotgun
         if (trigger.button !== 0)
           return;
         if (globalSequence) {
@@ -157,7 +157,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
       function onMousemove(trigger) {
         if (1 !== (trigger.buttons !== undefined ? trigger.buttons : trigger.which)) {
           const cancelEvent = makeDraggingEvent("cancel", trigger);
-          const target = globalSequence.target;                                      //9. GrabTarget
+          const target = globalSequence.target;                                          //9. GrabTarget
           globalSequence = stopSequence();
           replaceDefaultAction(target, cancelEvent, trigger);
           return;
