@@ -57,7 +57,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return null;
       }
 
-      function replaceDefaultAction(target, composedEvent, trigger) {      //3. ReplaceDefaultAction
+      function replaceDefaultAction(target, composedEvent, trigger) {   //3. ReplaceDefaultAction
         composedEvent.trigger = trigger;
         trigger.stopTrailingEvent = function () {
           composedEvent.stopImmediatePropagation ?
@@ -103,7 +103,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
       }
 
-      function startSequence(target, e) {                                    //5. Event Sequence
+      function startSequence(target, e) {                                          //5. Event Sequence
         const body = document.querySelector("body");
         const sequence = {
           details: [e.x],
@@ -112,7 +112,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
           flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,    //6. EventAttribute
           flingDistance: parseInt(target.getAttribute("fling-distance")) || 150,
           recorded: [e],
-          userSelectStart: body.style.userSelect,                                   //10. GrabMouse
+          userSelectStart: body.style.userSelect,                                  //10. GrabMouse
           touchActionStart: body.style.touchAction,
         };
         body.style.userSelect = "none";
@@ -122,7 +122,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return sequence;
       }
 
-      function updateSequence(sequence, e) {                                        //7. TakeNote
+      function updateSequence(sequence, e) {                                       //7. TakeNote
         sequence.details.push(e.x);
         sequence.recorded.push(e);
         return sequence;
