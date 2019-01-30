@@ -20,6 +20,7 @@ a 'boundary' between the calls to these two events.
  * draggable-distance
  * draggable-duration
  * fling: will trigger the fling event
+ ***
 ## Code
 The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master/book/chapter11_event_comp) application is marked below.
 ```javascript
@@ -29,7 +30,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
       const onMousemoveListener = e => onMousemove(e);
       const onMouseoutListener = e => onMouseout(e);
 
-      window.addEventListener("mousedown", function (e) {                                     //1. EarlyBird
+      window.addEventListener("mousedown", function (e) {               //1. EarlyBird
         onMousedown(e)                                                       
       }, {capture: true});
 
@@ -38,7 +39,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         stopProp && e.stopImmediatePropagation ? e.stopImmediatePropagation() : e.stopPropagation();
       }
 
-      function filterOnAttribute(e, attributeName) {                                         //4. FilterByAttribute
+      function filterOnAttribute(e, attributeName) {                    //4. FilterByAttribute
         for (let el = e.target; el; el = el.parentNode) {
           if (!el.hasAttribute)
             return null;
@@ -56,7 +57,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return null;
       }
 
-      function replaceDefaultAction(target, composedEvent, trigger) {                       //3. ReplaceDefaultAction
+      function replaceDefaultAction(target, composedEvent, trigger) {      //3. ReplaceDefaultAction
         composedEvent.trigger = trigger;
         trigger.stopTrailingEvent = function () {
           composedEvent.stopImmediatePropagation ?
@@ -102,46 +103,45 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
       }
 
-      function startSequence(target, e) {                                                   //5. Event Sequence
+      function startSequence(target, e) {                                    //5. Event Sequence
         const body = document.querySelector("body");
         const sequence = {
           details: [e.x],
           target,
           cancelMouseout: target.hasAttribute("draggable-cancel-mouseout"),
-          flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,             //6. EventAttribute
+          flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,    //6. EventAttribute
           flingDistance: parseInt(target.getAttribute("fling-distance")) || 150,
           recorded: [e],
-          userSelectStart: body.style.userSelect,                                           //10. GrabMouse
+          userSelectStart: body.style.userSelect,                                   //10. GrabMouse
           touchActionStart: body.style.touchAction,
         };
         body.style.userSelect = "none";
-        window.addEventListener("mousemove", onMousemoveListener, {capture: true});         //8. ListenUp
+        window.addEventListener("mousemove", onMousemoveListener, {capture: true}); //8. ListenUp
         window.addEventListener("mouseup", onMouseupListener, {capture: true});
         !sequence.cancelMouseout && window.addEventListener("mouseout", onMouseoutListener, {capture: true});
         return sequence;
       }
 
-      function updateSequence(sequence, e) {                                                //7. TakeNote
+      function updateSequence(sequence, e) {                                        //7. TakeNote
         sequence.details.push(e.x);
         sequence.recorded.push(e);
         return sequence;
       }
 
       function stopSequence() {
-        document.querySelector("body").style.userSelect = globalSequence.userSelectStart;   //9.a GrabMouse
-        // body.style.touchAction = globalSequence.touchActionStart;
+        document.querySelector("body").style.userSelect = globalSequence.userSelectStart; //9.a GrabMouse
         window.removeEventListener("mouseup", onMouseupListener, {capture: true});
         window.removeEventListener("mousemove", onMousemoveListener, {capture: true});
         window.removeEventListener("mouseout", onMouseoutListener, {capture: true});
       }
 
 
-      function onMousedown(trigger) {                                                       //2. CallShotgun
+      function onMousedown(trigger) {                                //2. CallShotgun
         if (trigger.button !== 0)
           return;
         if (globalSequence) {
           const cancelEvent = makeDraggingEvent("cancel", trigger);
-          const target = globalSequence.target;                                             //8. Grab/Capture target???
+          const target = globalSequence.target;                     //8. Grab/Capture target???
           globalSequence = stopSequence();
           // dispatchPriorEvent(target, cancelEvent, trigger);
           replaceDefaultAction(target, cancelEvent, trigger);
@@ -159,7 +159,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
       function onMousemove(trigger) {
         if (1 !== (trigger.buttons !== undefined ? trigger.buttons : trigger.which)) {
           const cancelEvent = makeDraggingEvent("cancel", trigger);
-          const target = globalSequence.target;                                                //9. GrabTarget
+          const target = globalSequence.target;                    //9. GrabTarget
           globalSequence = stopSequence();
           replaceDefaultAction(target, cancelEvent, trigger);
           return;
@@ -167,7 +167,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         const composedEvent = makeDraggingEvent("move", trigger);
         captureEvent(trigger, false);
         globalSequence = updateSequence(globalSequence, composedEvent);
-        replaceDefaultAction(globalSequence.target, composedEvent, trigger);                    //3. ReplaceDefaultAction
+        replaceDefaultAction(globalSequence.target, composedEvent, trigger);    
       }
 
       function onMouseup(trigger) {
@@ -193,15 +193,65 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
   )();
 ```
 
-1. comment
-2. comment
-
+1. `EarlyBird` - the EarlyBird listener function is added before the function is loaded. It calls shotgun.
+2. `CallShotgun` - as soon as the function is defined, the trigger function would work as intended. 
+3. `ReplaceDefaultAction` - allows us to block the defaultAction of the triggering event. This gives us the clear benefit of a consistent event sequence, but the clear benefit of always loosing the native composed events or the native default action.
+4. `FilterByAttribute` - to make an event specific to certain element instances we need a pure `filterOnAttribute` function that finds the first target with the required attribute, and then dispatching the custom, composed event on that element.         
+5. `EventSequence` - beginning of the sequence of events. Since mouse events start with `mousedown` events, it starts the sequence. Function `startSequence` initializes theproperties that will be used further. These include both the conditions of a `fling` event, and standard css properties, such as
+6. `EventAttribute` - you can set your own conditions for fling events by defining them in custom properties. If you do not define them, the default values will be applied.
+7. `TakeNote` - 
+8. `ListenUp` - Adding listeners alternately. Events such as `touchmove`, `touchup` and `touchcancel` will be added only after the `mousedown` event is activated, and will pass through several filtering steps. This allows us to avoid possible mistakes.
+9. `GrabTarget` - target is "captured" in the initial trigger event function (`mousedown`), then stored in the EventSequence's internal state, and then reused as the target in subsequent, secondary composed DOM Events.
+10. `GrabMouse` - the idea is that the initial launch event changes `userSelect` to `none` and after the end of the event sequence, return this value to the state in which it was before the start of the event sequence.
+***
 ## Example 1: Slider
 
 ```html
+<div id="viewport" width="300">
+    <div draggable id="frames">
+        <div>First</div>
+        <div>Second</div>
+        <div>Third</div>
+        <div>Fourth</div>
+    </div>
+</div>
 
+<script>
+  let currentLeft = undefined;
+  let startX;
+  window.addEventListener("dragging-start", e => {
+    startX = e.x;
+    currentLeft = parseInt((e.target.style.transform).substr(10) || 0);
+  });
+
+  window.addEventListener("dragging-move", e => {
+    e.target.style.transform = `translate(${currentLeft + e.x - startX}px)`;
+  });
+
+  window.addEventListener("dragging-cancel", e => {
+    e.target.style.transform = `translate(${currentLeft}px)`;
+  });
+
+  window.addEventListener('dragging-stop', (e) => {
+    let sliderWidth = parseInt(e.target.parentNode.getAttribute("width"));
+    let movement = e.x - startX;
+    if (Math.abs(movement) < 100)
+      movement = 0;
+    else
+      movement = (movement > 0 ? sliderWidth : -sliderWidth);
+
+    let newPosition = (currentLeft + movement);
+    if (newPosition > 0)
+      newPosition = currentLeft;
+    else if (newPosition <= -1200)
+      newPosition = currentLeft;
+    e.target.style.transform = `translate(${newPosition}px)`;
+  });
+
+</script>
 ```
-
+Try in on the [codepen](https://codepen.io/Halochkin/pen/XOKjBd?editors=1010);
+***
 ### Reference
 * [Try the difference among different gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
 * [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
