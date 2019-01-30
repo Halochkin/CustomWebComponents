@@ -30,16 +30,29 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
       const onMousemoveListener = e => onMousemove(e);
       const onMouseoutListener = e => onMouseout(e);
 
-      window.addEventListener("mousedown", function (e) {                            //1. EarlyBird
+      window.addEventListener("mousedown", function (e) {                                 //1. EarlyBird
         onMousedown(e)                                                       
       }, {capture: true});
 
+      function replaceDefaultAction(target, composedEvent, trigger) {                     //3. ReplaceDefaultAction
+        composedEvent.trigger = trigger;
+        trigger.stopTrailingEvent = function () {
+          composedEvent.stopImmediatePropagation ?
+            composedEvent.stopImmediatePropagation() :
+            composedEvent.stopPropagation();
+        };
+        trigger.preventDefault();
+        return setTimeout(function () {
+          target.dispatchEvent(composedEvent)
+        }, 0);
+      }
+      
       function captureEvent(e, stopProp) {
         e.preventDefault();
         stopProp && e.stopImmediatePropagation ? e.stopImmediatePropagation() : e.stopPropagation();
       }
 
-      function filterOnAttribute(e, attributeName) {                                //4. FilterByAttribute
+      function filterOnAttribute(e, attributeName) {                                      //4. FilterByAttribute
         for (let el = e.target; el; el = el.parentNode) {
           if (!el.hasAttribute)
             return null;
@@ -56,20 +69,39 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         }
         return null;
       }
-
-      function replaceDefaultAction(target, composedEvent, trigger) {               //3. ReplaceDefaultAction
-        composedEvent.trigger = trigger;
-        trigger.stopTrailingEvent = function () {
-          composedEvent.stopImmediatePropagation ?
-            composedEvent.stopImmediatePropagation() :
-            composedEvent.stopPropagation();
+      
+      function startSequence(target, e) {                                                 //5. Event Sequence
+        const body = document.querySelector("body");
+        const sequence = {
+          details: [e.x],
+          target,
+          cancelMouseout: target.hasAttribute("draggable-cancel-mouseout"),
+          flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,           //6. EventAttribute
+          flingDistance: parseInt(target.getAttribute("fling-distance")) || 150,
+          recorded: [e],
+          userSelectStart: body.style.userSelect,                                   
+          touchActionStart: body.style.touchAction,
         };
-        trigger.preventDefault();
-        return setTimeout(function () {
-          target.dispatchEvent(composedEvent)
-        }, 0);
+        body.style.userSelect = "none";
+        window.addEventListener("mousemove", onMousemoveListener, {capture: true});      //7. ListenUp
+        window.addEventListener("mouseup", onMouseupListener, {capture: true});
+        !sequence.cancelMouseout && window.addEventListener("mouseout", onMouseoutListener, {capture: true});
+        return sequence;
       }
 
+      function updateSequence(sequence, e) {                                              //8. TakeNote
+        sequence.details.push(e.x);
+        sequence.recorded.push(e);
+        return sequence;
+      }
+
+      function stopSequence() {
+        document.querySelector("body").style.userSelect = globalSequence.userSelectStart; //10 GrabMouse
+        window.removeEventListener("mouseup", onMouseupListener, {capture: true});
+        window.removeEventListener("mousemove", onMousemoveListener, {capture: true});
+        window.removeEventListener("mouseout", onMouseoutListener, {capture: true});
+      }
+     
       function makeDraggingEvent(name, trigger) {
         const composedEvent = new CustomEvent("dragging-" + name, {bubbles: true, composed: true});
         composedEvent.x = trigger.x;
@@ -103,45 +135,12 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
       }
 
-      function startSequence(target, e) {                                           //5. Event Sequence
-        const body = document.querySelector("body");
-        const sequence = {
-          details: [e.x],
-          target,
-          cancelMouseout: target.hasAttribute("draggable-cancel-mouseout"),
-          flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,     //6. EventAttribute
-          flingDistance: parseInt(target.getAttribute("fling-distance")) || 150,
-          recorded: [e],
-          userSelectStart: body.style.userSelect,                                   //10. GrabMouse
-          touchActionStart: body.style.touchAction,
-        };
-        body.style.userSelect = "none";
-        window.addEventListener("mousemove", onMousemoveListener, {capture: true}); //8. ListenUp
-        window.addEventListener("mouseup", onMouseupListener, {capture: true});
-        !sequence.cancelMouseout && window.addEventListener("mouseout", onMouseoutListener, {capture: true});
-        return sequence;
-      }
-
-      function updateSequence(sequence, e) {                                         //7. TakeNote
-        sequence.details.push(e.x);
-        sequence.recorded.push(e);
-        return sequence;
-      }
-
-      function stopSequence() {
-        document.querySelector("body").style.userSelect = globalSequence.userSelectStart; //9.a GrabMouse
-        window.removeEventListener("mouseup", onMouseupListener, {capture: true});
-        window.removeEventListener("mousemove", onMousemoveListener, {capture: true});
-        window.removeEventListener("mouseout", onMouseoutListener, {capture: true});
-      }
-
-
       function onMousedown(trigger) {                                               //2. CallShotgun
         if (trigger.button !== 0)
           return;
         if (globalSequence) {
           const cancelEvent = makeDraggingEvent("cancel", trigger);
-          const target = globalSequence.target;                                     //8. Grab/Capture target???
+          const target = globalSequence.target;                                     
           globalSequence = stopSequence();
           replaceDefaultAction(target, cancelEvent, trigger);
           return;
@@ -198,8 +197,8 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
 4. `FilterByAttribute` - to make an event specific to certain element instances we need a pure `filterOnAttribute` function that finds the first target with the required attribute, and then dispatching the custom, composed event on that element.         
 5. `EventSequence` - beginning of the sequence of events. Since mouse events start with `mousedown` events, it starts the sequence. Function `startSequence` initializes theproperties that will be used further. These include both the conditions of a `fling` event, and standard css properties, such as
 6. `EventAttribute` - you can set your own conditions for fling events by defining them in custom properties. If you do not define them, the default values will be applied.
-7. `TakeNote` - 
-8. `ListenUp` - Adding listeners alternately. Events such as `touchmove`, `touchup` and `touchcancel` will be added only after the `mousedown` event is activated, and will pass through several filtering steps. This allows us to avoid possible mistakes.
+7. `ListenUp` - Adding listeners alternately. Events such as `touchmove`, `touchup` and `touchcancel` will be added only after the `mousedown` event is activated, and will pass through several filtering steps. This allows us to avoid possible mistakes.
+8. `TakeNote` - //
 9. `GrabTarget` - target is "captured" in the initial trigger event function (`mousedown`), then stored in the EventSequence's internal state, and then reused as the target in subsequent, secondary composed DOM Events.
 10. `GrabMouse` - the idea is that the initial launch event changes `userSelect` to `none` and after the end of the event sequence, return this value to the state in which it was before the start of the event sequence.
 ***
