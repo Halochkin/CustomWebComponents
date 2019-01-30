@@ -265,5 +265,10 @@ By default it is not defined, so when the `drag-start` event is first activated,
 
 Try in on the [codepen](https://codepen.io/Halochkin/pen/XOKjBd?editors=1010);
 ***
+## Example 2: Shuffleboard game
+
+```html
+// tomorrow morning) 
+```
 ### Reference
 * [DragEvent](https://developer.mozilla.org/en-US/docs/Web/API/DragEvent)
