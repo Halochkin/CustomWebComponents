@@ -204,11 +204,12 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
 9. `GrabTarget` - target is "captured" in the initial trigger event function (`mousedown`), then stored in the EventSequence's internal state, and then reused as the target in subsequent, secondary composed DOM Events.
 10. `GrabMouse` - the idea is that the initial launch event changes `userSelect` to `none` and after the end of the event sequence, return this value to the state in which it was before the start of the event sequence.
 ***
-## Example 1: Slider
 
+## Example 1: Slider
+Let's look at an example of a slider that works on the basis of the drag events described above.
 ```html
-<div id="viewport" width="300">
-    <div draggable id="frames">
+<div width="300" id="viewport">                                               //[1]
+    <div draggable draggable-cancel-mouseout id="frame">                                               //[2]
         <div>First</div>
         <div>Second</div>
         <div>Third</div>
@@ -219,40 +220,50 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
 <script>
   let currentLeft = undefined;
   let startX;
-  window.addEventListener("dragging-start", e => {
+  window.addEventListener("dragging-start", e => {                       
     startX = e.x;
-    currentLeft = parseInt((e.target.style.transform).substr(10) || 0);
+    currentLeft = parseInt((e.target.style.transform).substr(10) || 0);       //[3]
   });
 
   window.addEventListener("dragging-move", e => {
-    e.target.style.transform = `translate(${currentLeft + e.x - startX}px)`;
+    e.target.style.transform = `translate(${currentLeft + e.x - startX}px)`;  //[4]
   });
 
-  window.addEventListener("dragging-cancel", e => {
-    e.target.style.transform = `translate(${currentLeft}px)`;
+  window.addEventListener("dragging-cancel", e => { 
+    e.target.style.transform = `translate(${currentLeft}px)`;                //[5]
   });
 
   window.addEventListener('dragging-stop', (e) => {
-    let sliderWidth = parseInt(e.target.parentNode.getAttribute("width"));
+    let sliderWidth = parseInt(e.target.parentNode.getAttribute("width"));    //[6]
+    let frames = e.target.children.length;                                    //[7]
     let movement = e.x - startX;
-    if (Math.abs(movement) < 100)
+    if (Math.abs(movement) < 100)                                             //[8]
       movement = 0;
     else
       movement = (movement > 0 ? sliderWidth : -sliderWidth);
-
     let newPosition = (currentLeft + movement);
-    if (newPosition > 0)
+    if (newPosition > 0)                                                      //[9]
       newPosition = currentLeft;
-    else if (newPosition <= -1200)
+    else if (newPosition <= -sliderWidth * frames)                            //[10]
       newPosition = currentLeft;
     e.target.style.transform = `translate(${newPosition}px)`;
   });
 
 </script>
 ```
+1. Use the custom attribute `width="300"` to set the width of the viewport that we use in the below.
+2. Add the attribute `draggable` which marks the element, the position of which we will change using drag events.
+3. The idea is to scroll the tape frame in the right direction. For this we need to get the actual value.
+By default it is not defined, so when the `drag-start` event is first activated, the it will be equal 0.
+4. Slide scrolling begins after the user activates the `drag-move` event. The slide scrolling will occur in accordance with the direction of the horizontal movement of the mouse.
+5. In the case of a `cancel` event triggered during mouse movement - the current slide returns to its position, which corresponds to the position when the last` drag-start` event was activated.
+6. In order to get the port width value, we use the `getAttribute` method. (Of course, we can also get this value using `getElementById` or `querySelector()`, but since we used other attributes, it was decided to do it that way).
+7. To allow you to add any number of frames and not have unnecessary problems, let's just get the length of #frame childrens.
+8. If the total length of the horizontal movement during an `drag-move` event is less than 100 pixels, then when the `drag-move` event is activated, the slide will not be switched, but return to the last position, as in step 5.
+9. If the user tries to return to the previous slide, being on the first one - the slide will move in the appropriate direction during `drag-move` event. But when you activate the `drag-stop` event, the slide will return to the last position. 
+10. Similarly, the last slide.
+
 Try in on the [codepen](https://codepen.io/Halochkin/pen/XOKjBd?editors=1010);
 ***
 ### Reference
-* [Try the difference among different gestures here](https://rawgit.com/Halochkin/Components/master/Gestures/GesturesTest1.html)
-* [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 * [DragEvent](https://developer.mozilla.org/en-US/docs/Web/API/DragEvent)
