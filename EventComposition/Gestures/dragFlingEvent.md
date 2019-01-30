@@ -30,7 +30,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
       const onMousemoveListener = e => onMousemove(e);
       const onMouseoutListener = e => onMouseout(e);
 
-      window.addEventListener("mousedown", function (e) {               //1. EarlyBird
+      window.addEventListener("mousedown", function (e) {                            //1. EarlyBird
         onMousedown(e)                                                       
       }, {capture: true});
 
@@ -39,7 +39,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         stopProp && e.stopImmediatePropagation ? e.stopImmediatePropagation() : e.stopPropagation();
       }
 
-      function filterOnAttribute(e, attributeName) {                    //4. FilterByAttribute
+      function filterOnAttribute(e, attributeName) {                                //4. FilterByAttribute
         for (let el = e.target; el; el = el.parentNode) {
           if (!el.hasAttribute)
             return null;
@@ -57,7 +57,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return null;
       }
 
-      function replaceDefaultAction(target, composedEvent, trigger) {   //3. ReplaceDefaultAction
+      function replaceDefaultAction(target, composedEvent, trigger) {               //3. ReplaceDefaultAction
         composedEvent.trigger = trigger;
         trigger.stopTrailingEvent = function () {
           composedEvent.stopImmediatePropagation ?
@@ -103,16 +103,16 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return ((Math.atan2(y, -x) * 180 / Math.PI) + 270) % 360;
       }
 
-      function startSequence(target, e) {                                          //5. Event Sequence
+      function startSequence(target, e) {                                           //5. Event Sequence
         const body = document.querySelector("body");
         const sequence = {
           details: [e.x],
           target,
           cancelMouseout: target.hasAttribute("draggable-cancel-mouseout"),
-          flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,    //6. EventAttribute
+          flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,     //6. EventAttribute
           flingDistance: parseInt(target.getAttribute("fling-distance")) || 150,
           recorded: [e],
-          userSelectStart: body.style.userSelect,                                  //10. GrabMouse
+          userSelectStart: body.style.userSelect,                                   //10. GrabMouse
           touchActionStart: body.style.touchAction,
         };
         body.style.userSelect = "none";
@@ -122,7 +122,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
         return sequence;
       }
 
-      function updateSequence(sequence, e) {                                       //7. TakeNote
+      function updateSequence(sequence, e) {                                         //7. TakeNote
         sequence.details.push(e.x);
         sequence.recorded.push(e);
         return sequence;
@@ -136,14 +136,13 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
       }
 
 
-      function onMousedown(trigger) {                                //2. CallShotgun
+      function onMousedown(trigger) {                                               //2. CallShotgun
         if (trigger.button !== 0)
           return;
         if (globalSequence) {
           const cancelEvent = makeDraggingEvent("cancel", trigger);
-          const target = globalSequence.target;                     //8. Grab/Capture target???
+          const target = globalSequence.target;                                     //8. Grab/Capture target???
           globalSequence = stopSequence();
-          // dispatchPriorEvent(target, cancelEvent, trigger);
           replaceDefaultAction(target, cancelEvent, trigger);
           return;
         }
@@ -159,7 +158,7 @@ The sequence of [patterns](https://github.com/orstavik/JoiComponents/tree/master
       function onMousemove(trigger) {
         if (1 !== (trigger.buttons !== undefined ? trigger.buttons : trigger.which)) {
           const cancelEvent = makeDraggingEvent("cancel", trigger);
-          const target = globalSequence.target;                    //9. GrabTarget
+          const target = globalSequence.target;                                      //9. GrabTarget
           globalSequence = stopSequence();
           replaceDefaultAction(target, cancelEvent, trigger);
           return;
