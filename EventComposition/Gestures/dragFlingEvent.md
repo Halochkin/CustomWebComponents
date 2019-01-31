@@ -12,10 +12,10 @@ a 'boundary' between the calls to these two events.
     * `dragging-start`
     * `dragging-move`
     * `dragging-end`
-    * `dragging-cancel`: 
+  Drag event have an attribute:
+ * `draggable-cancel-touchout` - adds `dragging-cancel` events which fired when: 
       1. on the mouse leaving the window 
       2. the window loosing focus as a consequence of for example alert being called.
- * `draggable-mouseout`
  * `fling`: will trigger the fling event
  Using attributes we can change the default fling settings, such as
  1. `draggable-distance` (150 by default);
