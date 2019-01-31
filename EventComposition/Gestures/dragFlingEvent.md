@@ -18,7 +18,7 @@ a 'boundary' between the calls to these two events.
  * `draggable-mouseout`
  * `fling`: will trigger the fling event
  Using attributes we can change the default fling settings, such as
- 1. `draggable-distance` (50 by default);
+ 1. `draggable-distance` (150 by default);
  2. `draggable-duration` (50 by default);
  ***
 ## Code
