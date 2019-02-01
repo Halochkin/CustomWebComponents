@@ -249,6 +249,42 @@ Let's look at a simple but very useful example that allows you to change the blo
 Try it on [codepen.io](https://codepen.io/Halochkin/pen/wRbxbj);
 ***
 ## Example 2: Wheel of fortune??
-// in the process)
+```html
+<div pinch draggable id="circle">                                     //[1]
+    <div class="color"></div>
+    <div class="color"></div>
+    <div class="color"></div>
+    <div class="color"></div>
+</div>
+<div id="arrow"></div>                                                //[2]
+
+<script>
+
+  let element = document.querySelector("#circle");
+  let arrow = document.querySelector("#arrow");
+  let rotation;
+
+  window.addEventListener("spin", e => {                              //[3]
+    rotation = parseInt(e.detail.rotation);
+    checkFunc(rotation);
+    element.style.transform = `rotate(${rotation}deg)`;
+    });
+
+  function checkFunc(rotation) {                                      //[4]
+    if (rotation > 5 && rotation < 79) arrow.style.borderBottom = `70px solid aqua`;
+    else if (rotation > 80 && rotation < 169) arrow.style.borderBottom = `70px solid tomato`;
+    else if (rotation > 170 && rotation < 259) arrow.style.borderBottom = `70px solid green`;
+    else if (rotation > 260 && rotation < 349) arrow.style.borderBottom = `70px solid yellow`;
+  }
+</script>
+
+```
+1. Add a circle divided into 4 parts.
+2. And also, a triangle that will change color, depending on the fourth circle, which will be the closest after rotation.
+3. Add an event listener for a spin event. Using the details of the event we get the rotation value.
+4. The function checks the rotation value and changes the color of the triangle, depending on the angle.
+
+Try it on [codepen.io](https://codepen.io/Halochkin/pen/mvWQKa)
+
 ### Reference
-* 
+* [Pinch](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Pinch_zoom_gestures)
