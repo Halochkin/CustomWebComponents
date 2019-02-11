@@ -61,5 +61,6 @@ Consider an example of a popular dating dating application based on a `swipe-end
 7. I suggest using different colors to show that we can also add images if necessary
 8. After that we add the created element to the DOM
 
+Try [mouse](https://codepen.io/Halochkin/pen/XOgLVJ) or [touch](https://codepen.io/Halochkin/pen/NempKJ) version on codepen.io
 
 
