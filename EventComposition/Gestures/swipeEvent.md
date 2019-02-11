@@ -63,4 +63,5 @@ Consider an example of a popular dating dating application based on a `swipe-end
 
 Try [mouse](https://codepen.io/Halochkin/pen/XOgLVJ) or [touch](https://codepen.io/Halochkin/pen/NempKJ) version on codepen.io
 
-
+### Reference
+1. [MozSwipeGesture](https://developer.mozilla.org/en-US/docs/Web/Events/MozSwipeGesture)
