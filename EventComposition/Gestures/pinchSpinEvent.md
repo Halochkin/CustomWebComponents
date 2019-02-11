@@ -16,12 +16,12 @@ The following properties are available on the different pinch events:
 
 spin() includes the following custom details:
 
-`spinStart`: the event that started the swipe gesture
-`distX` : horizontal distance between active fingers
-`distY` : vertical distance
-`distDiag` : diagonal distance
-`durationMs` : duration of the swipe event
-`angle` : angle between fingers
+1. `spinStart`: the event that started the swipe gesture
+2. `distX` : horizontal distance between active fingers
+3. `distY` : vertical distance
+4. `distDiag` : diagonal distance
+5. `durationMs` : duration of the swipe event
+6. `angle` : angle between fingers
  
  ***
 
