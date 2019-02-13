@@ -18,18 +18,18 @@ If the user accidentally activates the third point - the event will stop, but ca
 <div id="element"></div>
 
 <script>
-  let element = document.querySelector("#element");
-  let body = document.querySelector("body");
-  let lastRotate;
-  let startAngle;
-  let moveAngle;
-  let f1;
-  let f2;
-  let x1;
-  let y1;
-  let x2;
-  let y2;
-  let blockedAngle;
+    let element = document.querySelector("#element");
+    let body = document.querySelector("body");
+    let lastRotate;
+    let startAngle;
+    let moveAngle;
+    let f1;
+    let f2;
+    let x1;
+    let y1;
+    let x2;
+    let y2;
+    let blockedAngle;
 
   element.addEventListener("touchstart", function (e) {
     body.style.userSelect = "none";                                                                  //[1]
