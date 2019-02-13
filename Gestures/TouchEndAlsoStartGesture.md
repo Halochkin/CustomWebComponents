@@ -97,3 +97,52 @@ rotation with the three points active;
 11. Rotation function that can be called from both `touchmove` and `touchend` initial functions.
 
 Try it on [codepen](https://codepen.io/Halochkin/pen/exjWRP?editors=1010)
+
+##  `drag` event is a killing machine
+In the web world, all browser events are very well brought up. They allow you to listen to several different events at the same time without worrying about what they will say at the same time or interfere with the conversation, interfering with your listening.
+
+```javascript
+ window.addEventListener("mousemove", function (e) {
+    console.log("mousemove");
+  });
+
+  window.addEventListener("keypress", function (e) {
+    console.log("keypress");
+  });
+
+  window.addEventListener("mousedown", function (e) {
+    console.log("mousedown");
+  });
+  ```
+  I think that you have already guessed, that there is an event that breaks the wonderful world of uplifting, bringing discord and chaos. This is a native `drag` event. The peculiarity of this event is that it completely blocks the wiretapping of other events, taking all attention to itself. And even after the end of the drags of the event, there are no traces of those events that attempted to interrupt the drags of the event, in an attempt to restore the previous order. Therefore, a drag event can be called a killing machine for other events.
+  Consider a simple example that summarizes the number of activations of different types of events.
+  
+```html 
+<div id="info"></div>
+<div id="draginfo"></div>
+<div id="draggable" draggable="true">This div is draggable</div>
+
+<script>
+
+  let element = document.querySelector("#draggable");
+  let info = document.querySelector("#info");
+  let draginfo = document.querySelector("#draginfo");
+  let mousecounter = 1;
+  let dragcounter = 1;
+  
+  window.addEventListener("mousemove", function (e) {        //[1]
+    info.textContent = "mousemove: " + mousecounter++;       //[2]
+  });
+
+  element.addEventListener("drag", function (e) {            //[3]
+    draginfo.textContent = "drag: "+ dragcounter++;
+  });
+
+</script>
+``` 
+1. For greater clarity, add `mouemove` event listener for the whole window;
+2. Each time when event will be active it increase counter;
+3. Now add an event listener for the `drag` event.
+
+Make sure that `mousemove` event is not activated simultaneously with the `drag` on [codepen](https://codepen.io/Halochkin/pen/RvBeLr)
+  
