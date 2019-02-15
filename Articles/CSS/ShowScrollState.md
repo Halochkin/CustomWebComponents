@@ -85,7 +85,8 @@ html{
    scrollbar-color: light;
    scrollbar-color: red green;  //Red color applise to the track and green for the draggable handle
   }
-  
+```
+
 #### Internet Explorer / Edge
 In both Internet Explorer abd Edge , you can only change the colors of individual scrollbar elements
 * `scrollbar-face-color` — color of the drag-and-drop scroll handle.
@@ -98,15 +99,6 @@ In both Internet Explorer abd Edge , you can only change the colors of individua
 
  ![IE scroll bar property](https://newwavenewthinking.files.wordpress.com/2014/01/custom-scroll-bar-for-ie.png)
 
-
-
 ### Reference
 * [MDN: ::-webkit-scrollbar](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar)
 * [CSS Scrollbar](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Scrollbars)
-
-
-
-
-
-
-
