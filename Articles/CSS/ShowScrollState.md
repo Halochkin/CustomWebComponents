@@ -1,4 +1,4 @@
-## ShowScrollState
+# ShowScrollState
 
 The scroll bar is an integral part of most modern applications. Although this interface control has been used for a long time, its
 functionality and ergonomic value, in our opinion, is not fully disclosed and can be significantly improved by some additions.
