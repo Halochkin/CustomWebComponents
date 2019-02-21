@@ -65,74 +65,74 @@
 * `<a href="...">`
 * `<form action="...">`
 * `<style>`
-* `<script>, <textarea>, <select>, and <option>`
+* `<script>, <textarea>, <select> and <option>`
 2. 
 * `<a href="...">`
 * `<form action="...">`
 * `<base>`
-* `<input>, <button>, <select>, and <option>`
+* `<input>, <button>, <select> and <option>`
 3.
 * `<a href="...">`
 * `<link href="...">`
 * `<meta>`
-* `<input>, <button>, <select>, and <option>`
+* `<input>, <button>, <select>  and <option>`
 4. 
 * `<a href="...">`
 * `<button>`
 * `<base>`
-* `<input>, <iframe>, <select>, and <option>`
+* `<input>, <iframe>, <select> and <option>`
 
 ### The main goal of applying template EventComposer is ... 
 1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
 2. creating events from other events
 3. make web components
-4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+4. to alter or mutate the interpretation of an already created browse events from `<a>` and `<form>`
 
 ### EventComposer pattern most effective for use with ... 
-1. <base>
-2. <a href= "...">
-3. <input>
-4. <form>, <input>, <button>, <select>, and <option>
+1. `<base>`
+2. `<a href= "...">`
+3. `<input>`
+4. `<form>, <input>, <button>, <select> and <option>`
 5. with any custom elements
   
 ### The main goal of applying template EventCreator is ... 
 1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
 2. creating events from other events
 3. make web components
-4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+4. to alter or mutate the interpretation of an already created browse events from `<a>` and `<form>`
 
 ### EventCreator pattern most effective for use with ... 
-1. <base>
-2. <a href= "...">
-3. <input>
-4. <form>, <input>, <button>, <select>, and <option>
+1.`<base>`
+2. `<a href= "...">`
+3. `<input>`
+4. `<form>, <input>, <button>, <select> and <option>`
 5. with any custom elements
 
 ### The main goal of applying template EventHelper ... 
 1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
 2. creating events from other events
 3. make web components
-4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+4. to alter or mutate the interpretation of an already created browse events from `<a>` and `<form>`
 
 ### EventHelper pattern most effective for use with ... 
-1. <base>
-2. <a href= "...">
-3. <input>
-4. <form>, <input>, <button>, <select>, and <option>
+1. `<base>`
+2. `<a href= "...">`
+3. `<input>`
+4. `<form>, <input>, <button>, <select> and <option>`
 5. with any custom elements
 
 ### The main goal of applying template EventOrchestra ... 
 1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
 2. creating events from other events
 3. make web components
-4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+4. to alter or mutate the interpretation of an already created browse events from `<a>` and `<form>`
 
 ### EventOrchestra pattern most effective for use with ... 
-1. <base>
-2. <a href= "...">
-3. <input>
-4. <form>, <input>, <button>, <select>, and <option>
-5.  with any custom elements
+1. `<base>`
+2. `<a href= "...">`
+3. `<input>`
+4. `<form>, <input>, <button>, <select> and <option>`
+5. with any custom elements
   
 ### In order for CSS properties to control DOM events, the CSSOM must be processed...
 1. before the affected DOM events are dispatched
