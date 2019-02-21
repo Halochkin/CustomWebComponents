@@ -102,7 +102,7 @@
 4. to alter or mutate the interpretation of an already created browse events from `<a>` and `<form>`
 
 ### EventCreator pattern most effective for use with ... 
-1.`<base>`
+1. `<base>`
 2. `<a href= "...">`
 3. `<input>`
 4. `<form>, <input>, <button>, <select> and <option>`
