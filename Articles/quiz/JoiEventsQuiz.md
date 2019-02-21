@@ -60,4 +60,113 @@
 3. No, no attributes that generate DOM events
 4. No, HTML attributes cannot generate DOM events, only custom events
 
+### What HTML elements allow you to create and manage DOM events?
+1. 
+* `<a href="...">`
+* `<form action="...">`
+* `<style>`
+* `<script>, <textarea>, <select>, and <option>`
+2. 
+* `<a href="...">`
+* `<form action="...">`
+* `<base>`
+* `<input>, <button>, <select>, and <option>`
+3.
+* `<a href="...">`
+* `<link href="...">`
+* `<meta>`
+* `<input>, <button>, <select>, and <option>`
+4. 
+* `<a href="...">`
+* `<button>`
+* `<base>`
+* `<input>, <iframe>, <select>, and <option>`
 
+### The main goal of applying template EventComposer is ... 
+1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
+2. creating events from other events
+3. make web components
+4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+
+### EventComposer pattern most effective for use with ... 
+1. <base>
+2. <a href= "...">
+3. <input>
+4. <form>, <input>, <button>, <select>, and <option>
+5. with any custom elements
+  
+### The main goal of applying template EventCreator is ... 
+1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
+2. creating events from other events
+3. make web components
+4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+
+### EventCreator pattern most effective for use with ... 
+1. <base>
+2. <a href= "...">
+3. <input>
+4. <form>, <input>, <button>, <select>, and <option>
+5. with any custom elements
+
+### The main goal of applying template EventHelper ... 
+1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
+2. creating events from other events
+3. make web components
+4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+
+### EventHelper pattern most effective for use with ... 
+1. <base>
+2. <a href= "...">
+3. <input>
+4. <form>, <input>, <button>, <select>, and <option>
+5. with any custom elements
+
+### The main goal of applying template EventOrchestra ... 
+1. suitable for describing and reusing the architecture of entire web applications, the high-level components of such applications
+2. creating events from other events
+3. make web components
+4. to alter or mutate the interpretation of an already created browse events from <a> and <form>
+
+### EventOrchestra pattern most effective for use with ... 
+1. <base>
+2. <a href= "...">
+3. <input>
+4. <form>, <input>, <button>, <select>, and <option>
+5.  with any custom elements
+  
+### In order for CSS properties to control DOM events, the CSSOM must be processed...
+1. before the affected DOM events are dispatched
+2. after the affected DOM events are dispatched
+3. in any order the affected DOM events are dispatched
+4. at the beginning of the document load
+
+### One way to ensure that the CSSOM is processed before an affected DOM Event is dispatched, so that the relevant DOM Event-controlling CSS property can be checked beforehand, is to process the events that need access to such CSSOM values at the ...
+1. end of the frame, right before the next frame will be painted
+2. very beginning of the frame, right after the previous frame was painted
+3. very beginning of the frame, right before the current frame will be painted
+4. middle of the frame, right before the next frame will be painted and right after the previous frame was painted
+
+### We can manually trigger a CSSOM recalculation by calling ...
+1. document.getElementById("elementId").style...
+2. document.querySelector("#elementId").style...
+3. getComputedStyle(element)
+4. element.style....
+
+### What events can be managed with CSS?
+1. `mousedown`, `touchstart` and `pointerdown`
+2. `mousedown`, `mousemove` and `mouseup`
+3. `touchstart`, `touchmove` and `touchend`
+4. `pointerdown`, `pointermove`, or `pointerend`
+
+### Which CSS property to prevent users from selecting text? 
+1. mouse-select
+2. user-select
+3. display-select
+4. text-select
+
+### Which CSS property sets how a region can be manipulated by a touchscreen user
+1. touch-action
+2. scroll-action
+3. user-select
+4. none of the listed
+  
