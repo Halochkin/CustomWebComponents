@@ -170,3 +170,54 @@
 3. user-select
 4. none of the listed
   
+# 2_EventToEvent
+
+### How to avoid conflicts with other event listeners for the same event?
+1. Add a separate function to each task step, and call them sequentially using the current event listener
+2. Add an event listener that responds only to the current event and does not try to catch up or get ahead of other events
+3. Add an event listener of a certain type for several elements, and handle an event of a specific type
+4. Add a global event listener for each required event and process the event sequentially, calling the necessary functions
+
+### What is needed to make SequentialEvents?
+1. Add global event listeners and send trigger events to the next event listener.
+2. Add event listeners gradually, subject to custom conditions
+3. trigger events should be handled by a separate function for each type of event gradually during the execution of a sequential event.
+4. trigger events must be stored and kept available in order for the final trigger event to dispatch
+
+### What does ListenUp mean?
+1. Pass the trigger event to the next event listener.
+2. Add secondary event listeners only when a mandatory primary event listener is required.
+3. Stored and kept in dispatch.
+4. Add two event listeners for the following event sequences to handle two events in the same function.
+
+### What is EventToEventComposition?
+1. modification of native events based on processing details of triggers of several events
+2. the act of making a new event from one or more other events
+3. the act of making a new event from several events
+4. activation of complex event using a sequence of simple events
+
+### The biggest advantage of global event listeners is ...
+1. Support all types of events
+2. Ability to process multiple target elements using one function
+3. Priority to respond to events
+4. All of the above
+
+### What is a false proposition? Having a single function gives the developer: ...
+1. clear overview
+2. clear point of interception when pursuing bugs
+3. ease of debugging
+4. removes the content management and HTML content construction
+
+### Huge benefit of the composed events based on the EarlyBird pattern is that they are:
+1. reusable, modular and dynamic
+2. global and reusable and modular
+3. generic and modular and global
+4. reusable and generic and generic
+
+### Local event listeners have one big advantage over global event listeners: 
+1. response speed
+2. efficiency
+3. saving browser resources
+4. no one above
+
+// Stopped: https://github.com/orstavik/JoiEvents/blob/master/docs/2_EventToEvent/Pattern21_ReverseGlobalization.md#efficiency-of-global-event-listeners
