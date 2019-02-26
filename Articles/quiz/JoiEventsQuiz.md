@@ -220,4 +220,75 @@
 3. saving browser resources
 4. no one above
 
+### If the trigger event is added to the local element, then when the effect on the target element, the browser will ...
+1. complete the JS task as soon as possible
+2. add the JS task to the event loop
+3. modifies the existing queue of JS tasks by adding the current one to the beginning
+4. have to que a JS task every time the event occurs
+
+
+### What does the third argument (true) mean? window.addEventListener("trigger-event", function(e){eventTriggerFunction(e)}, true); 
+1. the event listener will run during a “capture phase” (when events propagate down the DOM)
+2. the event listener will run during a “capture phase” (when events propagate up the DOM)
+3. the event listener will run during a “bubbling phase” (when events propagate down the DOM)
+4. the event listener will run during a “bubbling phase” (when events propagate up the DOM)
+
+### The standard DOM Events describes 3 phases of event propagation
+1. Capturing phase - Target phase - Bubbling phase
+2. Target phase - Bubbling phase - Capturing phase
+3. Bubbling phase - Capturing phase - Capturing phase 
+4. Capturing phase - Bubbling phase - Target phase
+
+### If you click on `<p>` which is wrapped in `<div>` element, then the capturing sequence is:
+1. HTML → BODY → DIV → P 
+2. P → DIV → BODY → HTML 
+
+### There is special methods which allow to control and block default event actions, it call ...
+1. .stopPropagation()
+2. .preventDefault()
+3. .stopImmediatePropagation()
+4. .initEvent()
+
+### To call preventDefault() on the touchmove event will cancel the scroll event?
+1. true
+2. false
+
+### We can delay the propagation of a custom composite event until the propagation of the triggering event has completed by using ...
+1. Promise.resolve().then(...)
+2. requestAnimationFrame(...)
+3. setTimeout(..., 0)
+4. preventDefault()
+
+### Why we delay the propagation of a custom composite event until the propagation of the triggering event?
+1. It will allow all the event listeners on the triggering event to complete before the task of propagating the custom, composed event
+2. This will add the JS job to handle the composed events in the queue after the trigger event has finished processing
+3. It will allow to avoid conflicts during the initialization of the composed event
+4. Both 1 and 3 are correct 
+
+### The browser will never trigger an event listener for a native, trailing event before all the event listeners for a native, preceding event has been executed?
+1. true
+2. false
+
+### Stopping the propagation of a native event will ..
+1. not affect the propagation and execution of any other trailing native event.
+2. affected the propagation and execution of any other trailing native event
+3. prevent the propagation of any other trailing native event
+4. prevent execution of any other trailing native event
+
+### The propagation of a triggering event should... the propagation of a composed event
+1. stop
+2. affect  
+3. affect/stop 
+4. never affect/stop   
+
+
+
+
+
+
+
+
+
+
+
 // Stopped: https://github.com/orstavik/JoiEvents/blob/master/docs/2_EventToEvent/Pattern21_ReverseGlobalization.md#efficiency-of-global-event-listeners
