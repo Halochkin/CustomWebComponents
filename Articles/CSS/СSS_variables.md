@@ -43,9 +43,9 @@
 </div>
 ```
 
-1. Outside the shadowDOM, we can define CSS-variables of the <blue-blue> element in a <style> element.
-2. Inside shadowDOM, we can define the background color <div> by using the values of a CSS variable defined outside shadowDOM.
-3. We can also define the color of the <div> element itself by also using the CSS variable. When we use the <blue-blue> web 
+1. Outside the shadowDOM, we can define CSS-variables of the <blue-blue> element in a <style> element to expose multiple CSS properties.
+2. Inside shadowDOM, we can define the background color <div> by invoking CSS variable selectors defined outside shadowDOM.
+3. We can also define the color of the <div> element itself by also invoking CSS variable. When we use the <blue-blue> web 
 component, the text inside it will be wrapped inside the <div>, making the text blue against the blue background.
 4. Regular CSS properties set in the lightDOM will not leak into the web component and control the styles in the shadowDOM of the custom element.
 5. Styles set inside the shadowDOM of <blue-blue>, does not leak out into the lightDOM surrounding the host element.
