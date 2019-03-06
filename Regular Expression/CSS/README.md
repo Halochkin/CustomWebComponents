@@ -72,7 +72,7 @@ The code below demonstrates what the values of the CSS properties code are selec
 
 ```css
   element {  
-    max-width: 50em;                                /*50em*/                         
+    max-width:50em;                                /*50em*/                         
     margin: 0 +3px auto;                            /*0, +3px*/
     padding: 1.6em1.5em2em 50px;                    /*1.6em, 1.5em, 2em, 50px*/
     padding: 1.6em 1.5em 2em calc(26px + 1.5em);    /*1.6em, 1.5em, 2em, 26px and 1.5em*/
