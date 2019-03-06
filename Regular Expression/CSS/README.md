@@ -21,7 +21,7 @@ In CSS, numer values can be declared in the following form
   extinction (px|em|ex|%|in|cn|mm|pt|pc)
   
   ```css
-  /(\-?\_?\d*\.?\d+)(px|em|ex|%|in|cn|mm|pt|pc)?/g
+  /(\-?\+?\d*\.?\d+)(px|em|ex|%|in|cn|mm|pt|pc)?/g
   ```
   
   Let's analyze regex to understand what's what.
@@ -34,7 +34,7 @@ In CSS, numer values can be declared in the following form
   
    **`?`** - Quantifier. The condition that the previous condition is met and the selection starts with a valid value (-).
  
-  **`\_`** - Escaped character. Allows selection to start with a space character.
+  **`\+`** - Escaped character. Allows selection to start with a + character.
   
   **`?`** - Quantifier. The condition that the previous condition is met and the selection starts with a valid value (space).
   
@@ -73,8 +73,8 @@ The code below demonstrates what the values of the CSS properties code are selec
 ```css
   element {  
     max-width: 50em;                                /*50em*/                         
-    margin: 0 auto;                                 /*0*/
-    padding: 1.6em 1.5em 2em 50px;                  /*1.6em 1.5em 2em 50px*/
+    margin: 0 +3px auto;                            /*0, +3px*/
+    padding: 1.6em1.5em2em 50px;                    /*1.6em, 1.5em, 2em, 50px*/
     padding: 1.6em 1.5em 2em calc(26px + 1.5em);    /*1.6em, 1.5em, 2em, 26px and 1.5em*/
     line-height: 1.5;                               /*1.5*/
     font-family: sans-serif; 
