@@ -1,2 +1,3 @@
 # Components
-A small collection of custom web components.
+Small collection of custom web Components
+
