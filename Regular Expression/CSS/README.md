@@ -1,13 +1,16 @@
 # HowTo: ParseCustomCssValues
 > Regular expressions are patterns used to match character combinations in strings. 
-Css values is a string with space separated values. Border f. Ex. Can have the 2px solid blue, a string containing from 1 upto 12 different values separated by one or more spaces. The first step when oarsing css values is to split the string on space.
-```javascript
-const cssStringValues = valueAsString.split(/\s+/);
-```
+Css values is a string with space separated values. Border f. Ex. Can have the 2px solid blue, a string containing from 1 upto 12 different values separated by one or more spaces. 
 
 You can use a regular expression to parse the values of CSS properties. This can be either a numeric value of the property or the 
 name of the property. 
 ### CSS valid number values
+
+
+
+
+
+
 In CSS, numer values can be declared in the following form
 ```
 12          A raw <integer> is also a <number>.
