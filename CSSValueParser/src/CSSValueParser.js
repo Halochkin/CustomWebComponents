@@ -189,9 +189,8 @@ function parseSpaceSeparatedValueList(tokens) {
     if (next[0] === ",")            //todo check if ,, is a syntax error for ValueList?
       return result;
 
-    if (next[0] === null)            //todo end of the sequence
+    if (next === null)            //todo end of the sequence
       return result;
-
     result.push(new CssValue(parseValue(tokens)));
   }
   return result;
