@@ -15,7 +15,7 @@ After seeing almost all the doctors, I realized with horror that I was fit for s
 Her face didn't express any emotion, she slightly raised an eyebrow, and said, `"psychopaths in the army are not needed."`<br>
 All my thoughts stopped. Well, I'm not fit to be in the army, that's easy. I already imagined how I would be given a certificate that I do not fit and I will never be drafted into the army!!!<br>
 But it was only my dreams. If you read carefully, I have already said that the doctors in the military have no right to diagnose...<br> And instead of closing the issue with the military enlistment office, I was examined for several days in a mental hospital. I drew pictures, solved tests and did many other boring things. 2 days later I was found perfectly healthy.<br>
-It was a great life lesson, you should not complicate your life
+It was a great life lesson that teaches you not to complicate your own life.
 
 Learning new things is a long process, and it is possible that you have the feeling that in your case it lasts even longer than usual. But moving forward at snail's speed is still better than no code at all, and bad code is a natural and fun (many say: the only) path to good code.
 
