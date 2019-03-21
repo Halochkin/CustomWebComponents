@@ -116,9 +116,14 @@ class CssValue {
     this._obj = obj;
   }
 
+  getTypeValue(type) {
+    if (this._obj.type === type)
+      return this._obj;
+  }
+   
   getRgbValue() {
     if (this._obj.type === "function" && this._obj.unit === "rgb")
-      return this._obj.children.map(number => parseInt(number.value));
+      return this._obj.children.map(number => parseInt(number.value)); //todo  fix units (%)
     if (this._obj.type === "#") {
       const str = this._obj.value;
       if (str.length === 3)
@@ -132,6 +137,36 @@ class CssValue {
   getValue() {
     return this._obj;
   }
+}
+
+export function parseRgbValue(str) {
+  const tokens = new CssValueTokenizer(str);
+  let result = [];
+  for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
+    if (next[1]) {
+      tokens.next();
+      continue;
+    }
+    let rgb = (new CssValue(parseValue(tokens)).getRgbValue());
+    if (rgb)
+      result.push(rgb);
+  }
+  return result;
+}
+
+export function parseCssTypeValue(str, typeValue) {
+  const tokens = new CssValueTokenizer(str);
+  let result = [];
+  for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
+    if (next[1]) {
+      tokens.next();
+      continue;
+    }
+    let type = (new CssValue(parseValue(tokens)).getTypeValue(typeValue));
+    if (type)
+      result.push(type);
+  }
+  return result;
 }
 
 export function parseCssValue(str) {
@@ -248,7 +283,7 @@ function parsePrimitive(tokens) {
     return {type: "quote", value: next[0], text: next[8]};
   if (next[2] /*isNumber*/) {
     let nextNextLookahead = tokens.lookAhead();
-    if (nextNextLookahead[4] /*isWord*/ || nextNextLookahead[0] === "%")
+ if (nextNextLookahead && nextNextLookahead[4] /*isWord*/ || nextNextLookahead && nextNextLookahead[0] === "%") 
       return {type: "number", unit: tokens.next()[0], value: next[0]};
     return {number: true, value: next[0]};
   }
