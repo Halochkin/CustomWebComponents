@@ -1,22 +1,16 @@
 //should we add "/gi" ?
 /*
-
 needs to be split up into a series of value tokens and comma tokens.
 Then, this big list will be split up into a set of smaller lists on the comma tokens.
-
 So, we can get a flat list,
 or a list of comma separated lists.
 This is simplest to always return as a list of comma separated lists, kinda.
-
 Then, to get the value of each token, we have to access it as either a primitive word, a number value, or a function.
 (The #color is a shortcut for an rgb function, but this is simple and not very relevant.)
-
 The real problem is parsing the CSS function.
 The function consists of a function name, then a "(" and then a list of comma separated function expressions, and then ")".
-
 what can be a function name?
 what can be a function expression?
-
 the function expression can be either a:
 1. quoted string
 2. another function expression
@@ -24,8 +18,6 @@ the function expression can be either a:
 4. calc expression (boolean expression):
    10px + 20%vh
    width >= 200px
-
-
 1. CSS Value token list:
 ********************
 0. <space>                                          \s+
@@ -36,10 +28,8 @@ the function expression can be either a:
 5. <singlequote>                                    '((\\\\|\\'|[^'\n])*)'
 6. <doublequote>                                    "((\\\\|\\"|[^"\n])*)"
 7. any other finding would be an error              .+
-
 1.b Regex Tokenizer:
 ***************
-
   \s+ |
   [a-z]+ |
   [+-]?\d*\.?\d+(e[+-]?\d+)? |
@@ -47,13 +37,9 @@ the function expression can be either a:
   '((\\\\|\\'|[^'\n])*)'|
   "((\\\\|\\"|[^"\n])*)"|
   .+
-
 /\s+|[a-z]+|[+-]?\d*\.?\d+(e[+-]?\d+)?|>=|<=|==|[#(),/<>+*%-]|'((\\\\|\\'|[^'\n])*)'|"((\\\\|\\"|[^"\n])*)"|(.*)/g
-
 2.b JS Parser:
 *********
-
-
 3 getPropertyValueObject:
 ************************
 [
@@ -61,7 +47,6 @@ the function expression can be either a:
   [value, value, value],
   ...
 ]
-
 CSSValue
    .getType() returns "color", "number", "word"
    .getValue() returns the interpreted result of the value as a String, that would compute the "if(..)" expression
@@ -72,73 +57,57 @@ CSSValue
 **/
 
 
-const tokenizer = /(\s+)|([-]*[a-z]+[3d]?)+|([+-]?\d*\.?\d+(e[+-]?\d+)?)|>=|<=|==|(#[0-9a-f]+)|[(),/<>+*%]|'((\\\\|\\'|[^'\n])*)'|"((\\\\|\\"|[^"\n])*)"|(.+)/gi;
-//todo      \   \   |[3d]?| added to apply 3d fucntions              |(#[0-9a-f]+)|here was added regex for hash colors                              | i flags for hash colors (FFF)
-//todo     \[-]*\ added to support variables
-// const tokenizer = /(\s+)|([a-z]+)|([+-]?\d*\.?\d+(e[+-]?\d+)?)|>=|<=|==|[#(),/<>+*%-]|'((\\\\|\\'|[^'\n])*)'|"((\\\\|\\"|[^"\n])*)"|(.+)/g;
+// const tokenizer = /(\s+)|([-]*[a-z]+[3d]?)+|([+-]?\d*\.?\d+(e[+-]?\d+)?)|>=|<=|==|(#[0-9a-f]+)|[(),/<>+*%]|'((\\\\|\\'|[^'\n])*)'|"((\\\\|\\"|[^"\n])*)"|(.+)/gi;
+//(#[0-9a-f]+)|here was added regex for hash colors                              | i flags for hash colors (FFF)
+const tokenizer = /(\s+)|3d|([+-]?\d*\.?\d+(e[+-]?\d+)?)|([a-zA-Z_-]+)|(#[0-9a-fA-F]+)|(>=|<=|==|[(),/<>+*%-])|'((\\\\|\\'|[^'\n])*)'|"((\\\\|\\"|[^"\n])*)"|(.+)/g;
 //
-
-
-class Tokenizer {
+export class CssValueTokenizer {
   constructor(str) {
-    this._input = str;
+    this._input = str.trim();
     this._next = undefined;
     this._nextNext = undefined;
+    this._active = true;
   }
 
   hasNext() {
-    if (this._next === undefined)
-      this._next = tokenizer.exec(this._input);
-    return this._next !== null;
+    return this._active;
   }
 
   _nextToken() {
+    if (!this._active)
+      return null;
     const token = tokenizer.exec(this._input);
-    if (token[8])
+    if (token === null) {
+      this._active = false;
+      return null;
+    }
+    if (token[9])
       throw new SyntaxError("Illegal token: " + token[0]);
-    /*todo Max: undefined n variable replaced to token[0]*/
     return token;
   }
 
-
   next() {
-    if (this._nextNext === null)
-      return;
-
-    if (this._nextNext === 0) {
-      return this._next;
-    }
-
-    if (this._next) {
-      let n = this._next;
-      this._next = this._nextNext;
-      this._nextNext = undefined;
-      return n;
-    }
-
-    return this._next = this._nextToken();
+    if (this._next === undefined)
+      return this._nextToken();
+    let n = this._next;
+    this._next = this._nextNext;
+    this._nextNext = undefined;
+    return n;
   }
 
   lookAhead() {
-
-    return this._next || (this._next = tokenizer.exec(this._input));
+    if (this._next === undefined)
+      this._next = this._nextToken();
+    return this._next;
   }
 
   lookAheadAhead() {
-    if (!this._nextNext)
-      this._nextNext = tokenizer.exec(this._input);
-    if (!this._next)
-      this._next = tokenizer.exec(this._input);
-
-    if (this._nextNext === null)
-      return this._nextNext = 0; //some value which means that there is no next values.
-
+    if (this._nextNext === undefined){
+      this.lookAhead();
+      this._nextNext = this._nextToken()
+    }
     return this._nextNext;
   }
-}
-
-export function tokenizeCssValues(str) {
-  return tokenizer.exec(str.trim());
 }
 
 
@@ -161,12 +130,12 @@ class CssValue {
   }
 
   getValue() {
-    return obj.value;
+    return this._obj;
   }
 }
 
 export function parseCssValue(str) {
-  const tokens = new Tokenizer(str);
+  const tokens = new CssValueTokenizer(str);
   let result = [];
   while (tokens.hasNext()) {
     result.push(parseSpaceSeparatedValueList(tokens));
@@ -197,8 +166,8 @@ function parseSpaceSeparatedValueList(tokens) {
 }
 
 function parseValue(tokens) {
-
-  if (tokens.lookAheadAhead()[0] === "(") {
+  const lookAheadAhead = tokens.lookAheadAhead();
+  if (lookAheadAhead && lookAheadAhead[0] === "(") {
     const type = tokens.next()[0];
     tokens.next();  //skip the "("
     const children = parseCssExpressionList(tokens);
@@ -241,7 +210,9 @@ function parseExpression(tokens) {
 }
 
 function getOperator(tokens) {
-  if (tokens.lookAhead()[1] /*isSpace*/ && tokens.lookAheadAhead()[0] /*isOperator*/) {   //todo Max: replaced [5] to [0] in operator check
+  const lookAhead = tokens.lookAhead();
+  const lookAheadAhead = tokens.lookAheadAhead();
+  if (lookAhead&&lookAhead[1] /*isSpace*/ && lookAheadAhead && lookAheadAhead[6] /*isOperator*/) {
     tokens.next(); //skip space
     let operator = tokens.next()[0];
     let next;
@@ -267,22 +238,20 @@ function parsePrimitive(tokens) {
     throw new SyntaxError("illegal #color: " + next[0] + nextNext[0]);
   }
   //-------------------------------------------------------------------------------------------------
-  if (next[8])
-    return {text: next[8]};
-  if (next[2] /*isWord*/)
-    return next[0];
-  if (next[5] /*isSingleQuote*/)
-    return {quote: next[0], text: next[6]};
-  if (next[7] /*isDoubleQuote*/)
-    return {quote: next[0], text: next[8]};
-  if (next[3] /*isNumber*/) {
+  if (next[9])                                  //todo how to treat errors, should we allow it to exist?
+    return {type: "error", value: next[8]};
+  if (next[4] /*isWord*/)
+    return {type: "word", value: next[0]};
+  if (next[6] /*isSingleQuote*/)
+    return {type: "quote", value: next[0], text: next[6]};
+  if (next[8] /*isDoubleQuote*/)
+    return {type: "quote", value: next[0], text: next[8]};
+  if (next[2] /*isNumber*/) {
     let nextNextLookahead = tokens.lookAhead();
-    if (nextNextLookahead[2] /*isWord*/ || nextNextLookahead[0] === "%")
+    if (nextNextLookahead[4] /*isWord*/ || nextNextLookahead[0] === "%")
       return {type: "number", unit: tokens.next()[0], value: next[0]};
     return {number: true, value: next[0]};
   }
 
   throw new SyntaxError("Illegal CSS primitive value: " + next[0]);
 }
-
-
