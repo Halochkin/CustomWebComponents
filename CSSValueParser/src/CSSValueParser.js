@@ -115,11 +115,6 @@ class CssValue {
   constructor(obj) {
     this._obj = obj;
   }
-
-  getTypeValue(type) {
-    if (this._obj.type === type)
-      return this._obj;
-  }
    
   getRgbValue() {
     if (this._obj.type === "function" && this._obj.unit === "rgb")
@@ -139,32 +134,18 @@ class CssValue {
   }
 }
 
-export function parseRgbValue(str) {
+export function parseByTypeValue(str, type) {
   const tokens = new CssValueTokenizer(str);
   let result = [];
+  let value;
   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
     if (next[1]) {
       tokens.next();
       continue;
     }
-    let rgb = (new CssValue(parseValue(tokens)).getRgbValue());
-    if (rgb)
-      result.push(rgb);
-  }
-  return result;
-}
-
-export function parseCssTypeValue(str, typeValue) {
-  const tokens = new CssValueTokenizer(str);
-  let result = [];
-  for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
-    if (next[1]) {
-      tokens.next();
-      continue;
-    }
-    let type = (new CssValue(parseValue(tokens)).getTypeValue(typeValue));
-    if (type)
-      result.push(type);
+    type === "rgb" ? value = (new CssValue(parseValue(tokens)).getRgbValue()) : value = (new CssValue(parseValue(tokens)).getValue());
+    if (value)
+      result.push(value);
   }
   return result;
 }
