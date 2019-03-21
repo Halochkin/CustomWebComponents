@@ -9,8 +9,7 @@
 <script type="module">
 
   import {
-    parseRgbValue,
-    parseCssTypeValue,
+    parseByTypeValue,
     parseCssValue
   } from "../src/CssValueParser.js";
 
@@ -22,27 +21,8 @@
   var test5 = 'url("./abcd.png") url("http://mysite.example.com/mycursor.png") url("./abc/def.png") ';
   var test6 = "rotate3d(1, -1, 1, 45deg) rotate(23deg)  calc(12vw * 20%) matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -50, -100, 0, 1.1) var(--custom-prop, red)";
 
-// WRONG
-//   var test7 = "#00f red-blue #1234567890 #red ";
-//   var test8 = "rgba(0,0,255,0.5 rgb(123, 100 100) rgba(100%0%0%1) hsl(120, 100%, 25% hsl(120100%25%) hsl(120  100%,  25%) ";
-//   var test9 = 'url(abcd.png\') url("http://mysite.example.com/mycursor.png" url(".abc / def") ';
-    
-// It is generic function just put a string and type (number | function | word | color)  
-  var getByType = parseCssTypeValue(test3, "word");
-  console.log(getByType);
-  // IMHO it is much better than:
-  
-  // var res = parseCssValue(test4);
-  // console.log(res);
-
-  // var colors = parseColorValue(test2);
-  // console.log(colors);
-
-  // var rgbValues = parseRgbValue(test4);
-  // console.log(rgbValues);
-
-  // var numbers = parseNumberValue(test1);
-  // console.log(numbers);
+  var values = parseByTypeValue(test1, "number");
+  console.log(values);
 </script>
 
 </body>
