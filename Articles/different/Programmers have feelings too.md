@@ -4,10 +4,18 @@ In the context of emotions programming stands apart from other professions. In t
  
 If in the process of programming you absolutely nothing happens, do not try to break through by force to the goal. Once you get frustrated, angry, or bored in the process of finding mistakes, or succumb to superstitious ideas, you can very easily do more damage than the original problem. 
 
->Not long before the Dolphin finally understands what the essence is new trick, his mood deteriorates, he begins to swim in circles,
->and at some point, he loses patience. He jumps out of the waterand entirely sprays trainer's. Psychologists have to describe this
->phenomena there is a concept of "cognitive dissonance" -a feeling of irritation that occurs due to the fact that something is wrong. 
->Dolphin trainers, calls this reaction `anger training`.
+>When I was 16 years old, I like all the guys of my age had to pass a medical examination in the military, despite the fact that only adults can be called to serve in the army.<br>
+This is done because at 16, the future recruit is still inexperienced and goes to the draft board without preparing separate certificates of disability from childhood or incurable diseases incompatible with military service, he is immediately marked as completely healthy.<br>
+At 9 in the morning it all started. We were told to hang the jackets on the hooks and get all the documents. After that, a 2-hour bureaucratic red tape began with the establishment of personal affairs, surveys, questionnaires and filling in boring psychological tests.<br>
+Since I knew from childhood that he did not want to be in the army, the idea that I was rejected firmly rooted in my mind. <br>
+`The main task of doctors of the military enlistment office is to determine whether a young man is fit for military service . In this case, doctors have no right to diagnose. They have the right only to register the disease: to conduct a visual examination, interview the recruit and study his medical documents.`<br>
+After seeing almost all the doctors, I realized with horror that I was fit for service in the army, and most likely the last doctor will confirm my guess. That doctor was a therapist.<br>
+`"Nervous often?"`- asked me a woman doctor, about 60 years of age.<br>
+`"Yes,"` - I said. <br>
+Her face didn't express any emotion, she slightly raised an eyebrow, and said, `"psychopaths in the army are not needed."`<br>
+All my thoughts stopped. Well, I'm not fit to be in the army, that's easy. I already imagined how I would be given a certificate that I do not fit and I will never be drafted into the army!!!<br>
+But it was only my dreams. If you read carefully, I have already said that the doctors in the military have no right to diagnose...<br> And instead of closing the issue with the military enlistment office, I was examined for several days in a mental hospital. I drew pictures, solved tests and did many other boring things. 2 days later I was found perfectly healthy.<br>
+It was a great life lesson, you should not complicate your life
 
 Learning new things is a long process, and it is possible that you have the feeling that in your case it lasts even longer than usual. But moving forward at snail's speed is still better than no code at all, and bad code is a natural and fun (many say: the only) path to good code.
 
