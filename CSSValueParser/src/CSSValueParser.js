@@ -134,7 +134,7 @@ class CssValue {
   }
 }
 
-export function parseByTypeValue(str, type) {
+export function parseByTypeValue(str, typeValue) {
   const tokens = new CssValueTokenizer(str);
   let result = [];
   let value;
@@ -144,7 +144,7 @@ export function parseByTypeValue(str, type) {
       continue;
     }
     type === "rgb" ? value = (new CssValue(parseValue(tokens)).getRgbValue()) : value = (new CssValue(parseValue(tokens)).getValue());
-    if (value)
+    if (value.type ==== typeValue)
       result.push(value);
   }
   return result;
