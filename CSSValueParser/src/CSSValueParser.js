@@ -140,9 +140,7 @@ export class CssValue {
     return this._obj;
   }
 
-
 }
-
 
 export function parseByTypeValue(str, typeValue) {
   const tokens = new CssValueTokenizer(str);
@@ -153,93 +151,14 @@ export function parseByTypeValue(str, typeValue) {
       tokens.next();
       continue;
     }
-    // typeValue === "function" ? console.log("lal"):
-
-
-    if (typeValue === "function") {
-      value = (new CssValue(parseValue(tokens)).getRgbValue(tokens));
-      // regex first returns the function name and then 3d. Some functions as a rotate3d or matrix3d.
-      if (value && value.type === "word" || value && value.type === "function") {
-
-        /*if the previous value corresponds to the type "word" - and the current - "3D" combine them.*/
-        if (result.length !== 0 && result[result.length - 1] && result[result.length - 1].type === "word" && value.unit && value.unit === "3d") {
-          value.unit = result[result.length - 1].value + value.unit;
-          //Then remove the previous value from the array
-          result.splice(result.length - 1, 1);
-          //Push new value with 3d
-          result.push(value);
-          // tokens.next();
-        }
-      }
-      // for function names. For example rotate3d(...) will return rotate as a type:word and then 3d as a type: function with an array of values as a children property
-      if (value && value.type === "word")
-        result.push(value);
-      //Url values
-      if (value && value.unit === "url")
-        result.push(value);
-      // for rgb. We can transform hash colors to rgb by calls ("#123456", "function"). It returns value as an array without type property
-      if (value && !value.type)
-        result.push(value);
-    }
-
-    //if type is number|color ..
-    else {
-      value = (new CssValue(parseValue(tokens)).getValue());
-      if (value && !value.type)
-        result.push(value);
-
-
-      if (value && value.type && value.type === typeValue)
-        result.push(value);
-    }
+    typeValue === "function" ? value = (new CssValue(parseValue(tokens)).getRgbValue(tokens)) : value = (new CssValue(parseValue(tokens)).getValue());
+    if (value && value.type && value.type === typeValue)
+      result.push(value);
+    if (value && !value.type)
+      result.push(value);
   }
   return result;
 }
-
-// export function parseNumberValue(str) {
-//   const tokens = new CssValueTokenizer(str);
-//   let result = [];
-//   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
-//     if (next[1]) {
-//       tokens.next();
-//       continue;
-//     }
-//     let number = (new CssValue(parseValue(tokens)).getValue());
-//     if (number.type === "number")
-//       result.push(number);
-//   }
-//   return result;
-// }
-//
-// // export function parseColorValue(str) {
-// //   const tokens = new CssValueTokenizer(str);
-// //   let result = [];
-// //   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
-// //     if (next[1]) {
-// //       tokens.next();
-// //       continue;
-// //     }
-// //     let color = (new CssValue(parseValue(tokens)).getColor());
-// //     if (color)
-// //       result.push(color);
-// //   }
-// //   return result;
-// // }
-//
-// export function parseCssTypeValue(str, typeValue) {
-//   const tokens = new CssValueTokenizer(str);
-//   let result = [];
-//   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
-//     if (next[1]) {
-//       tokens.next();
-//       continue;
-//     }
-//     let type = (new CssValue(parseValue(tokens)).getTypeValue(typeValue));
-//     if (type)
-//       result.push(type);
-//   }
-//   return result;
-// }
 
 export function parseCssValue(str) {
   const tokens = new CssValueTokenizer(str);
@@ -254,7 +173,6 @@ export function parseCssValue(str) {
   }
   return result;
 }
-
 
 function parseSpaceSeparatedValueList(tokens) {
   let result = [];
