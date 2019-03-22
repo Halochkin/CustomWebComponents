@@ -60,6 +60,7 @@ CSSValue
 // const tokenizer = /(\s+)|([-]*[a-z]+[3d]?)+|([+-]?\d*\.?\d+(e[+-]?\d+)?)|>=|<=|==|(#[0-9a-f]+)|[(),/<>+*%]|'((\\\\|\\'|[^'\n])*)'|"((\\\\|\\"|[^"\n])*)"|(.+)/gi;
 //(#[0-9a-f]+)|here was added regex for hash colors                              | i flags for hash colors (FFF)
 const tokenizer = /(\s+)|3d|([+-]?\d*\.?\d+(e[+-]?\d+)?)|([a-zA-Z_-]+)|(#[0-9a-fA-F]+)|(>=|<=|==|[(),/<>+*%-])|'((\\\\|\\'|[^'\n])*)'|"((\\\\|\\"|[^"\n])*)"|(.+)/g;
+
 //
 export class CssValueTokenizer {
   constructor(str) {
@@ -102,7 +103,7 @@ export class CssValueTokenizer {
   }
 
   lookAheadAhead() {
-    if (this._nextNext === undefined){
+    if (this._nextNext === undefined) {
       this.lookAhead();
       this._nextNext = this._nextToken()
     }
@@ -111,28 +112,37 @@ export class CssValueTokenizer {
 }
 
 
-class CssValue {
+export class CssValue {
   constructor(obj) {
     this._obj = obj;
   }
-   
+
   getRgbValue() {
-    if (this._obj.type === "function" && this._obj.unit === "rgb")
-      return this._obj.children.map(number => parseInt(number.value)); //todo  fix units (%)
-    if (this._obj.type === "#") {
+    if (this._obj.unit === "rgb" || this._obj.unit === "rgba" || this._obj.unit === "hsl" || this._obj.unit === "hsla")
+      return this._obj.children.map(number => [number.value] + [number.unit]);  //todo  fixed units (%)
+    if (this._obj.color === "#") {
       const str = this._obj.value;
       if (str.length === 3)
         return [parseInt(str[0], 16) * 16, parseInt(str[1], 16) * 16, parseInt(str[2], 16) * 16];
       if (str.length === 6)
         return [parseInt(str[0] + str[1], 16), parseInt(str[2] + str[3], 16), parseInt(str[4] + str[5], 16)];
     }
+
+    if (this._obj.type === "word" || this._obj.type === "function") {
+      return this._obj;
+    }
+
+
     return undefined;
   }
 
   getValue() {
     return this._obj;
   }
+
+
 }
+
 
 export function parseByTypeValue(str, typeValue) {
   const tokens = new CssValueTokenizer(str);
@@ -143,12 +153,93 @@ export function parseByTypeValue(str, typeValue) {
       tokens.next();
       continue;
     }
-    type === "rgb" ? value = (new CssValue(parseValue(tokens)).getRgbValue()) : value = (new CssValue(parseValue(tokens)).getValue());
-    if (value.type ==== typeValue)
-      result.push(value);
+    // typeValue === "function" ? console.log("lal"):
+
+
+    if (typeValue === "function") {
+      value = (new CssValue(parseValue(tokens)).getRgbValue(tokens));
+      // regex first returns the function name and then 3d. Some functions as a rotate3d or matrix3d.
+      if (value && value.type === "word" || value && value.type === "function") {
+
+        /*if the previous value corresponds to the type "word" - and the current - "3D" combine them.*/
+        if (result.length !== 0 && result[result.length - 1] && result[result.length - 1].type === "word" && value.unit && value.unit === "3d") {
+          value.unit = result[result.length - 1].value + value.unit;
+          //Then remove the previous value from the array
+          result.splice(result.length - 1, 1);
+          //Push new value with 3d
+          result.push(value);
+          // tokens.next();
+        }
+      }
+      // for function names. For example rotate3d(...) will return rotate as a type:word and then 3d as a type: function with an array of values as a children property
+      if (value && value.type === "word")
+        result.push(value);
+      //Url values
+      if (value && value.unit === "url")
+        result.push(value);
+      // for rgb. We can transform hash colors to rgb by calls ("#123456", "function"). It returns value as an array without type property
+      if (value && !value.type)
+        result.push(value);
+    }
+
+    //if type is number|color ..
+    else {
+      value = (new CssValue(parseValue(tokens)).getValue());
+      if (value && !value.type)
+        result.push(value);
+
+
+      if (value && value.type && value.type === typeValue)
+        result.push(value);
+    }
   }
   return result;
 }
+
+// export function parseNumberValue(str) {
+//   const tokens = new CssValueTokenizer(str);
+//   let result = [];
+//   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
+//     if (next[1]) {
+//       tokens.next();
+//       continue;
+//     }
+//     let number = (new CssValue(parseValue(tokens)).getValue());
+//     if (number.type === "number")
+//       result.push(number);
+//   }
+//   return result;
+// }
+//
+// // export function parseColorValue(str) {
+// //   const tokens = new CssValueTokenizer(str);
+// //   let result = [];
+// //   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
+// //     if (next[1]) {
+// //       tokens.next();
+// //       continue;
+// //     }
+// //     let color = (new CssValue(parseValue(tokens)).getColor());
+// //     if (color)
+// //       result.push(color);
+// //   }
+// //   return result;
+// // }
+//
+// export function parseCssTypeValue(str, typeValue) {
+//   const tokens = new CssValueTokenizer(str);
+//   let result = [];
+//   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
+//     if (next[1]) {
+//       tokens.next();
+//       continue;
+//     }
+//     let type = (new CssValue(parseValue(tokens)).getTypeValue(typeValue));
+//     if (type)
+//       result.push(type);
+//   }
+//   return result;
+// }
 
 export function parseCssValue(str) {
   const tokens = new CssValueTokenizer(str);
@@ -164,6 +255,7 @@ export function parseCssValue(str) {
   return result;
 }
 
+
 function parseSpaceSeparatedValueList(tokens) {
   let result = [];
   for (let next = tokens.lookAhead(); next; next = tokens.lookAhead()) {
@@ -172,9 +264,6 @@ function parseSpaceSeparatedValueList(tokens) {
       continue;
     }
     if (next[0] === ",")            //todo check if ,, is a syntax error for ValueList?
-      return result;
-
-    if (next === null)            //todo end of the sequence
       return result;
     result.push(new CssValue(parseValue(tokens)));
   }
@@ -187,7 +276,7 @@ function parseValue(tokens) {
     const type = tokens.next()[0];
     tokens.next();  //skip the "("
     const children = parseCssExpressionList(tokens);
-    return {type, children};
+    return {type: "function", unit: type, children};
   }
   return parsePrimitive(tokens);
 }
@@ -217,6 +306,7 @@ function parseExpression(tokens) {
   if (potentialOperator) {
     tokens.next();                                 //todo: Max: skipped space after operator
     return {
+      type: "function",
       left: value,
       operator: potentialOperator,
       right: parseExpression(tokens)
@@ -228,7 +318,7 @@ function parseExpression(tokens) {
 function getOperator(tokens) {
   const lookAhead = tokens.lookAhead();
   const lookAheadAhead = tokens.lookAheadAhead();
-  if (lookAhead&&lookAhead[1] /*isSpace*/ && lookAheadAhead && lookAheadAhead[6] /*isOperator*/) {
+  if (lookAhead && lookAhead[1] /*isSpace*/ && lookAheadAhead && lookAheadAhead[6] /*isOperator*/) {
     tokens.next(); //skip space
     let operator = tokens.next()[0];
     let next;
@@ -250,7 +340,7 @@ function parsePrimitive(tokens) {
     /*Check if it has a valid character length (include #symbol) */
     if (next[0].length === 4 || next[0].length === 5 || next[0].length === 7 || next[0].length === 9)  //todo Max: fixed # colors possible lengths
     /*Remove first character from the string in the value property to remove #*/
-      return {color: "#", value: next[0].substr(1)};
+      return {type: "color", color: "#", value: next[0].substr(1)};
     throw new SyntaxError("illegal #color: " + next[0] + nextNext[0]);
   }
   //-------------------------------------------------------------------------------------------------
@@ -264,9 +354,9 @@ function parsePrimitive(tokens) {
     return {type: "quote", value: next[0], text: next[8]};
   if (next[2] /*isNumber*/) {
     let nextNextLookahead = tokens.lookAhead();
- if (nextNextLookahead && nextNextLookahead[4] /*isWord*/ || nextNextLookahead && nextNextLookahead[0] === "%") 
+    if (nextNextLookahead && nextNextLookahead[4] /*isWord*/ || nextNextLookahead && nextNextLookahead[0] === "%")  //todo Max: nextNextLookahead&&nextNextLookahead[..]
       return {type: "number", unit: tokens.next()[0], value: next[0]};
-    return {number: true, value: next[0]};
+    return {type: "number", value: next[0]};
   }
 
   throw new SyntaxError("Illegal CSS primitive value: " + next[0]);
