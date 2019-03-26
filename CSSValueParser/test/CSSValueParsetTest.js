@@ -116,47 +116,6 @@ describe("Parser correct", function () {
       }]]);
   });
 
-  it("url parsing 1: url('abcd.png')", function () {
-    const color = parseCssValue("url('abcd.png')");
-    expect(color).to.deep.equal(
-      [[{
-        children: [{
-          text: "abcd.png",
-          type: "quote",
-          value: "'abcd.png'"
-        }],
-        name: "url",
-        type: "function"
-      }]]);
-  });
-
-  it("url parsing 2: url('./abc/def.png')", function () {
-    const color = parseCssValue("url('./abc/def.png')");
-    expect(color).to.deep.equal(
-      [[{
-        children: [{
-          text: "./abc/def.png",
-          type: "quote",
-          value: "'./abc/def.png'"
-        }],
-        name: "url",
-        type: "function"
-      }]]);
-  });
-
-  it("url parsing 3: url('http://mysite.example.com/mycursor.png')", function () {
-    const color = parseCssValue("url('http://mysite.example.com/mycursor.png')");
-    expect(color).to.deep.equal(
-      [[{
-        children: [{
-          text: "http://mysite.example.com/mycursor.png",
-          type: "quote",
-          value: "'http://mysite.example.com/mycursor.png'"
-        }],
-        name: "url",
-        type: "function"
-      }]]);
-  });
 
 });
 
@@ -455,6 +414,110 @@ describe("Colors", function () {
         name: "hsl",
       }]]);
   });
+
+});
+
+
+describe("quotes tests:", function () {
+  it("double quotes inside single  :  ' \"a a a\"  \'   ", function () {
+    const color = parseCssValue('"a a a"');
+    expect(color).to.deep.equal(
+      [[{
+        text: "a a a",
+        type: "quote",
+        value: "\"a a a\""
+      }]]);
+  });
+
+  it("single quotes inside single :  ' \'a a a\'  \'   ", function () {
+    const color = parseCssValue('\'a a a\'');
+    expect(color).to.deep.equal(
+      [[{
+        text: "a a a",
+        type: "quote",
+        value: "'a a a'"
+      }]]);
+  });
+
+  it("double quotes inside double : \"  \"a a a\"  \" ", function () {
+    const color = parseCssValue("\"a a a\"");
+    expect(color).to.deep.equal(
+      [[{
+        text: "a a a",
+        type: "quote",
+        value: "\"a a a\""
+      }]]);
+  });
+
+  it("single and double quotes inside double quote  : \"  'a a a',  \"b b b\" \" ", function () {
+    const color = parseCssValue("'a a a', \"b b b\"");
+    expect(color).to.deep.equal(
+      [[{
+        text: "a a a",
+        type: "quote",
+        value: "\'a a a\'"
+      }],
+        [{
+          text: "b b b",
+          type: "quote",
+          value: "\"b b b\""
+        }]
+      ]);
+  });
+
+  it("double quotes : \"  \'a a a\'  \" ", function () {
+    const color = parseCssValue("'a a a'");
+    expect(color).to.deep.equal(
+      [[{
+        text: "a a a",
+        type: "quote",
+        value: "'a a a'"
+      }]]);
+  });
+
+
+  it("url parsing 1: url('abcd.png')", function () {
+    const color = parseCssValue("url('abcd.png')");
+    expect(color).to.deep.equal(
+      [[{
+        children: [{
+          text: "abcd.png",
+          type: "quote",
+          value: "'abcd.png'"
+        }],
+        name: "url",
+        type: "function"
+      }]]);
+  });
+
+  it("url parsing 2: url(\"./abc/def.png\")", function () {
+    const color = parseCssValue("url(\"./abc/def.png\")");
+    expect(color).to.deep.equal(
+      [[{
+        children: [{
+          text: "./abc/def.png",
+          type: "quote",
+          value: "\"./abc/def.png\""
+        }],
+        name: "url",
+        type: "function"
+      }]]);
+  });
+
+  it("url parsing 3: url('http://mysite.example.com/mycursor.png')", function () {
+    const color = parseCssValue("url('http://mysite.example.com/mycursor.png')");
+    expect(color).to.deep.equal(
+      [[{
+        children: [{
+          text: "http://mysite.example.com/mycursor.png",
+          type: "quote",
+          value: "'http://mysite.example.com/mycursor.png'"
+        }],
+        name: "url",
+        type: "function"
+      }]]);
+  });
+
 
 });
 
