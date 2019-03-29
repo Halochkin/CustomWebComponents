@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="src/dragNdrop.js"></script>
+    <!--<script src="https://unpkg.com/joicomponents@1.2.25/src/events/mouse-dragging-fling-prior.js"></script>-->
+    <style>
+
+        * {
+            font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        #elem {
+            position: absolute;
+            left: 200px;
+            top: 200px;
+            height: 100px;
+            width: 100px;
+            background-color: red;
+            text-align: center;
+        }
+
+        #redzone {
+            height: 110px;
+            width: 110px;
+            border: 2px solid red;
+            float: right;
+        }
+
+        test-case {
+            display: block;
+        }
+
+        span {
+            margin-left: 20px;
+            display: none;
+        }
+
+        button {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+<div id="elem" draggable></div>
+<div id="redzone">Drag here</div>
+<button>Alert after 2s</button>
+
+<test-case id="one">drag-start event
+    <span>Just start the drag event by starting dragging this block</span>
+</test-case>
+<test-case id="two">drag-move event
+    <span>Move this block in any direction</span>
+</test-case>
+<test-case id="three">drag-end event
+    <span>Stop moving the block, and take your finger from the mouse</span>
+</test-case>
+<test-case id="four">fling event
+    <span>Throw the block as if shot from a catapult</span>
+</test-case>
+
+<test-case id="six">drag-start event starts from the last coordinates as drag-end ends
+    <span>Move the block - stop moving - release the mouse button - continue moving with a new mouse click</span>
+</test-case>
+<test-case id="seven">drag-start event starts from the last coordinates as fling ends
+    <span>Catapult the block (fling) - stop moving - release the mouse button - continue moving with a new mouse click</span>
+</test-case>
+<test-case id="eight">Just nice feature
+    <span>Drag the block in the direction of the red square</span>
+</test-case>
+<test-case id="nine">Mouse jailbreak 1: Alert
+    <span>Press "Alert" button and drag the block until alert will be trigger</span>
+</test-case>
+<test-case id="ten">Mouse jailbreak 1: The same coordinates after alert canceling
+    <span>Press "Alert" button and drag the block until alert will be trigger, confirm alert message and repeat dropping</span>
+</test-case>
+<test-case id="eleven">Mouse jailbreak 2: Wrong mouse button
+    <span>Try to click right mouse button when you drag the block</span>
+</test-case>
+<test-case id="twelve">Mouse jailbreak 2: The same coordinates after wrong mouse button canceling
+    <span>Press "Alert" button and drag the block until alert will be trigger, confirm alert message and repeat dropping</span>
+</test-case>
+
+<test-case id="five">Mouse jailbreak 3: Out of bounds
+    <span>Try capturing the block and moving it off the page (for example, toward the top of the display)</span>
+</test-case>
+
+<test-case id="thirteen">Mouse jailbreak 3: The same coordinates after out of bounds canceling
+    <span>Press "Alert" button and drag the block until alert will be trigger, confirm alert message and repeat dropping</span>
+</test-case>
+
+<script>
+  let element = document.querySelector("#elem");
+
+  let elemX = undefined;
+  let elemY = undefined;
+  let startX = undefined;
+  let startY = undefined;
+
+  let dropCoord = {};
+  let dropzone = undefined;
+
+  let endElemDragX = undefined;
+  let endElemDragY = undefined;
+  let endElemFlingX = undefined;
+  let endElemFlingY = undefined;
+
+  let endElemCancelX = undefined;
+  let endElemCancelY = undefined;
+
+
+  // to avoid accident checking. Will be true if some conditionwill be done
+  alertCancel = false;
+  wrongButtonCancel = false;
+  outOfBoundsCancel = false;
+
+
+  // avoid trigger done() each time when drag-move event activated
+  let move = true;
+
+
+  function done(testId) {
+    document.querySelector("#" + testId).shadowRoot.querySelector("div").style.backgroundColor = "#66ff69";
+  }
+
+  document.querySelector("button").addEventListener("click", () => {
+    setTimeout(() => {
+      alert("Alert")
+    }, 2000);
+  });
+
+
+  class Tests extends HTMLElement {
+
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+      <style>
+      #indicator{
+        height: 10px;
+        width: 10px;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      #info{
+        width: 12px;
+        height: 12px;
+        border: 1px solid blue;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: center;
+        color: blue;
+        }
+      </style>
+      <div id="indicator"></div>
+      <slot></slot>
+      <div id="info">i</div>
+      <!--<slot id="manual" name="manual"></slot>-->
+`;
+
+      this.shadowRoot.querySelector("#info").addEventListener("click", () => {
+
+        element.innerText = this.querySelector("span").innerText;
+
+
+      });
+
+    };
+  }
+
+  customElements.define("test-case", Tests);
+
+
+  window.addEventListener("dragging-start", e => {
+    startX = e.x;
+    startY = e.y;
+    element.style.transition = undefined;
+    elemX = parseInt(getComputedStyle(element).left);
+    elemY = parseInt(getComputedStyle(element).top);
+    done("one");
+
+    // is the coordinates of the block is the same as it was when alert was triggered?
+    if (alertCancel && endElemCancelX === element.style.left) {
+      done("ten");
+      alertCancel = false;
+    }
+    // new coordinates after wrong button pressing cancel
+    if (wrongButtonCancel && endElemCancelX === element.style.left) {
+      done("twelve");
+      wrongButtonCancel = false;
+    }
+    // newcoordinates after out of bounds cancel
+    if (outOfBoundsCancel && endElemCancelX === element.style.left) {
+      done("thirteen");
+      outOfBoundsCancel = false;
+    }
+
+
+    if (e.target.id === "elem") {
+      dropzone = document.querySelector("#redzone");
+      dropCoord = {
+        left: dropzone.offsetLeft,
+        top: dropzone.offsetTop
+      };
+    }
+    if (element.style.left === endElemDragX && element.style.top === endElemDragY)
+      done("six");
+    if (element.style.left === endElemFlingX && element.style.top === endElemFlingY)
+      done("seven");
+  });
+
+
+  window.addEventListener("dragging-move", (e) => {
+    element.style.left = (e.x - startX + elemX) + "px";
+    element.style.top = (e.y - startY + elemY) + "px";
+    if (move) {
+      done("two");
+      move = false;
+    }
+  });
+
+
+  document.addEventListener("dragging-stop", (e) => {
+    done("three");
+    if (e.x >= dropCoord.left - 10 && e.y >= dropCoord.top - 10 && e.y <= dropCoord.top + dropzone.clientHeight + 10) {
+      element.style.left = dropCoord.left + 7 + "px";
+      element.style.top = dropCoord.top + 7 + "px";
+      done("eight");
+    }
+    //last drag coordinates
+    endElemDragX = element.style.left;
+    endElemDragY = element.style.top;
+  });
+
+  window.addEventListener("fling", e => {
+    element.style.transition = "all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1)";
+    element.style.left = (e.trigger.x - startX + elemX + e.detail.distX * 1.5) + "px";
+    element.style.top = (e.trigger.y - startY + elemY + e.detail.distY * 1.5) + "px";
+    done("four");
+    //last fling coordinates
+    endElemFlingX = element.style.left;
+    endElemFlingY = element.style.top;
+
+  });
+
+  document.addEventListener("dragging-cancel", (e) => {
+    if (e.trigger.type === "focus") {
+      done("nine");
+      alertCancel = true;
+    }
+    if (e.trigger.type === "mouseout") {
+      done("five");
+      outOfBoundsCancel = true;
+    }
+    // other mouse buttons triggers cncel event
+    if (e.trigger.button && e.trigger.button !== 0) {
+      wrongButtonCancel = true;
+      done("eleven");
+    }
+
+    endElemCancelX = element.style.left;
+    endElemCancelY = element.style.top;
+
+  });
+
+
+</script>
+</body>
+</html>
