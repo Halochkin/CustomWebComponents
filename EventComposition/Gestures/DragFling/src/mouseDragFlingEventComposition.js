@@ -16,8 +16,8 @@
   }
 
   function dispatchPriorEvent(target, composedEvent, trigger) {
-    if (!composedEvent || !target)
-      return;
+    // if (!composedEvent || !target)   //todo remove this redundant check? should always be done at the level up?
+    //   return;
     composedEvent.preventDefault = function () {
       trigger.preventDefault();
       trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
@@ -71,8 +71,7 @@
   const mousemoveListener = e => onMousemove(e);
   const mouseupListener = e => onMouseup(e);
   const mouseoutListener = e => onMouseout(e);
-  const onFocusinListener = e => onFocusin(e);
-  const onMouseleaveListener = e => onMouseleave(e);
+  const onFocusListener = e => onFocus(e);
 
   function startSequence(target, e) {
     const body = document.querySelector("body");
@@ -80,18 +79,14 @@
       target,
       cancelMouseout: target.hasAttribute("draggable-cancel-mouseout"),
       flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,
-      flingDistance: parseInt(target.getAttribute("fling-distance")) || 50,
+      flingDistance: parseInt(target.getAttribute("fling-distance")) || 150,
       recorded: [e],
       userSelectStart: body.style.userSelect
     };
     body.style.userSelect = "none";
     window.addEventListener("mousemove", mousemoveListener, true);
     window.addEventListener("mouseup", mouseupListener, true);
-    window.addEventListener("mouseleave", onMouseleaveListener, true);
-    window.addEventListener("focus", onFocusinListener, true);
-    window.removeEventListener("mousedown", e => onMousedown(e), true);
-
-
+    window.addEventListener("focus", onFocusListener, true);
     !sequence.cancelMouseout && window.addEventListener("mouseout", mouseoutListener, true);
     return sequence;
   }
@@ -107,29 +102,23 @@
     document.querySelector("body").style.userSelect = globalSequence.userSelectStart;
     window.removeEventListener("mousemove", mousemoveListener, true);
     window.removeEventListener("mouseup", mouseupListener, true);
-    window.removeEventListener("mouseleave", onMouseleaveListener, true);
-    window.removeEventListener("focus", onFocusinListener, true);
+    window.removeEventListener("focus", onFocusListener, true);
     window.removeEventListener("mouseout", mouseoutListener, true);
-
-    // window.addEventListener("mousedown", e => onMousedown(e),true); //todo it is trigger extra events
-
-
     return undefined;
   }
 
   //custom listeners
 
   function onMousedown(trigger) {
-    console.log("mousedown");
-    // filter 1
-    if (globalSequence) {
+    //filter 1
+    if (globalSequence){
       const cancelEvent = makeDraggingEvent("cancel", trigger);
       const target = globalSequence.target;
       globalSequence = stopSequence();
       dispatchPriorEvent(target, cancelEvent, trigger);
       return;
     }
-    // filter 2
+    //filter 2
     if (trigger.button !== 0)
       return;
     //filter 3
@@ -144,6 +133,13 @@
   }
 
   function onMousemove(trigger) {
+    if (1 !== (trigger.buttons !== undefined ? trigger.buttons : trigger.nativeEvent.which)) {
+      const cancelEvent = makeDraggingEvent("cancel", trigger);
+      const target = globalSequence.target;
+      globalSequence = stopSequence();
+      dispatchPriorEvent(target, cancelEvent, trigger);
+      return;
+    }
     const composedEvent = makeDraggingEvent("move", trigger);
     captureEvent(trigger, false);
     globalSequence = updateSequence(globalSequence, composedEvent);
@@ -157,13 +153,14 @@
     const target = globalSequence.target;
     globalSequence = stopSequence();
     dispatchPriorEvent(target, stopEvent, trigger);
-    dispatchPriorEvent(target, flingEvent, trigger);
+    if (flingEvent)
+      dispatchPriorEvent(target, flingEvent, trigger);
   }
 
   function onMouseout(trigger) {
-    //filter
+    //filter to only trigger on the mouse leaving the window
     if (trigger.clientY > 0 && trigger.clientX > 0 && trigger.clientX < window.innerWidth && trigger.clientY < window.innerHeight)
-      return;   //The mouse has not left the window
+      return;
     //captureEvent(trigger, false);
     const cancelEvent = makeDraggingEvent("cancel", trigger);
     const target = globalSequence.target;
@@ -171,12 +168,7 @@
     dispatchPriorEvent(target, cancelEvent, trigger);
   }
 
-  function onMouseleave(trigger) {
-    alert("Wow, it is work!!!")
-  }
-
-  function onFocusin(trigger) {
-    console.log("focusin");
+  function onFocus(trigger) {
     const focusInEvent = makeDraggingEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
