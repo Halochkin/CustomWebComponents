@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slider</title>
+    <style>
+        #viewport {
+            height: 300px;
+            width: 300px;
+            font-size: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-left: 20px;
+            margin-top: 30px;
+            border: 1px solid red;
+        }
+
+        #frame {
+            transition: all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1);
+        }
+
+        #frame > div {
+            height: 300px;
+            width: 300px;
+            /*display: block;*/
+            font-size: 30px;
+            text-align: center;
+            line-height: 10;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div width="300" id="viewport">
+    <div draggable draggable-cancel-mouseout id="frame">
+        <div>First</div>
+        <div>Second</div>
+        <div>Third</div>
+        <div>Fourth</div>
+    </div>
+</div>
+<script>
+  let currentLeft = undefined;
+  let startX;
+  window.addEventListener("dragging-start", e => {
+    startX = e.pageX;
+    currentLeft = parseInt((e.target.style.transform).substr(10) || 0);       //[3]
+  });
+
+  window.addEventListener("dragging-move", e => {
+
+    e.target.style.transform = `translate(${currentLeft + e.pageX - startX}px)`;  //[4]
+  });
+
+  window.addEventListener("dragging-cancel", e => {
+    e.target.style.transform = `translate(${currentLeft}px)`;                //[5]
+  });
+
+  window.addEventListener('dragging-stop', (e) => {
+    let sliderWidth = parseInt(e.target.parentNode.getAttribute("width"));    //[6]
+    let frames = e.target.children.length;                                    //[7]
+    let movement = e.pageX - startX;
+    if (Math.abs(movement) < 100)                                             //[8]
+      movement = 0;
+    else
+      movement = (movement > 0 ? sliderWidth : -sliderWidth);
+    let newPosition = (currentLeft + movement);
+    if (newPosition > 0)                                                      //[9]
+      newPosition = currentLeft;
+    else if (newPosition <= -sliderWidth * frames)                            //[10]
+      newPosition = currentLeft;
+    e.target.style.transform = `translate(${newPosition}px)`;
+  });
+</script>
+<script>
+  (function () {
+
+    const sequence = Symbol("globalSequence");
+    const body = document.querySelector("body");
+
+    function getFlingStart(end, duration, events) {
+      const flingTime = end.timeStamp - duration;
+      for (let i = events.length - 1; i >= 0; i--) {
+        if (events[i].trigger.timeStamp < flingTime)
+          return events[i];
+      }
+      return events[0];
+    }
+
+    //The DraggingEvent class has access to the globalSequence variable via a symbol property.
+    //This property should not be tampered with from the outside, and the symbol defense should be strong enough.
+    //The DraggingEvent must ONLY read from the sequence property, it should NEVER write to it.
+    //
+    //As the DraggingEvent holds on to the sequence object, it will have useful data after being reused.
+    //However, this also makes the DraggingEvent a potential memory leak if you preserve only a single DraggingEvent
+    //object from each sequence. Therefore, be careful not to store many DraggingEvents for long periods.
+    //
+    //The coordinates of the DraggingEvent can be retrieved like so:
+    // draggingEvent.pageX
+    // draggingEvent.trigger.clientX
+    // draggingEvent.trigger.screenX
+
+    class DraggingEvent extends Event {
+      constructor(type, trigger, globals) {
+        super("dragging-" + type, {bubbles: true, composed: true, cancelable: true});
+        this.trigger = trigger;
+        this.pageX = parseInt(trigger.changedTouches[0].pageX);
+        this.pageY = parseInt(trigger.changedTouches[0].pageY);
+        this[sequence] = globals;
+      }
+
+      fling(duration) {
+        const flingStart = getFlingStart(this.trigger, duration, this[sequence].recorded);
+        const distX = parseInt(this.pageX) - flingStart.pageX;
+        const distY = parseInt(this.pageY) - flingStart.pageY;
+        const distDiag = Math.sqrt(distX * distX + distY * distY);
+        const durationMs = this.trigger.timeStamp - flingStart.trigger.timeStamp;
+        const angle = ((Math.atan2(distY, -distX) * 180 / Math.PI) + 270) % 360;
+        return {distX, distY, distDiag, durationMs, angle, flingStart};
+      }
+    }
+
+    let globalSequence;
+    var onTouchmoveListener = e => onTouchmove(e);
+    var onTouchendListener = e => onTouchend(e);
+    var onTouchcancelListener = e => onTouchcancel(e);
+
+    function captureEvent(e, stopProp) {
+      e.preventDefault();
+      stopProp && e.stopImmediatePropagation ? e.stopImmediatePropagation() : e.stopPropagation();
+    }
+
+    function filterOnAttribute(e, attributeName) {                  //[4] FilterByAttribute
+      var target = e.composedPath ? e.composedPath()[0] : e.target;
+      for (var el = target; el; el = el.parentNode) {
+        if (el.hasAttribute && el.hasAttribute(attributeName))
+          return el;
+      }
+    }
+
+    function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
+      trigger.stopTrailingEvent = function () {
+        composedEvent.stopImmediatePropagation ?
+          composedEvent.stopImmediatePropagation() :
+          composedEvent.stopPropagation();
+      };
+      trigger.preventDefault();
+      return setTimeout(function () {
+        target.dispatchEvent(composedEvent)
+      }, 0);
+    }
+
+    function makeDraggingEvent(name, trigger) {
+      return new DraggingEvent(name, trigger, globalSequence);
+    }
+
+    function startSequence(target, e) {                                    //[5] Event Sequence
+      globalSequence = {
+        target,                                                                 //[9] GrabTarget
+        recorded: [e],
+        userSelectStart: body.style.userSelect,                                   //[1]. GrabMouse
+        touchActionStart: body.style.touchAction
+      };
+      body.style.userSelect = "none";
+      body.style.touchAction = "none";
+      window.addEventListener("touchmove", onTouchmoveListener, {capture: true, passive: false});   //8. ListenUp
+      window.addEventListener("touchend", onTouchendListener, {capture: true, passive: false});
+      window.addEventListener("touchcancel", onTouchcancelListener, {capture: true, passive: false});
+      window.addEventListener("focusin", onFocusin, true);
+    }
+
+    function updateSequence(e) {                                        //[7] TakeNote
+      globalSequence.recorded.push(e);
+    }
+
+    function stopSequence() {
+      body.style.userSelect = globalSequence.userSelectStart; //[9]a GrabMouse
+      body.style.touchAction = globalSequence.touchActionStart;
+      window.removeEventListener("touchend", onTouchendListener, {capture: true, passive: false});
+      window.removeEventListener("touchmove", onTouchmoveListener, {capture: true, passive: false});
+      window.removeEventListener("touchcancel", onTouchcancelListener, {capture: true, passive: false});
+      window.removeEventListener("focusin", onFocusin, true);
+      //the content of the globalSequence could be queued to be emptied here.
+      //it must be a double setTimeout as the replaceDefaultAction dispatch of the event is setTimeout shortly after this one.
+      //this will force the event to hold on to the data for 2 set timeouts, always. This is bad.
+      //don't use this.
+      // setTimeout(
+      //   function () {
+      //     setTimeout(
+      //       function () {
+      //         globalSequence.recorded = [];
+      //       }, 0);
+      //   }, 0);
+      globalSequence = undefined;
+    }
+
+    function onTouchstart(trigger) {
+      if (globalSequence) {
+        var cancelEvent = makeDraggingEvent("cancel", trigger);
+        var target = globalSequence.target;
+        stopSequence();
+        replaceDefaultAction(target, cancelEvent, trigger);
+        return;
+      }
+      var target = filterOnAttribute(trigger, "draggable");
+      if (!target)
+        return;
+      var composedEvent = makeDraggingEvent("start", trigger);
+      captureEvent(trigger, false);
+      startSequence(target, composedEvent);
+      replaceDefaultAction(target, composedEvent, trigger);
+    }
+
+    function onTouchmove(trigger) {
+      var composedEvent = makeDraggingEvent("move", trigger);
+      captureEvent(trigger, false);
+      updateSequence(composedEvent);
+      replaceDefaultAction(globalSequence.target, composedEvent, trigger);
+    }
+
+    function onTouchend(trigger) {
+      var stopEvent = makeDraggingEvent("stop", trigger);
+      stopEvent.detail = stopEvent.fling(stopEvent.timeStamp);
+      captureEvent(trigger, false);
+      var target = globalSequence.target;
+      stopSequence();
+      // if (stopEvent.detail.distDiag < 10)
+      //   return;
+      replaceDefaultAction(target, stopEvent, trigger);
+    }
+
+    function onTouchcancel(trigger) {
+      if (trigger.clientY > 0 && trigger.clientX > 0 && trigger.clientX < window.innerWidth && trigger.clientY < window.innerHeight)
+        return;
+      var cancelEvent = makeDraggingEvent("cancel", trigger);
+      var target = globalSequence.target;
+      stopSequence();
+      replaceDefaultAction(target, cancelEvent, trigger);
+    }
+
+    function onFocusin(trigger) {
+      var cancelEvent = makeDraggingEvent("cancel", trigger);
+      var target = globalSequence.target;
+      stopSequence();
+      replaceDefaultAction(target, cancelEvent, trigger);
+    }
+
+    window.addEventListener("touchstart", onTouchstart, {capture: true, passive: false}); //[1] EarlyBird
+  })();
+</script>
+</body>
+</html>
