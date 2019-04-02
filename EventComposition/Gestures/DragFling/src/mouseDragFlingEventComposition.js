@@ -72,6 +72,7 @@
   const mouseupListener = e => onMouseup(e);
   const mouseoutListener = e => onMouseout(e);
   const onFocusListener = e => onFocus(e);
+  const onSelectstartListener = e => onSelectstart(e);
 
   function startSequence(target, e) {
     const body = document.querySelector("body");
@@ -83,10 +84,11 @@
       recorded: [e],
       userSelectStart: body.style.userSelect
     };
-    body.style.userSelect = "none";
+    // body.style.userSelect = "none";
     window.addEventListener("mousemove", mousemoveListener, true);
     window.addEventListener("mouseup", mouseupListener, true);
     window.addEventListener("focus", onFocusListener, true);
+    window.addEventListener("selectstart", onSelectstartListener, true);
     !sequence.cancelMouseout && window.addEventListener("mouseout", mouseoutListener, true);
     return sequence;
   }
@@ -99,10 +101,11 @@
   function stopSequence() {
     //release target and event type start
     //always remove all potential listeners, regardless
-    document.querySelector("body").style.userSelect = globalSequence.userSelectStart;
+    // document.querySelector("body").style.userSelect = globalSequence.userSelectStart;
     window.removeEventListener("mousemove", mousemoveListener, true);
     window.removeEventListener("mouseup", mouseupListener, true);
     window.removeEventListener("focus", onFocusListener, true);
+    window.removeEventListener("selectstart", onSelectstartListener, true);
     window.removeEventListener("mouseout", mouseoutListener, true);
     return undefined;
   }
@@ -111,7 +114,7 @@
 
   function onMousedown(trigger) {
     //filter 1
-    if (globalSequence){
+    if (globalSequence) {
       const cancelEvent = makeDraggingEvent("cancel", trigger);
       const target = globalSequence.target;
       globalSequence = stopSequence();
@@ -173,6 +176,11 @@
     const target = globalSequence.target;
     globalSequence = stopSequence();
     dispatchPriorEvent(target, focusInEvent, trigger);
+  }
+
+  function onSelectstart(trigger) {
+    trigger.preventDefault();
+    if(window.onSelect(trigger)) window.onSelect(trigger);
   }
 
   window.addEventListener("mousedown", e => onMousedown(e));
