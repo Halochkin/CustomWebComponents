@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #elem {
+            position: absolute;
+            left: 200px;
+            top: 400px;
+            height: 300px;
+            width: 300px;
+            border: 2px solid skyblue;
+            background-color: #b7e9fd;
+            /*transition: all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1);*/
+        }
+
+        * {
+            font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        test-case {
+            display: block;
+        }
+
+        span {
+            margin-left: 20px;
+            display: none;
+        }
+
+        button {
+            float: right;
+        }
+    </style>
+    <!--<script src="https://hammerjs.github.io/dist/hammer.js"></script>-->
+    <script src="src/PinchSpin.js"></script>
+    <script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
+    <script> TouchEmulator(); </script>
+</head>
+<body>
+
+<div id="elem" pinch></div>
+
+<button>Alert after 2s</button>
+<div id="test">event here</div>
+
+<test-case id="a1">pinch-start event
+    <span>Just start pinch-start event by putting two fingers on this block</span>
+</test-case>
+<test-case id="a2">pinch-move event
+    <span>Just start pinch-move event by starting rotate this block</span>
+</test-case>
+<test-case id="a3">pinch-end event
+    <span>Just start pinch-end event by removing your fingers from this block</span>
+</test-case>
+<test-case id="a4">spin event
+    <span>Just start spin event by fast rotation this block</span>
+</test-case>
+<test-case id="a5">pinch-cancel event
+    <span>Just start pinch-cancel event by putting extra finger on this block or press Alert button</span>
+</test-case>
+<hr>
+<test-case id="b1">pinch-start event starts from the same angle as pinch-end ends
+    <span>Rotate the block - stop rotation - repeat rotation</span>
+</test-case>
+<test-case id="b2">pinch-start event starts from the same angle as spin ends
+    <span>Spin the block - stop rotation - repeat rotation</span>
+</test-case>
+<hr>
+<test-case id="c1"> Extra finger cancel event
+    <span>Put extra finger when dragging</span>
+</test-case>
+<test-case id="c2"> The same coordinates after extra finger canceling
+    <span>Put extra finger when dragging, it will cancele event, and repeat dropping</span>
+</test-case>
+<test-case id="c3"> Alert canceling
+    <span>Press "Alert" button and drag the block until alert will be trigger</span>
+</test-case>
+<test-case id="c4"> The same coordinates after alert canceling
+    <span>Press "Alert" button and drag the block until alert will be trigger, confirm alert message and repeat dropping</span>
+</test-case>
+<hr>
+<test-case id="d1">Grab touch: user select: none with pinch-start event
+    <span>Just activate pinch-start event</span>
+</test-case>
+<test-case id="d2">Grab touch: user select: back to default value with pinch-stop event
+    <span>Just activate pinch-end event</span>
+</test-case>
+<test-case id="d3">Grab touch: user select: none with pinch-move event
+    <span>Just activate pinch-move event</span>
+</test-case>
+<test-case id="d4">Grab touch: user select: back to default value with pinch-cancel event
+    <span>Just activate pinch-cancel event</span>
+</test-case>
+<hr>
+<test-case id="e1">PreventDefault() : pinch-start prevented trigger event
+    <span>Just activate pinch-start event</span>
+</test-case>
+<test-case id="e2">PreventDefault() : pinch-move prevented trigger event
+    <span>Just activate pinch-move event</span>
+</test-case>
+<test-case id="e3">PreventDefault() : pinch-stop prevented trigger event
+    <span>Just activate pinch-move event</span>
+</test-case>
+<test-case id="e4">PreventDefault() : spin prevented trigger event
+    <span>Just activate pinch-move event</span>
+</test-case>
+<hr>
+<test-case id="f1">Composed event : pinch-start
+    <span>Just activate pinch-start event</span>
+</test-case>
+<test-case id="f2">Composed event : pinch-move
+    <span>Just activate pinch-move event</span>
+</test-case>
+<test-case id="f3">Composed event : pinch-end
+    <span>Just activate pinch-end event</span>
+</test-case>
+<test-case id="f4">Composed event : spin
+    <span>Just activate spin event</span>
+</test-case>
+<test-case id="f5">Composed event : pinch-cancel
+    <span>Just activate pinch-cancel event</span>
+</test-case>
+<hr>
+<test-case id="g1">Trigger event : pinch-start triggered by touchstart event
+    <span>Just activate pinch-start event</span>
+</test-case>
+<test-case id="g2">Trigger event : pinch-move triggered by touchmove event
+    <span>Just activate pinch-move event</span>
+</test-case>
+<test-case id="g3">Trigger event : pinch-stop triggered by touchend event
+    <span>Just activate pinch-stop event</span>
+</test-case>
+<hr>
+<test-case id="h1">Selection 2: normal selection before pinch/spin
+    <span>Just try select something before you start dragging</span>
+</test-case>
+<test-case id="h3">Selection 2: normal selection after pinch/spin
+    <span>Just try select something after you finished dragging</span>
+</test-case>
+<hr>
+<test-case id="h4">Checking the target attribute "pinch" in the pinch-start event
+    <span>Just start pinch start event</span>
+</test-case>
+<test-case id="h5">Checking the target attribute "pinch" in the pinch-move event
+    <span>Just start pinch-move event</span>
+</test-case>
+<test-case id="h6">Checking the target attribute "pinch" in the pinch-stop event
+    <span>Just start pinch-end event</span>
+</test-case>
+<test-case id="h7">Checking the target attribute "pinch" in the spin event
+    <span>Just start pinch-end event</span>
+</test-case>
+<test-case id="h8">Checking the target attribute "pinch" in the pinch-cancel event
+    <span>Just start pinch-cancel event</span>
+</test-case>
+<hr>
+
+<script>
+  function done(testId) {
+    document.querySelector("#" + testId).shadowRoot.querySelector("div").style.backgroundColor = "#66ff69";
+  }
+
+  document.querySelector("button").addEventListener("click", () => {
+    setTimeout(() => {
+      alert("Alert")
+    }, 2000);
+  });
+
+  class Tests extends HTMLElement {
+
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+      <style>
+      #indicator{
+        height: 10px;
+        width: 10px;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      #info{
+        width: 12px;
+        height: 12px;
+        border: 1px solid blue;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: center;
+        color: blue;
+        }
+      </style>
+      <div id="indicator"></div>
+      <slot></slot>
+      <div id="info">i</div>
+      <!--<slot id="manual" name="manual"></slot>-->
+`;
+
+      this.shadowRoot.querySelector("#info").addEventListener("click", () => {
+
+        element.innerText = this.querySelector("span").innerText;
+
+
+      });
+
+    };
+  }
+
+  customElements.define("test-case", Tests);
+
+
+  let element = document.querySelector("#elem");
+  let body = document.querySelector("body");
+  let startRotate = undefined;
+  let lastRotate = undefined;
+  let spinRotate = undefined;
+  let cancelRotate = undefined;
+  //cancel reasons
+  let extraFingerCancel = false;
+  let alertCancel = false;
+
+  let pinchEnd = false;
+
+  window.addEventListener("pinch-start", e => {
+    done("a1");
+    element.style.backgroundColor = "skyblue";
+    element.style.transition = "0s";
+    startRotate = element.style.transform ? parseFloat(element.style.transform.substring(7)) : 0;
+
+    if (lastRotate && lastRotate === startRotate) done("b1");
+    if (spinRotate && spinRotate === startRotate) done("b2");
+    if (extraFingerCancel && startRotate === lastRotate) {
+      done("c2");
+      extraFingerCancel = false;
+    }
+    if (alertCancel && startRotate === cancelRotate) done("c4");
+    if (body.style.userSelect === "none") done("d1");
+    if (e.trigger.defaultPrevented) done("e1");
+    if (e.composed) done("f1");
+    if (e.trigger.type === "touchstart") done("g1");
+    if (e.target.attributes[1].name === "pinch") done("h4");
+  });
+
+  window.addEventListener("pinch-move", e => {
+    done("a2");
+    if (body.style.userSelect === "none") done("d3");
+    if (e.trigger.defaultPrevented) done("e2");
+    if (e.composed) done("f2");
+    if (e.trigger.type === "touchmove") done("g2");
+    element.style.transform = `rotate(${ startRotate -= e.detail.rotation}deg)`;
+    if (e.target.attributes[1].name === "pinch") done("h5");
+  });
+
+  window.addEventListener("pinch-stop", e => {
+    done("a3");
+    if (body.style.userSelect === "") done("d2");
+    if (e.trigger.defaultPrevented) done("e3");
+    if (e.composed) done("f3");
+    if (e.trigger.type === "touchend") done("g3");
+    lastRotate = parseFloat(element.style.transform.substring(7));
+    pinchEnd = true;
+    if (e.target.attributes[1].name === "pinch") done("h6");
+  });
+
+  window.addEventListener("spin", e => {
+    done("a4");
+    element.style.transition = "all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1)";
+    element.style.transform = `rotate(${ startRotate - e.detail.rotation * 1.2}deg)`;
+
+    if (e.trigger.defaultPrevented) done("e4");
+    if (e.composed) done("f4");
+    spinRotate = parseFloat(element.style.transform.substring(7));
+    if (e.target.attributes[1].name === "pinch") done("h7");
+  });
+
+
+  window.addEventListener("pinch-cancel", e => {
+    done("a5");
+    cancelRotate = parseFloat(element.style.transform.substring(7));
+    if (e.trigger.type === "touchstart" && e.trigger.touches.length > 2) {
+      done("c1");
+      extraFingerCancel = true;
+    }
+    if (e.trigger.type === "blur") {
+      done("c3");
+      alertCancel = true;
+    }
+    if (e.composed) done("f5");
+    if (body.style.userSelect === "") done("d4");
+    if (e.target.attributes[1].name === "pinch") done("h8");
+  });
+
+  window.addEventListener("selectstart", e => {
+    done("h1");
+    //be sure that pinch-end event occurred
+    if (pinchEnd) done("h3");
+  });
+  
+</script>
+
+</body>
+</html>
