@@ -68,14 +68,15 @@
 
   //custom sequence
   let globalSequence;
+  const mousedownInitialListener = e => onMousedownInitial(e);
+  const mousedownSecondaryListener = e => onMousedownSecondary(e);
   const mousemoveListener = e => onMousemove(e);
   const mouseupListener = e => onMouseup(e);
-  const mouseoutListener = e => onMouseout(e);
-  const onFocusListener = e => onFocus(e);
+  const onBlurListener = e => onBlur(e);
   const onSelectstartListener = e => onSelectstart(e);
 
   function startSequence(target, e) {
-    const body = document.querySelector("body");
+ 
     const sequence = {
       target,
       cancelMouseout: target.hasAttribute("draggable-cancel-mouseout"),
@@ -84,12 +85,13 @@
       recorded: [e],
       userSelectStart: body.style.userSelect
     };
-    // body.style.userSelect = "none";
+    document.children[0].style.userSelect = "none";
+    window.removeEventListener("mousedown", mousedownInitialListener, true);
+    window.addEventListener("mousedown", mousedownSecondaryListener, true);
     window.addEventListener("mousemove", mousemoveListener, true);
     window.addEventListener("mouseup", mouseupListener, true);
-    window.addEventListener("focus", onFocusListener, true);
+    window.addEventListener("blur", onBlurListener, true);
     window.addEventListener("selectstart", onSelectstartListener, true);
-    !sequence.cancelMouseout && window.addEventListener("mouseout", mouseoutListener, true);
     return sequence;
   }
 
@@ -101,42 +103,38 @@
   function stopSequence() {
     //release target and event type start
     //always remove all potential listeners, regardless
-    // document.querySelector("body").style.userSelect = globalSequence.userSelectStart;
+    document.children[0].style.userSelect = globalSequence.userSelectStart;
     window.removeEventListener("mousemove", mousemoveListener, true);
     window.removeEventListener("mouseup", mouseupListener, true);
-    window.removeEventListener("focus", onFocusListener, true);
+    window.removeEventListener("blur", onBlurListener, true);
     window.removeEventListener("selectstart", onSelectstartListener, true);
-    window.removeEventListener("mouseout", mouseoutListener, true);
+    window.removeEventListener("mousedown", mousedownSecondaryListener, true);
+    window.addEventListener("mousedown", mousedownInitialListener, true);
     return undefined;
   }
 
   //custom listeners
-
-  function onMousedown(trigger) {
-    //filter 1
-    if (globalSequence) {
-      const cancelEvent = makeDraggingEvent("cancel", trigger);
-      const target = globalSequence.target;
-      globalSequence = stopSequence();
-      dispatchPriorEvent(target, cancelEvent, trigger);
-      return;
-    }
-    //filter 2
+  function onMousedownInitial(trigger) {
     if (trigger.button !== 0)
       return;
-    //filter 3
     const target = filterOnAttribute(trigger, "draggable");
     if (!target)
       return;
-
     const composedEvent = makeDraggingEvent("start", trigger);
     captureEvent(trigger, false);
     globalSequence = startSequence(target, composedEvent);
     dispatchPriorEvent(target, composedEvent, trigger);
   }
 
+  function onMousedownSecondary(trigger) {
+    const cancelEvent = makeDraggingEvent("cancel", trigger);
+    const target = globalSequence.target;
+    globalSequence = stopSequence();
+    dispatchPriorEvent(target, cancelEvent, trigger);
+  }
+
   function onMousemove(trigger) {
-    if (1 !== (trigger.buttons !== undefined ? trigger.buttons : trigger.nativeEvent.which)) {
+    if (globalSequence.cancelMouseout || mouseJailbreakOne(trigger)) {
       const cancelEvent = makeDraggingEvent("cancel", trigger);
       const target = globalSequence.target;
       globalSequence = stopSequence();
@@ -160,29 +158,21 @@
       dispatchPriorEvent(target, flingEvent, trigger);
   }
 
-  function onMouseout(trigger) {
-    //filter to only trigger on the mouse leaving the window
-    if (trigger.clientY > 0 && trigger.clientX > 0 && trigger.clientX < window.innerWidth && trigger.clientY < window.innerHeight)
-      return;
-    //captureEvent(trigger, false);
-    const cancelEvent = makeDraggingEvent("cancel", trigger);
-    const target = globalSequence.target;
-    globalSequence = stopSequence();
-    dispatchPriorEvent(target, cancelEvent, trigger);
+  function mouseJailbreakOne(trigger) {
+    return !(trigger.clientY > 0 && trigger.clientX > 0 && trigger.clientX < window.innerWidth && trigger.clientY < window.innerHeight);
   }
 
-  function onFocus(trigger) {
-    const focusInEvent = makeDraggingEvent("cancel", trigger);
+  function onBlur(trigger) {
+    const blurInEvent = makeDraggingEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, focusInEvent, trigger);
+    dispatchPriorEvent(target, blurInEvent, trigger);
   }
 
   function onSelectstart(trigger) {
     trigger.preventDefault();
-    if(window.onSelect(trigger)) window.onSelect(trigger);
+    if (window.onSelect(trigger)) window.onSelect(trigger);
   }
 
-
-  window.addEventListener("mousedown", e => onMousedown(e));
+  window.addEventListener("mousedown", mousedownInitialListener);
 })();
