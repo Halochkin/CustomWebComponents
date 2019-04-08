@@ -1,0 +1,74 @@
+<script src="./dragFlingTouchTest.js"></script>
+<script src="touchDragFling.js"></script>
+<style>
+    #elem {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        height: 100px;
+        width: 100px;
+        background-color: red;
+        text-align: center;
+    }
+    #redzone {
+        position: absolute;
+        left: 300px;
+        top: 10px;
+        height: 110px;
+        width: 110px;
+        border: 2px solid red;
+    }
+</style>
+<div id="redzone">Drag here</div>
+<div id="elem" draggable>This text should be impossible to select</div>
+<button style="float:right" onclick="setTimeout(function(){alert('boo!')}, 2000)">Alert after 2s</button>
+<script>
+
+  var dragStart = undefined;
+
+  window.addEventListener("dragging-start", e => {
+    dragStart = {
+      x: e.x - e.target.offsetLeft,
+      y: e.y - e.target.offsetTop
+    };
+  });
+
+  window.addEventListener("dragging-move", (e) => {
+    e.target.style.left = (e.x - dragStart.x) + "px";
+    e.target.style.top = (e.y - dragStart.y) + "px";
+  });
+
+  window.addEventListener("dragging-stop", (e) => {
+    var dropzone = document.querySelector("#redzone");
+    var dropCoord = {
+      left: dropzone.offsetLeft - 10,
+      top: dropzone.offsetTop - 10,
+      right: dropzone.offsetLeft + dropzone.offsetWidth + 10,
+      bottom: dropzone.offsetTop + dropzone.clientHeight + 10
+    };
+    if (e.x < dropCoord.left || e.y < dropCoord.top || e.y > dropCoord.bottom || e.x > dropCoord.right)
+      return;
+    e.target.style.left = dropCoord.left + 17 + "px";
+    e.target.style.top = dropCoord.top + 17 + "px";
+  });
+
+  window.addEventListener("fling", e => {
+    var element = e.target;
+    element.style.left = (e.trigger.x - dragStart.x + e.detail.distX * 1.5) + "px";
+    element.style.top = (e.trigger.y - dragStart.y + e.detail.distY * 1.5) + "px";
+    element.style.transition = "all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1)";
+    setTimeout(function () {
+      element.style.transition = undefined;
+    }, 300);
+  });
+
+  window.addEventListener("dragging-cancel", (e) => {
+    if (e.trigger.type === "blur")
+      confirm("you just got blurred!");
+    if (e.trigger.type === "mouseout")
+      confirm("you just got mouseouted!");
+    if (e.trigger.type === "mousedown")
+      confirm("you just pressed to many buttons!");
+  });
+</script>
+
