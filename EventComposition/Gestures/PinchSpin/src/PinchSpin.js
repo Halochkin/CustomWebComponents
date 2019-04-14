@@ -1,16 +1,4 @@
 (function () {
-  let supportsPassive = false;
-  try {
-    const opts = Object.defineProperty({}, "passive", {
-      get: function () {
-        supportsPassive = true;
-      }
-    });
-    window.addEventListener("test", null, opts);
-    window.removeEventListener("test", null, opts);
-  } catch (e) {
-  }
-  const thirdArg = supportsPassive ? {passive: false, capture: true} : true;
 
   function captureEvent(e, stopProp) {
     e.preventDefault();
@@ -61,13 +49,7 @@
 
   function makeDetail(touchevent) {
 
-    if (!touchevent.targetTouches[1])
-      debugger;
-
-
-    let prevAngle = globalSequence
-      ? globalSequence.recorded[globalSequence.recorded.length - 1].detail.angle
-      : 0;
+    let prevAngle = globalSequence ? globalSequence.recorded[globalSequence.recorded.length - 1].detail.angle : 0;
     const f1 = touchevent.targetTouches[0];
     const f2 = touchevent.targetTouches[1];
     const x1 = f1.pageX;
@@ -99,9 +81,6 @@
 
 
   function spinDetails(spinEnd, spinStart) {
-
-    // const diagonal = Math.sqrt(Math.abs( - x1) * width + height * height);
-
     const spinWidth = spinStart.detail.width - spinEnd.width;
     const spinHeight = spinStart.detail.height - spinEnd.height;
     const spinDiagonal = Math.sqrt(spinWidth * spinWidth + spinHeight * spinHeight);
@@ -114,12 +93,14 @@
   }
 
 
-
   let oneHit = false;
   let globalSequence;
+
+
+  const touchdownInitialListener = e => onTouchdownInitial(e);
+  const touchdownSecondaryListener = e => onTouchdownSecondary(e);
   const touchmoveListener = e => onTouchmove(e);
   const touchendListener = e => onTouchend(e);
-  const touchcancelListener = e => onTouchcancel(e);
   const onBlurListener = e => onBlur(e);
   const onSelectstartListener = e => onSelectstart(e);
 
@@ -128,35 +109,20 @@
     const sequence = {
       target,
       touchCancel: target.hasAttribute("pinch-cancel-touchout"),
-      spinDuration: parseInt(target.getAttribute("fling-duration")) || 100,                      //6. EventAttribute
-      spinDistance: parseInt(target.getAttribute("fling-distance")) || 100,
+      spinDuration: parseInt(target.getAttribute("spin-duration")) || 100,                      //6. EventAttribute
+      spinDistance: parseInt(target.getAttribute("spin-distance")) || 100,
       recorded: [e],
       userSelectStart: body.style.userSelect,                                                    //10. Grabtouch
       touchActionStart: body.style.touchAction,
     };
-    body.style.userSelect = "none";
-    body.style.touchAction = "none";
-    window.addEventListener("touchmove", touchmoveListener, {
-      capture: true,
-      passive: false
-    });
-    window.addEventListener("touchend", touchendListener, {
-      capture: true,
-      passive: false
-    });
-    window.addEventListener("blur", onBlurListener, {
-      capture: true,
-      passive: false
-    });
-    window.addEventListener("selectstart", onSelectstartListener, {
-      capture: true,
-      passive: false
-    });
-    !sequence.touchCancel &&
-    window.addEventListener("touchcancel", touchcancelListener, {
-      capture: true,
-      passive: false
-    });
+    document.children[0].style.userSelect = "none";
+    document.children[0].style.touchAction = "none";
+    window.removeEventListener("touchstart", touchdownInitialListener, {capture: true, passive: false});
+    window.addEventListener("touchstart", touchdownSecondaryListener, {capture: true, passive: false});
+    window.addEventListener("touchmove", touchmoveListener, {capture: true, passive: false});
+    window.addEventListener("touchend", touchendListener, {capture: true, passive: false});
+    window.addEventListener("blur", onBlurListener, {capture: true, passive: false});
+    window.addEventListener("selectstart", onSelectstartListener, {capture: true, passive: false});
     return sequence;
   }
 
@@ -165,36 +131,20 @@
     return sequence;
   }
 
-
   function stopSequence() {
-    //release target and event type start
-    //always remove all potential listeners, regardless
-    document.querySelector("body").style.userSelect =
-      globalSequence.userSelectStart;
-    window.removeEventListener("touchmove", touchmoveListener, {
-      capture: true,
-      passive: false
-    });
-    window.removeEventListener("touchend", touchendListener, {
-      capture: true,
-      passive: false
-    });
-    window.removeEventListener("blur", onBlurListener, {
-      capture: true,
-      passive: false
-    });
-    window.removeEventListener("selectstart", onSelectstartListener, {
-      capture: true,
-      passive: false
-    });
-    window.removeEventListener("touchcancel", touchcancelListener, {
-      capture: true,
-      passive: false
-    });
+    document.children[0].style.userSelect = globalSequence.userSelectStart;                      //[9]a GrabTouch
+    document.children[0].style.touchAction = globalSequence.touchActionStart;
+    window.removeEventListener("touchmove", touchmoveListener, {capture: true, passive: false});
+    window.removeEventListener("touchend", touchendListener, {capture: true, passive: false});
+    window.removeEventListener("blur", onBlurListener, {capture: true, passive: false});
+    window.removeEventListener("selectstart", onSelectstartListener, {capture: true, passive: false});
+    window.removeEventListener("touchstart", touchdownSecondaryListener, {capture: true, passive: false});
+    window.addEventListener("touchdown", touchdownInitialListener, {capture: true, passive: false});
     return undefined;
   }
 
-  function onTouchstart(trigger) {
+
+  function onTouchdownInitial(trigger) {
     //filter 1
     const touches = trigger.targetTouches.length;
     // should start from one finger
@@ -206,31 +156,34 @@
       return;
     if (!oneHit)//first finger was not pressed on the element, so this second touch is part of something bigger.
       return;
-    //filter 2
-    if (globalSequence) {
-      const cancelEvent = makePinchEvent("cancel", trigger);
-      const target = globalSequence.target;
-      globalSequence = stopSequence();
-      dispatchPriorEvent(target, cancelEvent, trigger);
-      return;
-    }
-    //filter 3
     const target = filterOnAttribute(trigger, "pinch");
     if (!target)
       return;
-
     const composedEvent = makePinchEvent("start", trigger);
     captureEvent(trigger, false);
     globalSequence = startSequence(target, composedEvent);
     dispatchPriorEvent(target, composedEvent, trigger);
   }
 
+  function onTouchdownSecondary(trigger) {
+    const cancelEvent = makePinchEvent("cancel", trigger);
+    const target = globalSequence.target;
+    globalSequence = stopSequence();
+    dispatchPriorEvent(target, cancelEvent, trigger);
+  }
+
   function onTouchmove(trigger) {
+    if (globalSequence.cancelMouseout || mouseJailbreakOne(trigger)) {
+      const cancelEvent = makePinchEvent("cancel", trigger);
+      const target = globalSequence.target;
+      globalSequence = stopSequence();
+      dispatchPriorEvent(target, cancelEvent, trigger);
+      return;
+    }
     const composedEvent = makePinchEvent("move", trigger);
     captureEvent(trigger, false);
     globalSequence = updateSequence(globalSequence, composedEvent);
     dispatchPriorEvent(globalSequence.target, composedEvent, trigger);                         //3. ReplaceDefaultAction
-
   }
 
   function onTouchend(trigger) {
@@ -245,19 +198,12 @@
       dispatchPriorEvent(target, spinEvent, trigger);
   }
 
-  function onTouchcancel(trigger) {
-    //filter
-    if (trigger.clientY > 0 && trigger.clientX > 0 && trigger.clientX < window.innerWidth && trigger.clientY < window.innerHeight)
-      return;   //The mouse has not left the window
-    const cancelEvent = makePinchEvent("cancel", trigger);
-    const target = globalSequence.target;
-    globalSequence = stopSequence();
-    dispatchPriorEvent(target, cancelEvent, trigger);
+  function mouseJailbreakOne(trigger) {
+    return !(trigger.touches[0].clientY > 0 && trigger.touches[0].clientX > 0 && trigger.touches[0].clientX < window.innerWidth && trigger.touches[0].clientY < window.innerHeight);
   }
 
   function onBlur(trigger) {
     const blurEvent = makePinchEvent("cancel", trigger);
-    document.querySelector("#test").innerHTML = "CANCEL type: " + blurEvent.type;
     const target = globalSequence.target;
     globalSequence = stopSequence();
     dispatchPriorEvent(target, blurEvent, trigger);
@@ -267,6 +213,5 @@
     trigger.preventDefault();
   }
 
-  window.addEventListener("touchstart", onTouchstart, thirdArg);
-
+  window.addEventListener("touchstart", touchdownInitialListener, {passive: false});
 })();
