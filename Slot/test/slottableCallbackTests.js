@@ -1,5 +1,6 @@
 import {SlottablesCallback} from "../src/slottablesCallback.js";
 
+const name = "slottable-callback";
 
 describe("slottableCallBack: ", function () {
 
@@ -32,6 +33,8 @@ describe("slottableCallBack: ", function () {
     stop() {
       this._stop = true;
     }
+
+    //}
   }
 
   class ChainedSlotsGrandpaError extends SlottablesCallback(HTMLElement) {
@@ -39,11 +42,11 @@ describe("slottableCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-          <slottable-callback-test-one>
+          <${name}-test-one>
             <div>
               <slot></slot>
             </div>
-          </slottable-callback-test-one>`;
+          </${name}-test-one>`;
       this.testValue = [];
     }
 
@@ -75,9 +78,9 @@ describe("slottableCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-           <slottable-callback-chained-slot>
+           <${name}-chained-slot>
             <slot></slot>
-          </slottable-callback-chained-slot>`;
+          </${name}-chained-slot>`;
       this.testValue = [];
     }
 
@@ -109,9 +112,9 @@ describe("slottableCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-            <slottable-callback-grandpa-slot>
+            <${name}-grandpa-slot>
             <slot></slot>
-          </slottable-callback-grandpa-slot>`;
+          </${name}-grandpa-slot>`;
       this.testValue = [];
     }
 
@@ -143,9 +146,9 @@ describe("slottableCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-            <slottable-callback-chained-slot>
+            <${name}-chained-slot>
             <slot name="a"></slot>
-          </slottable-callback-chained-slot>`;
+          </${name}-chained-slot>`;
       this.testValue = [];
     }
 
@@ -189,9 +192,9 @@ describe("slottableCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-          <slottable-callback-test-one>
+          <${name}-test-one>
             <slot></slot>
-          </slottable-callback-test-one>`;
+          </${name}-test-one>`;
     }
   }
 
