@@ -276,6 +276,37 @@ describe("slotchangeCallBack: ", function () {
       });
     });
   });
+  
+    it("chained slot test: three slotCallbacks", function (done) {
+    const el = new SlotWrapper();
+    const inner = el.shadowRoot.children[0];
+    requestAnimationFrame(() => {
+      expect(inner.testValue.length).to.be.equal(1);
+      expect(inner.testValue[0].slotName).to.be.equal("");
+      expect(inner.testValue[0].value.length).to.be.equal(2);
+      el.appendChild(document.createElement("p"));
+      Promise.resolve().then(() => {                //we must wait for the slotchange event which is run at the end of microtask que
+        expect(inner.testValue.length).to.be.equal(2);
+        expect(inner.testValue[1].slotName).to.be.equal("");
+        expect(inner.testValue[1].value.length).to.be.equal(3);
+        expect(inner.testValue[1].value[1].nodeName).to.be.equal("P");
+      });
+      Promise.resolve().then(() => {                //we must wait for the slotchange event which is run at the end of microtask que
+        el.appendChild(document.createElement("p"));
+      });
+      Promise.resolve().then(() => {                //we must wait for the slotchange event which is run at the end of microtask que
+        Promise.resolve().then(() => {                //we must wait for the slotchange event which is run at the end of microtask que
+          expect(inner.testValue.length).to.be.equal(3);
+          expect(inner.testValue[2].slotName).to.be.equal("");
+          expect(inner.testValue[2].value.length).to.be.equal(4);
+          expect(inner.testValue[2].value[1].nodeName).to.be.equal("P");
+          inner.stop();
+          done();
+        });
+      });
+    });
+  });
+  
 //
 //     //the .composedPath() of the slotchange event looks like this:
 //     //[slot, div, slot, document-fragment, shadowslotchangemixinarnold-test-one, document-fragment]
