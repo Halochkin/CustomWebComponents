@@ -33,8 +33,6 @@ describe("slotchangeCallBack: ", function () {
     stop() {
       this._stop = true;
     }
-
-    //}
   }
 
   class ChainedSlotsGrandpaError extends SlotchangeMixin(HTMLElement) {
@@ -277,7 +275,7 @@ describe("slotchangeCallBack: ", function () {
     });
   });
   
-    it("chained slot test: three slotCallbacks", function (done) {
+it("chained slot test: three slotCallbacks", function (done) {
     const el = new SlotWrapper();
     const inner = el.shadowRoot.children[0];
     requestAnimationFrame(() => {
@@ -290,7 +288,7 @@ describe("slotchangeCallBack: ", function () {
         expect(inner.testValue[1].slotName).to.be.equal("");
         expect(inner.testValue[1].value.length).to.be.equal(3);
         expect(inner.testValue[1].value[1].nodeName).to.be.equal("P");
-      });
+   });
       Promise.resolve().then(() => {                //we must wait for the slotchange event which is run at the end of microtask que
         el.appendChild(document.createElement("p"));
       });
