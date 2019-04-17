@@ -5,7 +5,7 @@ function setup(el){
     return;
   const slots = el.shadowRoot.querySelectorAll("slot");
   for (let slot of slots)
-    slot.assignedNodes().length === 0 && el.slotCallback(slot);
+    slot.assignedNodes().length === 0 && el.slotCallback(slot);     //fixed 
 }
 
 export function SlottablesCallback(base) {
