@@ -32,8 +32,6 @@ describe("slottableCallBack: ", function () {
     stop() {
       this._stop = true;
     }
-
-    //}
   }
 
   class ChainedSlotsGrandpaError extends SlottablesCallback(HTMLElement) {
