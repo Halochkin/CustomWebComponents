@@ -1,5 +1,7 @@
 import {SlotchangeMixin} from "../src/slotChangeCallback.js";
 
+const name = "slot-change-callback";
+
 describe("slotchangeCallBack: ", function () {
 
   class Slot1 extends SlotchangeMixin(HTMLElement) {
@@ -40,11 +42,11 @@ describe("slotchangeCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-          <slot-change-callback-test-one>
+          <${name}-test-one>
             <div>
               <slot></slot>
             </div>
-          </slot-change-callback-test-one>`;
+          </${name}-test-one>`;
       this.testValue = [];
     }
 
@@ -76,9 +78,9 @@ describe("slotchangeCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-           <slot-change-callback-chained-slot>
+           <${name}-chained-slot>
             <slot></slot>
-          </slot-change-callback-chained-slot>`;
+          </${name}-chained-slot>`;
       this.testValue = [];
     }
 
@@ -110,9 +112,9 @@ describe("slotchangeCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-            <slot-change-callback-grandpa-slot>
+            <${name}-grandpa-slot>
             <slot></slot>
-          </slot-change-callback-grandpa-slot>`;
+          </${name}-grandpa-slot>`;
       this.testValue = [];
     }
 
@@ -144,9 +146,9 @@ describe("slotchangeCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-            <slot-change-callback-chained-slot>
+            <${name}-chained-slot>
             <slot name="a"></slot>
-          </slot-change-callback-chained-slot>`;
+          </${name}-chained-slot>`;
       this.testValue = [];
     }
 
@@ -190,10 +192,11 @@ describe("slotchangeCallBack: ", function () {
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
-          <slot-change-callback-test-one>
+          <${name}-test-one>
             <slot></slot>
-          </slot-change-callback-test-one>`;
+          </${name}-test-one>`;
     }
+
 
   }
 
@@ -273,7 +276,7 @@ describe("slotchangeCallBack: ", function () {
       });
     });
   });
-
+//
 //     //the .composedPath() of the slotchange event looks like this:
 //     //[slot, div, slot, document-fragment, shadowslotchangemixinarnold-test-one, document-fragment]
 //     //here, the "div" between the two slots indicate that the direct children of the slot has not changed,
@@ -405,6 +408,7 @@ describe("slotchangeCallBack: ", function () {
     div.setAttribute("slot", "offside");
     child.appendChild(div);
     requestAnimationFrame(() => {
+
       expect(child.testValue.length).to.be.equal(1);
       expect(child.testValue[0].value.length).to.be.equal(2);
       expect(child.testValue[0].value[0].nodeName).to.be.equal("#text");
@@ -433,4 +437,3 @@ describe("slotchangeCallBack: ", function () {
     });
   });
 });
-
