@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<!--suppress ALL -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,14 +23,13 @@
             /*margin-top: 20px;*/
             border-radius: 10px;
         }
-
     </style>
+   
     <script src="../../src/mouse/Swipe.js"></script>
-    <script src="mouseSwipeTest.js"></script>
-    
+    <script src="SwipeTest.js"></script>
+
 </head>
 <body>
-
 
 <div swipe id="viewport" touch-action="pan-left" pointer-distance="30">
     <div id="elem"></div>
@@ -45,19 +44,19 @@
   }
 
   let viewport = document.getElementById("viewport");
-  let swipeStart = undefined;
-  let swipeMove = undefined;
+  let swipeStart = 0;
 
   window.addEventListener("swipe-start", e => {
     swipeStart = e.x - e.target.offsetLeft;
   });
 
-
   window.addEventListener("swipe-stop", e => {
+
+    let swipeDist = swipeStart - e.x;
     viewport.children[0].style.transitionDuration = "0.8s";
-    if (Math.abs(e.detail.distX) < 100) return;
-    viewport.children[0].style.transform = e.detail.distX < 0 ? "rotate(15deg)" : "rotate(-15deg)";
-    viewport.children[0].style.marginLeft = e.detail.distX < 0 ? "-650px" : "650px";
+    if (Math.abs(swipeDist) < 100) return;
+    viewport.children[0].style.transform = swipeDist > 0 ? "rotate(15deg)" : "rotate(-15deg)";
+    viewport.children[0].style.marginLeft = swipeDist > 0 ? "-650px" : "650px";
     setTimeout(() => {
       if (!viewport.children[0].parentNode)
         return;
@@ -67,7 +66,6 @@
       el.transitionDuration = "1s";
       el.style.backgroundColor = colorPicker();
       viewport.appendChild(el);
-
     }, 500);
   });
 </script>
