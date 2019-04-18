@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress ALL -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -24,9 +25,10 @@
         }
 
     </style>
+    <!--<script src="https://hammerjs.github.io/dist/hammer.js"></script>-->
+
     <script src="../src/touch/Swipe.js"></script>
     <script src="SwipeTest.js"></script>
-    
     <script src="//cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"></script>
     <script> TouchEmulator(); </script>
 </head>
@@ -46,19 +48,21 @@
   }
 
   let viewport = document.getElementById("viewport");
-  let swipeStart = undefined;
-  let swipeMove = undefined;
+
+  let swipeStart = 0;
+
 
   window.addEventListener("swipe-start", e => {
     swipeStart = e.x - e.target.offsetLeft;
   });
 
-
   window.addEventListener("swipe-stop", e => {
-    if (Math.abs(e.detail.distX) < 100) return;
-    viewport.children[0].style.transform = e.detail.distX < 0 ? "rotate(15deg)" : "rotate(-15deg)";
-    viewport.children[0].style.marginLeft = e.detail.distX < 0 ? "-650px" : "650px";
+
+    let swipeDist = swipeStart - e.x;
     viewport.children[0].style.transitionDuration = "0.8s";
+    if (Math.abs(swipeDist) < 100) return;
+    viewport.children[0].style.transform = swipeDist > 0 ? "rotate(15deg)" : "rotate(-15deg)";
+    viewport.children[0].style.marginLeft = swipeDist > 0 ? "-650px" : "650px";
     setTimeout(() => {
       if (!viewport.children[0].parentNode)
         return;
@@ -72,5 +76,6 @@
     }, 500);
   });
 </script>
+
 
 </html>
