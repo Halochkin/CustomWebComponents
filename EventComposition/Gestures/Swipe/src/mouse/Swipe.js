@@ -31,16 +31,7 @@
     composedEvent.y = trigger.y;
     return composedEvent;
   }
-
-  function makeDetails(flingEnd, flingStart) {
-    const distX = parseInt(flingEnd.x) - flingStart.x;
-    const distY = parseInt(flingEnd.y) - flingStart.y;
-    const distDiag = Math.sqrt(distX * distX + distY * distY);
-    const durationMs = flingEnd.timeStamp - flingStart.timeStamp;
-    return {distX, distY, distDiag, durationMs};
-  }
-
-
+  
   let globalSequence;
   const mousedownInitialListener = e => onMousedownInitial(e);
   const mousedownSecondaryListener = e => onMousedownSecondary(e);
