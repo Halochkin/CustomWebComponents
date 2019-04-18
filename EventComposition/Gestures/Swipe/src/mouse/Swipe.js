@@ -24,32 +24,8 @@
     return target.dispatchEvent(composedEvent);
   }
 
-  function findLastEventOlderThan(events, timeTest) {
-    for (let i = events.length - 1; i >= 0; i--) {
-      if (events[i].timeStamp < timeTest)
-        return events[i];
-    }
-    return null;
-  }
 
   function makeSwipeEvent(name, trigger) {
-    // let details;
-    // if (name !== "start") {
-    //   details = makeDetails(trigger, globalSequence.recorded[0])
-    // }
-    //
-    //
-    // const composedEvent = new CustomEvent("swipe-" + name, {
-    //   bubbles: true,
-    //   composed: true,
-    //   detail: details
-    // });
-    // composedEvent.x = trigger.x ? parseInt(trigger.x) : trigger.x;
-    // composedEvent.y = trigger.y ? parseInt(trigger.y) : trigger.y;
-    //
-    //
-    // return composedEvent;
-
     const composedEvent = new CustomEvent("swipe-" + name, {bubbles: true, composed: true});
     composedEvent.x = trigger.x;
     composedEvent.y = trigger.y;
