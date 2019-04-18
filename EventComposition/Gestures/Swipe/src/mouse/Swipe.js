@@ -16,14 +16,9 @@
   }
 
   function dispatchPriorEvent(target, composedEvent, trigger) {
-    if (!composedEvent || !target)
-    //todo remove this redundant check? should always be done at the level up?
-      return;
     composedEvent.preventDefault = function () {
       trigger.preventDefault();
-      trigger.stopImmediatePropagation
-        ? trigger.stopImmediatePropagation()
-        : trigger.stopPropagation();
+      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
     };
     composedEvent.trigger = trigger;
     return target.dispatchEvent(composedEvent);
@@ -38,21 +33,26 @@
   }
 
   function makeSwipeEvent(name, trigger) {
-    let details;
-    if (name !== "start") {
-      details = makeDetails(trigger, globalSequence.recorded[0])
-    }
+    // let details;
+    // if (name !== "start") {
+    //   details = makeDetails(trigger, globalSequence.recorded[0])
+    // }
+    //
+    //
+    // const composedEvent = new CustomEvent("swipe-" + name, {
+    //   bubbles: true,
+    //   composed: true,
+    //   detail: details
+    // });
+    // composedEvent.x = trigger.x ? parseInt(trigger.x) : trigger.x;
+    // composedEvent.y = trigger.y ? parseInt(trigger.y) : trigger.y;
+    //
+    //
+    // return composedEvent;
 
-
-    const composedEvent = new CustomEvent("swipe-" + name, {
-      bubbles: true,
-      composed: true,
-      detail: details
-    });
-    composedEvent.x = trigger.x ? parseInt(trigger.x) : trigger.x;
-    composedEvent.y = trigger.y ? parseInt(trigger.y) : trigger.y;
-
-
+    const composedEvent = new CustomEvent("swipe-" + name, {bubbles: true, composed: true});
+    composedEvent.x = trigger.x;
+    composedEvent.y = trigger.y;
     return composedEvent;
   }
 
@@ -78,14 +78,14 @@
     const body = document.querySelector("body");
     const sequence = {
       target,
-      cancelTouchout: target.hasAttribute("swipe-cancel-pointerout"),
+      cancelMouseout: target.hasAttribute("swipe-cancel-pointerout"),
       swipeDuration: parseInt(target.getAttribute("pointer-duration")) || 50,                    //6. EventAttribute
       swipeDistance: parseInt(target.getAttribute("pointer-distance")) || 100,
       recorded: [e],
       userSelectStart: body.style.userSelect,                                                    //10. Grabtouch
     };
     document.children[0].style.userSelect = "none";
-    window.removeEventListener("mousedown", mousedownInitialListener, true);
+    document.removeEventListener("mousedown", mousedownInitialListener, true);
     window.addEventListener("mousedown", mousedownSecondaryListener, true);
     window.addEventListener("mousemove", mousemoveListener, true);
     window.addEventListener("mouseup", mouseupListener, true);
@@ -100,16 +100,19 @@
   }
 
   function stopSequence() {
-    document.children[0].style.userSelect = globalSequence.userSelectStart;                      //[9]a GrabTouch
+    document.children[0].style.userSelect = globalSequence.userSelectStart;
     window.removeEventListener("mousemove", mousemoveListener, true);
     window.removeEventListener("mouseup", mouseupListener, true);
     window.removeEventListener("blur", onBlurListener, true);
     window.removeEventListener("selectstart", onSelectstartListener, true);
     window.removeEventListener("mousedown", mousedownSecondaryListener, true);
-    window.addEventListener("mousedown", mousedownInitialListener, true);
+    document.addEventListener("mousedown", mousedownInitialListener, true);
+    return undefined;
   }
 
   function onMousedownInitial(trigger) {
+    if (trigger.button !== 0)
+      return;
     const target = filterOnAttribute(trigger, "swipe");
     if (!target)
       return;
@@ -127,7 +130,7 @@
   }
 
   function onMousemove(trigger) {
-    if (globalSequence.cancelMouseout || mouseJailbreakOne(trigger)) {
+    if (!globalSequence.cancelMouseout && mouseOutOfBounds(trigger)) {
       const cancelEvent = makeSwipeEvent("cancel", trigger);
       const target = globalSequence.target;
       globalSequence = stopSequence();
@@ -149,8 +152,8 @@
     dispatchPriorEvent(target, stopEvent, trigger);
   }
 
-  function mouseJailbreakOne(trigger) {
-    return !(trigger.y > 0 && trigger.x > 0 && trigger.x < window.innerWidth && trigger.y < window.innerHeight);
+  function mouseOutOfBounds(trigger) {
+    return trigger.clientY < 0 || trigger.clientX < 0 || trigger.clientX > window.innerWidth || trigger.clientY > window.innerHeight;
   }
 
   function onBlur(trigger) {
@@ -162,8 +165,9 @@
 
   function onSelectstart(trigger) {
     trigger.preventDefault();
+    trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
   }
 
-  window.addEventListener("mousedown", onMousedownInitial, {passive: false});
+  window.addEventListener("mousedown", onMousedownInitial);
 
 })();
