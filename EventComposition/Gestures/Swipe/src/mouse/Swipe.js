@@ -1,5 +1,4 @@
 (function () {
-
   function captureEvent(e, stopProp) {
     e.preventDefault();
     stopProp && e.stopImmediatePropagation ? e.stopImmediatePropagation() : e.stopPropagation();
