@@ -15,20 +15,21 @@
     return null;
   }
 
-  function dispatchPriorEvent(target, composedEvent, trigger) {
-    // if (!composedEvent || !target)   //todo remove this redundant check? should always be done at the level up?
-    //   return;
-    composedEvent.preventDefault = function () {
-      trigger.preventDefault();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
-    };
+  function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
     composedEvent.trigger = trigger;
-    return target.dispatchEvent(composedEvent);
+    trigger.stopTrailingEvent = function () {
+      composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
+    };
+    trigger.preventDefault();
+    return setTimeout(function () {
+      target.dispatchEvent(composedEvent)
+    }, 0);
   }
 
   //custom make events
   function makeDraggingEvent(name, trigger) {
     const composedEvent = new CustomEvent("dragging-" + name, {bubbles: true, composed: true});
+    //todo the dragging-cancel events have a problem with the coordinates.
     composedEvent.x = trigger.x;
     composedEvent.y = trigger.y;
     return composedEvent;
@@ -76,17 +77,16 @@
   const onSelectstartListener = e => onSelectstart(e);
 
   function startSequence(target, e) {
- 
     const sequence = {
       target,
       cancelMouseout: target.hasAttribute("draggable-cancel-mouseout"),
       flingDuration: parseInt(target.getAttribute("fling-duration")) || 50,
       flingDistance: parseInt(target.getAttribute("fling-distance")) || 150,
       recorded: [e],
-      userSelectStart: body.style.userSelect
+      userSelectStart: document.children[0].style.userSelect
     };
     document.children[0].style.userSelect = "none";
-    window.removeEventListener("mousedown", mousedownInitialListener, true);
+    document.removeEventListener("mousedown", mousedownInitialListener, true);
     window.addEventListener("mousedown", mousedownSecondaryListener, true);
     window.addEventListener("mousemove", mousemoveListener, true);
     window.addEventListener("mouseup", mouseupListener, true);
@@ -109,7 +109,7 @@
     window.removeEventListener("blur", onBlurListener, true);
     window.removeEventListener("selectstart", onSelectstartListener, true);
     window.removeEventListener("mousedown", mousedownSecondaryListener, true);
-    window.addEventListener("mousedown", mousedownInitialListener, true);
+    document.addEventListener("mousedown", mousedownInitialListener, true);
     return undefined;
   }
 
@@ -123,28 +123,28 @@
     const composedEvent = makeDraggingEvent("start", trigger);
     captureEvent(trigger, false);
     globalSequence = startSequence(target, composedEvent);
-    dispatchPriorEvent(target, composedEvent, trigger);
+    replaceDefaultAction(target, composedEvent, trigger);
   }
 
   function onMousedownSecondary(trigger) {
     const cancelEvent = makeDraggingEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, cancelEvent, trigger);
+    replaceDefaultAction(target, cancelEvent, trigger);
   }
 
   function onMousemove(trigger) {
-    if (globalSequence.cancelMouseout || mouseJailbreakOne(trigger)) {
+    if (!globalSequence.cancelMouseout && mouseOutOfBounds(trigger)) {
       const cancelEvent = makeDraggingEvent("cancel", trigger);
       const target = globalSequence.target;
       globalSequence = stopSequence();
-      dispatchPriorEvent(target, cancelEvent, trigger);
+      replaceDefaultAction(target, cancelEvent, trigger);
       return;
     }
     const composedEvent = makeDraggingEvent("move", trigger);
     captureEvent(trigger, false);
     globalSequence = updateSequence(globalSequence, composedEvent);
-    dispatchPriorEvent(globalSequence.target, composedEvent, trigger);
+    replaceDefaultAction(globalSequence.target, composedEvent, trigger);
   }
 
   function onMouseup(trigger) {
@@ -153,26 +153,26 @@
     captureEvent(trigger, false);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, stopEvent, trigger);
+    replaceDefaultAction(target, stopEvent, trigger);
     if (flingEvent)
-      dispatchPriorEvent(target, flingEvent, trigger);
+      replaceDefaultAction(target, flingEvent, trigger);
   }
 
-  function mouseJailbreakOne(trigger) {
-    return !(trigger.clientY > 0 && trigger.clientX > 0 && trigger.clientX < window.innerWidth && trigger.clientY < window.innerHeight);
+  function mouseOutOfBounds(trigger) {
+    return trigger.clientY < 0 || trigger.clientX < 0 || trigger.clientX > window.innerWidth || trigger.clientY > window.innerHeight;
   }
 
   function onBlur(trigger) {
     const blurInEvent = makeDraggingEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, blurInEvent, trigger);
+    replaceDefaultAction(target, blurInEvent, trigger);
   }
 
   function onSelectstart(trigger) {
     trigger.preventDefault();
-    if (window.onSelect(trigger)) window.onSelect(trigger);
+    trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
   }
 
-  window.addEventListener("mousedown", mousedownInitialListener);
+  document.addEventListener("mousedown", mousedownInitialListener);
 })();
