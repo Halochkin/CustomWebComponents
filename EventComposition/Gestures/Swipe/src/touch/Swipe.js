@@ -27,13 +27,15 @@
     return null;
   }
 
-  function dispatchPriorEvent(target, composedEvent, trigger) {
-    composedEvent.preventDefault = function () {
-      trigger.preventDefault();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
-    };
+  function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
     composedEvent.trigger = trigger;
-    return target.dispatchEvent(composedEvent);
+    trigger.stopTrailingEvent = function () {
+      composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
+    };
+    trigger.preventDefault();
+    return setTimeout(function () {
+      target.dispatchEvent(composedEvent)
+    }, 0);
   }
 
   function makeSwipeEvent(name, trigger) {
@@ -45,16 +47,7 @@
     composedEvent.y = trigger.changedTouches ? parseInt(trigger.changedTouches[0].clientY) : trigger.y;
     return composedEvent;
   }
-
-  function makeDetails(flingEnd, flingStart) {
-    const distX = parseInt(flingEnd.changedTouches[0].pageX) - flingStart.x;
-    const distY = parseInt(flingEnd.changedTouches[0].pageY) - flingStart.y;
-    const distDiag = Math.sqrt(distX * distX + distY * distY);
-    const durationMs = flingEnd.timeStamp - flingStart.timeStamp;
-    return {distX, distY, distDiag, durationMs};
-  }
-
-
+  
   let globalSequence;
   const touchInitialListener = e => onTouchInitial(e);
   const touchdownSecondaryListener = e => onTouchdownSecondary(e);
@@ -116,21 +109,21 @@
     const composedEvent = makeSwipeEvent("start", trigger);
     captureEvent(trigger, false);
     globalSequence = startSequence(target, composedEvent);
-    dispatchPriorEvent(target, composedEvent, trigger);
+    replaceDefaultAction(target, composedEvent, trigger);
   }
 
   function onTouchdownSecondary(trigger) {
     const cancelEvent = makeSwipeEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, cancelEvent, trigger);
+    replaceDefaultAction(target, cancelEvent, trigger);
   }
 
   function onTouchmove(trigger) {
     const composedEvent = makeSwipeEvent("move", trigger);
     captureEvent(trigger, false);
     globalSequence = updateSequence(globalSequence, composedEvent);
-    dispatchPriorEvent(globalSequence.target, composedEvent, trigger);
+    replaceDefaultAction(globalSequence.target, composedEvent, trigger);
   }
 
   function onTouchend(trigger) {
@@ -140,14 +133,14 @@
     captureEvent(trigger, false);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, stopEvent, trigger);
+    replaceDefaultAction(target, stopEvent, trigger);
   }
 
   function onBlur(trigger) {
     const blurInEvent = makeSwipeEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, blurInEvent, trigger);
+    replaceDefaultAction(target, blurInEvent, trigger);
   }
 
   function onSelectstart(trigger) {
