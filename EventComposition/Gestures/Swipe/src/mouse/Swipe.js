@@ -15,13 +15,15 @@
     return null;
   }
 
-  function dispatchPriorEvent(target, composedEvent, trigger) {
-    composedEvent.preventDefault = function () {
-      trigger.preventDefault();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
-    };
+  function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
     composedEvent.trigger = trigger;
-    return target.dispatchEvent(composedEvent);
+    trigger.stopTrailingEvent = function () {
+      composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
+    };
+    trigger.preventDefault();
+    return setTimeout(function () {
+      target.dispatchEvent(composedEvent)
+    }, 0);
   }
 
 
@@ -31,7 +33,7 @@
     composedEvent.y = trigger.y;
     return composedEvent;
   }
-  
+
   let globalSequence;
   const mousedownInitialListener = e => onMousedownInitial(e);
   const mousedownSecondaryListener = e => onMousedownSecondary(e);
@@ -86,14 +88,14 @@
     const composedEvent = makeSwipeEvent("start", trigger);
     captureEvent(trigger, false);
     globalSequence = startSequence(target, composedEvent);
-    dispatchPriorEvent(target, composedEvent, trigger);
+    replaceDefaultAction(target, composedEvent, trigger);
   }
 
   function onMousedownSecondary(trigger) {
     const cancelEvent = makeSwipeEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, cancelEvent, trigger);
+    replaceDefaultAction(target, cancelEvent, trigger);
   }
 
   function onMousemove(trigger) {
@@ -101,13 +103,13 @@
       const cancelEvent = makeSwipeEvent("cancel", trigger);
       const target = globalSequence.target;
       globalSequence = stopSequence();
-      dispatchPriorEvent(target, cancelEvent, trigger);
+      replaceDefaultAction(target, cancelEvent, trigger);
       return;
     }
     const composedEvent = makeSwipeEvent("move", trigger);
     captureEvent(trigger, false);
     globalSequence = updateSequence(globalSequence, composedEvent);
-    dispatchPriorEvent(globalSequence.target, composedEvent, trigger);
+    replaceDefaultAction(globalSequence.target, composedEvent, trigger);
   }
 
   function onMouseup(trigger) {
@@ -116,7 +118,7 @@
     captureEvent(trigger, false);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, stopEvent, trigger);
+    replaceDefaultAction(target, stopEvent, trigger);
   }
 
   function mouseOutOfBounds(trigger) {
@@ -127,7 +129,7 @@
     const blurInEvent = makeSwipeEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, blurInEvent, trigger);
+    replaceDefaultAction(target, blurInEvent, trigger);
   }
 
   function onSelectstart(trigger) {
