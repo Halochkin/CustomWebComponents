@@ -29,13 +29,14 @@
     return null;
   }
 
-  function dispatchPriorEvent(target, composedEvent, trigger) {
-    composedEvent.preventDefault = function () {
-      trigger.preventDefault();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
+  function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
+    trigger.stopTrailingEvent = function () {
+      composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
     };
-    composedEvent.trigger = trigger;
-    return target.dispatchEvent(composedEvent);
+    trigger.preventDefault();
+    return setTimeout(function () {
+      target.dispatchEvent(composedEvent)
+    }, 0);
   }
 
   function findLastEventOlderThan(events, timeTest) {
@@ -54,7 +55,6 @@
     }
     return new CustomEvent("pinch-" + name, {bubbles: true, composed: true, detail});
   }
-
 
   function makepinchDetail(touchevent) {
     let prevAngle = globalSequence ? globalSequence.recorded[globalSequence.recorded.length - 1].detail.angle : 0;
@@ -81,6 +81,7 @@
     const spinStart = findLastEventOlderThan(sequence.recorded, spinTime);
     if (!spinStart) return null;
     const detail = spinDetails(globalSequence.recorded[globalSequence.recorded.length - 1].detail, spinStart);
+    // detail.duration = sequence.spinDuration;
     if (detail.spinDiagonal < sequence.spinDistance) return null;
     detail.angle = calcAngle(detail.distX, detail.distY);
     return new CustomEvent("spin", {bubbles: true, composed: true, detail});
@@ -101,7 +102,6 @@
 
   let oneHit = false;
   let globalSequence;
-
 
   const touchInitialListener = e => onTouchInitial(e);
   const touchdownSecondaryListener = e => onTouchdownSecondary(e);
@@ -149,7 +149,7 @@
     window.addEventListener("touchend", touchInitialListener, thirdArg);
     return undefined;
   }
-  
+
   function onTouchInitial(trigger) {
     if (trigger.defaultPrevented)
       return;
@@ -168,21 +168,22 @@
     const composedEvent = makePinchEvent("start", trigger);
     captureEvent(trigger, false);
     globalSequence = startSequence(target, composedEvent);
-    dispatchPriorEvent(target, composedEvent, trigger);
+    // dispatchPriorEvent(target, composedEvent, trigger);
+    replaceDefaultAction(target, composedEvent, trigger);
   }
 
   function onTouchdownSecondary(trigger) {
     const cancelEvent = makePinchEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, cancelEvent, trigger);
+    replaceDefaultAction(target, cancelEvent, trigger);
   }
 
   function onTouchmove(trigger) {
     const composedEvent = makePinchEvent("move", trigger);
     captureEvent(trigger, false);
     globalSequence = updateSequence(globalSequence, composedEvent);
-    dispatchPriorEvent(globalSequence.target, composedEvent, trigger);                         //3. ReplaceDefaultAction
+    replaceDefaultAction(globalSequence.target, composedEvent, trigger);
   }
 
   function onTouchend(trigger) {
@@ -193,16 +194,16 @@
     captureEvent(trigger, false);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, stopEvent, trigger);
+    replaceDefaultAction(target, stopEvent, trigger);
     if (spinEvent)
-      dispatchPriorEvent(target, spinEvent, trigger);
+      replaceDefaultAction(target, spinEvent, trigger);
   }
 
   function onBlur(trigger) {
-    const blurInEvent = makeDraggingEvent("cancel", trigger);
+    const blurInEvent = makePinchEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, blurInEvent, trigger);
+    replaceDefaultAction(target, blurInEvent, trigger);
   }
 
   function onSelectstart(trigger) {
