@@ -1,17 +1,6 @@
 (function () {
   //utilities
-  // let supportsPassive = false;
-  // try {
-  //   const opts = Object.defineProperty({}, "passive", {
-  //     get: function () {
-  //       supportsPassive = true;
-  //     }
-  //   });
-  //   window.addEventListener("test", null, opts);
-  //   window.removeEventListener("test", null, opts);
-  // } catch (e) {
-  // }
-  // const thirdArg = supportsPassive ? {passive: false, capture: true} : true;
+
 
   function captureEvent(e, stopProp) {
     e.preventDefault();
@@ -26,15 +15,15 @@
     return null;
   }
 
-  function dispatchPriorEvent(target, composedEvent, trigger) {
-    // if (!composedEvent || !target)   //todo remove this redundant check? should always be done at the level up?
-    //   return;
-    composedEvent.preventDefault = function () {
-      trigger.preventDefault();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
-    };
+  function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
     composedEvent.trigger = trigger;
-    return target.dispatchEvent(composedEvent);
+    trigger.stopTrailingEvent = function () {
+      composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
+    };
+    trigger.preventDefault();
+    return setTimeout(function () {
+      target.dispatchEvent(composedEvent)
+    }, 0);
   }
 
   //custom make events
@@ -138,14 +127,14 @@
     const composedEvent = makeDraggingEvent("start", trigger);
     captureEvent(trigger, false);
     globalSequence = startSequence(target, composedEvent);
-    dispatchPriorEvent(target, composedEvent, trigger);
+    replaceDefaultAction(target, composedEvent, trigger);
   }
 
   function onTouchdownSecondary(trigger) {
     const cancelEvent = makeDraggingEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, cancelEvent, trigger);
+    replaceDefaultAction(target, cancelEvent, trigger);
   }
 
   function onTouchmove(trigger) {
@@ -153,13 +142,13 @@
       const cancelEvent = makeDraggingEvent("cancel", trigger);
       const target = globalSequence.target;
       globalSequence = stopSequence();
-      dispatchPriorEvent(target, cancelEvent, trigger);
+      replaceDefaultAction(target, cancelEvent, trigger);
       return;
     }
     const composedEvent = makeDraggingEvent("move", trigger);
     captureEvent(trigger, false);
     globalSequence = updateSequence(globalSequence, composedEvent);
-    dispatchPriorEvent(globalSequence.target, composedEvent, trigger);
+    replaceDefaultAction(globalSequence.target, composedEvent, trigger);
   }
 
 
@@ -169,21 +158,20 @@
     captureEvent(trigger, false);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, stopEvent, trigger);
+    replaceDefaultAction(target, stopEvent, trigger);
     if (flingEvent)
-      dispatchPriorEvent(target, flingEvent, trigger);
+      replaceDefaultAction(target, flingEvent, trigger);
   }
 
   function mouseJailbreakOne(trigger) {
     return !(trigger.touches[0].clientY > 0 && trigger.touches[0].clientX > 0 && trigger.touches[0].clientX < window.innerWidth && trigger.touches[0].clientY < window.innerHeight);
   }
 
-
   function onBlur(trigger) {
     const blurInEvent = makeDraggingEvent("cancel", trigger);
     const target = globalSequence.target;
     globalSequence = stopSequence();
-    dispatchPriorEvent(target, blurInEvent, trigger);
+    replaceDefaultAction(target, blurInEvent, trigger);
   }
 
   function onSelectstart(trigger) {
