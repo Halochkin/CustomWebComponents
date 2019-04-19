@@ -30,6 +30,7 @@
   }
 
   function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
+    composedEvent.trigger = trigger;
     trigger.stopTrailingEvent = function () {
       composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
     };
