@@ -7,7 +7,7 @@ Presented function implements two events:
 
 These events can be activated by:
 1. touch events - which is based on `touchstart`, `touchmove` and `touchend` events. In order to get the element above which the movement occurs, use `.elementFromPoint(touch.clientX, touch.clientY)` which returns the element at the specified coordinates (relative to the viewing window). 
-2. mouse events - which is based on `mouseover` and `mouseout` events. These events allows get the target using event details, but it also check for the presence of the touchover attribute on the target element, and then composed `touchover` / `touchleave` event.
+2. mouse events - which is based on `mouseover` and `mouseout` events. These events allows get the target using event details. It also check for the presence of the touchover attribute on the target element, and then composed `touchover` / `touchleave` event.
 ### Implementation
 These events bubbles, so the event listener can be attached to the window.
 ```javascript
