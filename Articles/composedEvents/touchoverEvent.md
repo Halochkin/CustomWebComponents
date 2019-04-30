@@ -1,13 +1,15 @@
 ## `touchover` / `touchleave` composed event
-
+As you know, there are many ways to change the styles of an element when hovering. But unfortunately they are all created for the mouse. But what about touch events? Why are they ignored? In order to restore justice, a `touchover` composed event was created. 
 ### Description
-Presented function implements two events:
-* `touchover` - is activated whenever a touch point or mouse appears above an item marked with touchover attribute
+Presented function implements two composed events:
+* `touchover` - is activated whenever a touch point or mouse appears over the item.
 * `touchleave` - is activated whenever a touch point or mouse leaves the item.
 
+To implement both events, the element must have a *`touchover`* attribute.
+
 These events can be activated by:
-1. touch events - which is based on `touchstart`, `touchmove` and `touchend` events. In order to get the element above which the movement occurs, use `.elementFromPoint(touch.clientX, touch.clientY)` which returns the element at the specified coordinates (relative to the viewing window). 
-2. mouse events - which is based on `mouseover` and `mouseout` events. These events allows get the target using event details. It also check for the presence of the touchover attribute on the target element, and then composed `touchover` / `touchleave` event.
+1. `touch events` - which is based on `touchstart`, `touchmove` and `touchend` events. In order to get the element over which the movement occurs, using `.elementFromPoint(touch.clientX, touch.clientY)` method, which returns the element at the specified coordinates (relative to the viewing window). 
+2. `mouse events` - which is based on `mouseover` and `mouseout` events. It allows get the event target using only event properties.
 ### Implementation
 These events bubbles, so the event listener can be attached to the window.
 ```javascript
