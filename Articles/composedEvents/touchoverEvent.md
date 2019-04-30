@@ -1,6 +1,6 @@
 ## `touchover` / `touchleave` composed event
 As you know, there are many ways to change the styles of an element when hovering. But unfortunately they are all created for the mouse. But what about touch events? Why are they ignored? In order to restore justice, a `touchover` composed event was created. 
-### Description
+
 Presented function implements two composed events:
 * `touchover` - is activated whenever a touch point or mouse appears over the item.
 * `touchleave` - is activated whenever a touch point or mouse leaves the item.
@@ -10,6 +10,7 @@ To implement both events, the element must have a *`touchover`* attribute.
 These events can be activated by:
 1. `touch events` - which is based on `touchstart`, `touchmove` and `touchend` events. In order to get the element over which the movement occurs, using `.elementFromPoint(touch.clientX, touch.clientY)` method, which returns the element at the specified coordinates (relative to the viewing window). 
 2. `mouse events` - which is based on `mouseover` and `mouseout` events. It allows get the event target using only event properties.
+
 ### Implementation
 These events bubbles, so the event listener can be attached to the window.
 ```javascript
@@ -21,6 +22,7 @@ window.addEventListener("touchleave", function (e) {
    // other stuff here
 });
 ```
+
 ### Example
 Let's consider a simple example that changes the background colors when hovering the mouse or touch point.
 ```html
@@ -49,4 +51,5 @@ Let's consider a simple example that changes the background colors when hovering
 Try it on [codepen](https://codepen.io/Halochkin/pen/YMMooY).
 
 ### Reference 
-1. [.elementFromPoint(x, y)](https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/elementFromPoint)
+1. [MDN: .elementFromPoint(x, y)](https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/elementFromPoint)
+2. [MDN: Event.target](https://developer.mozilla.org/en-US/docs/Web/API/Event/target)
