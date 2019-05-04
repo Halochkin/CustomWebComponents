@@ -10,7 +10,7 @@ These events based on `touchstart`, `touchmove` and `touchend` events. In order 
 
 There are two custom attributes to control events:
 1. `touch-hover` - indicates that `touch-hover` event will occur when a touch point hover element.
-2. `touch-hover="click"` - when lifting the touch point, `click()` will be activated (convenient for elements with references)
+2. `touch-hover="click"` - when lifting the touch point, `click` event will be activated (convenient for elements with references)
 
 ### Implementation
 ```javascript
@@ -18,6 +18,7 @@ There are two custom attributes to control events:
 
     var prevTarget = undefined;
     var relatedTarget = undefined;
+    var initialUserSelect = undefined;
 
     function findParentWithAttribute(node, attName) {                  
       for (var n = node; n; n = (n.parentNode || n.host)) {
@@ -39,33 +40,34 @@ There are two custom attributes to control events:
     function getTarget(e) {                                                     //[3a] 
       var pos = (e.touches && e.touches.length) ? e.touches[0] : e;
       var target = document.elementFromPoint(pos.clientX, pos.clientY);
-      return findParentWithAttribute(target, "touch-hover");
+      return findParentWithAttribute(target, "touch-hover");                    //[3b]
     }
 
     function onTouchmove(e) {                                                  
-      e.preventDefault();                                                       //[3]
+      e.preventDefault();                                                        //[3]
       e.stopPropagation();
       let touchHoverTarget = getTarget(e);                                      
-      if (!touchHoverTarget || touchHoverTarget === relatedTarget)              //[3b]
+      if (!touchHoverTarget || touchHoverTarget === relatedTarget)               //[3c]
         return;
-      dispatchTouchHover(relatedTarget, false, "hover");                        //[4]
+      dispatchTouchHover(relatedTarget, false, "hover");                         //[4]
       dispatchTouchHover(touchHoverTarget, true, "hover");                      
       relatedTarget = touchHoverTarget;
     }
 
-    function init(e) {                                                          //[1a]
+    function init(e) {                                                           //[1a]
       e.touches.length === 1 ? start(e) : end(e);
     }
 
     function start(e) {                                               
       if (getTarget(e)){                                                         //[2]
         document.addEventListener("touchmove", onTouchmove, {passive: false});   //[2a]
-        document.children[0].style.userSelect = "none";                          //[2b]
+        initialUserSelect = document.children[0].style.userSelect;               //[2b]
+        document.children[0].style.userSelect = "none";                          //[2c]
         }
     }
 
     function end(e) {
-      document.children[0].style.userSelect = "";                                //[5]
+      document.children[0].style.userSelect = initialUserSelect;                //[5]
       document.removeEventListener("touchmove", onTouchmove);
       prevTarget = undefined;
       if (relatedTarget) {
@@ -77,38 +79,40 @@ There are two custom attributes to control events:
           }, 0);
         }
         relatedTarget = undefined;
+        initialUserSelect = undefined;
       }
     }
 
     function cancel() {                                                          //[6]
-      /*Remove "touchmove" event listener*/
       end();
       if (relatedTarget)
         dispatchTouchHover(relatedTarget, true, "cancel");
     }
 
-    document.addEventListener("touchend", init);                                   //[1]
+    document.addEventListener("touchend", init);                                 //[1]
     document.addEventListener("touchstart", init);
     window.addEventListener("blur", cancel);
   })();
 ```
 1. Adding basic event listeners.<br>
-
 1a. Touch-hover event is a single finger event, and cannot be activated by two or more fingers.
 2. Check whether the touch-start event starts on the target, with the `touch-hover` attribute. To avoid scrolling prevention, 
 if the event starts from another node. <br>
 2a. If  `touchstart` event occurs on element with a `touch-hover` attribute, an event listener will be added to the touchmove event.<br>
-2b. In order to prevent accidental selection of text, this feature will be temporarily disabled when the touch point is moved.
+2b. In order to prevent accidental selection of text, this feature will be temporarily disabled when the touch point is moved. But in order to avoid conflicts with the CSS property `userSelect` , we temporarily save its value (which was at the moment of activation of the `mousemove` event) in the variable 'initialUserSelect' to restore it after the end of the `touch-hover` event. <br>
+2c. And turn it off, on the `document.children[0]` node.
 3. If you try to move the touch point, scrolling will be automatically activated, which will prevent you from hovering. Therefore, we will disable the default event action.<br>
 3a. When `touchmove` event are activated, the same check as was in the start event will be made. This is necessary to switch the active element when moving the touch point over new element. (This means that the element that was activated with start event will be active until the touch point will be over the new element with `touch-hover` attribute).<br>
-3b. Since the `touchmove` event will be activated several times, we will not define the `touch-hover` event each time. It will be define when touch point will be over new suitable element.
+3b. The `findParentWithAttribute` function checks if there is a `touch-hover` attribute on the element.
+3c. Since the `touchmove` event will be activated several times, we will not define the `touch-hover` event each time. It will be define when touch point will be over new suitable element.
 4. The event will be defined for the active and previous element.<br>
 4a. In order to use one event listener for the element to which the touch point was hover and from which it was removed, the details are used. For the element on which the touch point hover, details will be defined as {enter: true, leave: false}. Accordingly, the element from which the touch point was removed to the new one: {enter: false, leave: true}.
-5. When the touchend event is activated, the ability to select text will be restored.<br>
+5. Restores the css property `userSelect` to the state that was before the start of the event, using the value of the variable `initialUserSelect`.<br>
 5a. In order to make it possible to restore new properties (e.g. change of style) after deactivating `touch-hover` event, `touch-cancel` event will be defined.<br>
 5b. If touch-hover="click" attribute was set, then after deactivating the `touch-hover` event, click() will be done with minimal delay.
-
-These events bubbles, so the event listener can be attached to the window.
+6. The `cancel` function is based on the `blur` event and will be called in case of alerting or loss of focus. First of all, it will call the `end` function (to restore the css property `userSelect` and delete the event listener 'touchmove') and then dispatch the 'touch-cancel' event.
+<hr>
+Both `touch-hover` and `touch-cancel` events are bubbles, so the event listener can be attached to the window.
 ```javascript
  window.addEventListener("touch-hover", function (e) {
    //stuff here
@@ -119,7 +123,7 @@ window.addEventListener("touch-cancel", function (e) {
 });
 
 window.addEventListener("click", (e) => {
- // if touch-hover="click" attribute was added
+   // if touch-hover="click" attribute was added, or will be done manually
   });
 ```
 
@@ -133,7 +137,6 @@ Let's consider a simple example that changes the background colors when hovering
 <h1 touch-hover="click">I am touchover too</h1>
 <h1 touch-hover>touchover again</h1>                                    //[2]
 <h1>I will not touchover</h1>                                           //[3]
-
 
 <script>
     window.addEventListener("touch-hover", function (e) {
@@ -160,16 +163,14 @@ Let's consider a simple example that changes the background colors when hovering
 5. For the elements from which the touch point was removed, we will remove the background color by removing the style attribute.
 6. We can do the same when other events will be active.
 
-
 Try it on [codepen](https://codepen.io/Halochkin/pen/YMMooY).
 
 ### Discussion
 #### 1.Should touch and mouse have different cancel events?
-Yes, definitely, because we can't initiate cancel-event if the touch point goes beyond the scope of the document, but we can do it for the mouse.
-// todo, should I use mouseover event in this demo, to support mouse version??
+Yes, definitely, because we can't initiate `cancel-event` if the touch point goes beyond the scope of the document, but we can do it for the mouse. For the event mouse, there are several events that can be used to cancel (`mouseleave`, `mouseout`).
 
 #### Is it better/necessary for performance to initiate the cancel event listeners from within a touch or mouse gesture? Or can it be global and independent? (ie. is it a penalty for always listening for blur?)
-// thinking about this
+
 
 
 ### Reference 
