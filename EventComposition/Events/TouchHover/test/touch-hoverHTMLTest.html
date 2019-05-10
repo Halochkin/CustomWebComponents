@@ -1,54 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <style>
-      * {
-  font-size: 50px;
-  margin: 0;
-  text-decoration: none;
-}
+<script src="./touch-hover.js"></script>
 
-body {
-  height: 200vh;
-  width: 100vw;
-  background-color: #d4fcbc;
-}
-.info {
-  margin: 10vh;
-  color: green;
-}
-.att{
-  color:red;
-}
-    </style>
-    <script src="../src/touch-hover.js"></script>
-</head>
-<body>
-<a touch-hover="click" href="lalala">sdds</a>
-<h1 touch-hover="click">touchover too</h1>
-<h1 touch-hover="click">I am touchover too</h1>
-<h1>I will not touchover</h1>
-<h1 touch-hover>touchover without click</h1>
+<style>
+    * {
+        font-size: 50px;
+        margin: 0;
+        text-decoration: none;
+    }
+
+    body {
+        height: 200vh;
+        width: 100vw;
+    }
+
+    .info {
+        margin: 10vh;
+        color: green;
+    }
+
+    .att {
+        color: red;
+    }
+
+    [touch-hover="click"] {
+        touch-action: none;
+    }
+</style>
+
+<h1 class="info"> You can scroll here</h1>
+
+<hr>
+<a touch-hover="click" href="https://www.bbc.com/news">What's new?</a>
+<h1 touch-hover="click">touch-hover too</h1>
+<h1 class="att" touch-hover="click">Here you can`t scrolling, only touch hovering</h1>
+<h1 touch-hover="click">I am touch-hover too</h1>
+<hr>
+<h1 class="info"> And here</h1>
 
 <button onclick="setTimeout(function(){alert('boo!')}, 2000)">Alert after 2s</button>
 
-
 <script>
   window.addEventListener("touch-hover", function (e) {
-    if (e.detail.enter)
-      e.target.style.backgroundColor = "#f86058";
-    if (e.detail.leave)
-      e.target.removeAttribute("style");
+    e.target.style.backgroundColor = "yellow";
   });
-
-  window.addEventListener("click", (e) => {
-    e.target.removeAttribute("style");
+  window.addEventListener("touch-leave", function (e) {
+    e.target.style.backgroundColor = "pink";
   });
-
+  window.addEventListener("click", function (e) {
+    e.target.style.backgroundColor = "orange";
+  });
   window.addEventListener("touch-cancel", function (e) {
-    e.target.removeAttribute("style");
+    e.target.style.backgroundColor = "lightgreen";
   });
 </script>
-</body>
-</html>
