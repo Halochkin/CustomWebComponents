@@ -29,7 +29,6 @@
   //custom make events
   function makeDraggingEvent(name, trigger) {
     const composedEvent = new CustomEvent("dragging-" + name, {bubbles: true, composed: true});
-    //todo the dragging-cancel events have a problem with the coordinates.
     composedEvent.x = trigger.x;
     composedEvent.y = trigger.y;
     return composedEvent;
@@ -69,12 +68,24 @@
 
   //custom sequence
   let globalSequence;
-  const mousedownInitialListener = e => onMousedownInitial(e);
-  const mousedownSecondaryListener = e => onMousedownSecondary(e);
-  const mousemoveListener = e => onMousemove(e);
-  const mouseupListener = e => onMouseup(e);
-  const onBlurListener = e => onBlur(e);
-  const onSelectstartListener = e => onSelectstart(e);
+  const mousedownInitialListener = e =
+>
+  onMousedownInitial(e);
+  const mousedownSecondaryListener = e =
+>
+  onMousedownSecondary(e);
+  const mousemoveListener = e =
+>
+  onMousemove(e);
+  const mouseupListener = e =
+>
+  onMouseup(e);
+  const onBlurListener = e =
+>
+  onBlur(e);
+  const onSelectstartListener = e =
+>
+  onSelectstart(e);
 
   function startSequence(target, e) {
     const sequence = {
