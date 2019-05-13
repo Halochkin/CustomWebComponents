@@ -46,7 +46,7 @@ It follows that you should use these properties at the same time to provide a mo
 ### How to style the scrollbar efficiently
 
 We can modify not only to hide the scrollbar, but we can also apply our own style to it. But as mentioned before,each browser has
-its own way.
+its own way.   
 
 #### Chrome:
 Pseudo-elements allow you to apply regular css properties to the scrollbar. This means that you can apply the same styles
