@@ -173,6 +173,5 @@
     trigger.preventDefault();
     trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
   }
-
   document.addEventListener("mousedown", mousedownInitialListener);
 })();
