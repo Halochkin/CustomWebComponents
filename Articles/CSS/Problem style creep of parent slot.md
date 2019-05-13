@@ -5,7 +5,7 @@ described the ways of styling `slot.childNodes`. This article describes the prob
 
 
 
-#### 1. `dispalay: block`
+#### 1. `dispalay: block`.
 Adding this parameter inside shadowRoot causes the style to be applied to all elements that match the selector outside of shadowRoot.<br>
 This effect will apply even to other classes that use this class in the shadowDOM. It is worth noting that this effect is applied only to non-inherited parameters. It is most noticeable when you use the general selector `(*)` independently regular CSS or:: slotted
 
