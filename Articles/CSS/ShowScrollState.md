@@ -51,7 +51,8 @@ its own way.
 #### Chrome:
 Pseudo-elements allow you to apply regular css properties to the scrollbar. This means that you can apply the same styles
 to the `<div>` element.
-Since the scrollbar consists of several elements, we can refer to the scrollbar as a whole, and to an individual element.
+Since the scrollbar consists of several elements, we can refer to the scrollbar as a whole, and to an 
+individual element.
 
 * `::-webkit-scrollbar` — the entire scrollbar.
 * `::-webkit-scrollbar-button` — the buttons on the scrollbar (arrows pointing upwards and downwards).
