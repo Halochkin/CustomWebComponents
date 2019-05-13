@@ -3,7 +3,8 @@ As you know, there are many ways to change the styles of an element when hoverin
 
 Presented function implements two composed events:
 * `touch-hover` - is activated whenever a touch point or mouse appears over the item.
-* `touch-cancel` - is activated whenever a touch point or mouse leaves the item.
+* `touch-leave` - is activated whenever a touch point is moved to a new target.
+* `touch-cancel` - is activated whenever the event was interrupted (e.g. by an alert message).
 * `click` - will dispatch a "click" event on the element if the user lifts his touch finger on that element.
 
 These events based on `touchstart`, `touchmove` and `touchend` events. In order to get the element over which the movement occurs, using `.elementFromPoint(touch.clientX, touch.clientY)` method, which returns the element at the specified coordinates (relative to the viewing window). 
