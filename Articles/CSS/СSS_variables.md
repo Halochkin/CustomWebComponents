@@ -39,7 +39,7 @@
 </blue-blue>
 
 <div>                                                             
-    This text is yellow.                                         //[5]
+    This text is yellow.                                          //[5]
 </div>
 ```
 
