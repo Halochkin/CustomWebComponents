@@ -13,19 +13,17 @@
   let initialAngle = undefined;
 
   // let deviceintheborder = undefined;
-
+  let firstChop = false;
+  let secondChop = false;
 
   let backward = false;
-
-  let counter = 0;
 
 
   function checkInitalAngle(e, hand) {
     // if (hand === "right") {
 
-    hand2.innerText += "+";
-
     if (e.gamma < -gammaDiapasone[0] && e.gamma > -gammaDiapasone[1] && e.beta < betaDiapasone[0]) {
+      hand2.innerText = e.type;
 
       if (!initialAngle)
         initialAngle = e.beta;
@@ -34,19 +32,19 @@
         initialAngle = e.beta;
         backward = true;
         document.body.style.backgroundColor = "lightgreen";
-        counter++;
       }
 
       if (backward && Math.abs(initialAngle - e.beta) > movedAngle) {
         document.body.style.backgroundColor = "yellow";
         initialAngle = undefined;
         backward = false;
-        counter++;
-      }
-      if (counter === 0) {
-        counter = 0;
+        if (firstChop)
+          secondChop = true;
+
+        firstChop = true;
         return true;
       }
+
     } else {
       initialAngle = undefined;
     }
@@ -56,19 +54,28 @@
 
   function handleOrientation(e) {
 
-
     if (!hand) hand = e.gamma < 0 ? "right" : "left";
 
-    // if (!firstChop)
-    if (checkInitalAngle(e, hand))
+    if (!firstChop)
+      checkInitalAngle(e, hand); //define first chop
+
+
+    beta.innerText = firstChop && !secondChop;
+
+    if (firstChop && !secondChop) {    //second time trigger;
+      (checkInitalAngle(e, hand));
+    }
+
+    if (secondChop) {
       window.dispatchEvent(
         new CustomEvent("chop-chop", {bubbles: true, composed: true})
       );
+      secondChop = false //todo not best solution
+    }
   }
 
 
   if ("ondeviceorientationabsolute" in window) {
-    // Chrome 50+ specific
     window.addEventListener("deviceorientationabsolute", handleOrientation);
   } else if ("ondeviceorientation" in window) {
     window.addEventListener("deviceorientation", handleOrientation);
