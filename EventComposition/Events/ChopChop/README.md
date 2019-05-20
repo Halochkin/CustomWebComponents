@@ -85,6 +85,11 @@ As for the `beta` axis, it should be less than *50°* when the axe starts swingi
 </script>
 
  <div id="stick">0</div>                                                                      <!--[17]-->
+ <audio>
+ <sourse src="https://retired.sounddogs.com/previews/44/mp3/598597_SOUNDDOGS__ax.mp3" type="audio/mpeg"> 
+</audio>
+ 
+ 
  
  <style>
   #stick{
