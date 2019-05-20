@@ -22,7 +22,6 @@ spin() includes the following custom details:
 4. `distDiag` : diagonal distance
 5. `durationMs` : duration of the swipe event
 6. `angle` : angle between fingers
- 
  ***
 
 ## Example 1: Scalable element
