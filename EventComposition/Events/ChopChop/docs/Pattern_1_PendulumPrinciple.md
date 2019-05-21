@@ -1,4 +1,4 @@
-#Pattern 1 Newton's cradle
+# Pattern 1 Newton's cradle
 Very often, when working with orientation events, it is necessary to add the value of the tilt angle
  of the device to activate custom orientation gesture. For example, tilt the device along the beta axis 
 (tilt the phone down) by more than 25° (for example) to activate the custom gesture, and when the device
