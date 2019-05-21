@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bubble level</title>
+    <style>
+        #bubble-level {
+            height: 1000px;
+            width: 100px;
+            background-color: lightgreen;
+        }
+
+        #bubble {
+            height: 150px;
+            width: 100px;
+            background-color: blue;
+            opacity: 0.4;
+            border-radius: 50%;
+            position: absolute;
+            top: 175px;
+
+        }
+
+        #center {
+            height: 150px;
+            width: 100px;
+            border: 2px solid black;
+            positon: absolute;
+            top: 175px;
+        }
+    </style>
+</head>
+<body>
+<div id="bubble-level">
+    <div id="bubble"></div>
+</div>
+<script>
+  let bubble = document.querySelector("#bubble");
+
+  let bubbleHandler = e => bubbleLevel(e);
+
+
+  function bubbleLevel(e) {
+    let topPos = parseInt(window.getComputedStyle(bubble).getPropertyValue("top"));
+
+    if (topPos > 400 || topPos < 0)
+      return;
+
+    bubble.style.top = topPos + e.beta + "px";
+  }
+
+  if ("ondeviceorientationabsolute" in window) {
+    window.addEventListener("deviceorientationabsolute", bubbleHandler);
+  } else if ("ondeviceorientation" in window) {
+    window.addEventListener("deviceorientation", bubbleHandler);
+  }
+</script>
+</body>
+</html>

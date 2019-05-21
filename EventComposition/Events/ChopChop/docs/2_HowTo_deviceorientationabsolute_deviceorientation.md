@@ -52,24 +52,30 @@ Some browsers may not support `deviceorientationabsolute` (which is similar to `
  </div>
  
 <script>
-  let bubble = document.querySelector("#bubble");
-
-  function bubbleHandler(e) {                                                                                 //[2]
-    bubble.style.top = parseInt(window.getComputedStyle(bubble).getPropertyValue("top")) + e.beta + "px";
-    bubble.style.left = parseInt(window.getComputedStyle(bubble).getPropertyValue("left")) + e.gamma + "px";
-  }
-  
-  if ("ondeviceorientationabsolute" in window) {                                                              //[1]
-    window.addEventListener("deviceorientationabsolute", bubbleHandler);
-  } else if ("ondeviceorientation" in window) {
-    window.addEventListener("deviceorientation", bubbleHandler);
-  }
+   let bubble = document.querySelector("#bubble");
+   let bubbleHandler = e => bubbleLevel(e);
+ 
+   function bubbleLevel(e) {
+     let topPos = parseInt(window.getComputedStyle(bubble).getPropertyValue("top"));
+     if (topPos > 1000)                                                                //[2]
+       topPos = 700;
+     if (topPos < 0)
+       topPos = 0;
+     bubble.style.top = topPos + e.beta + "px";                                        //[3]
+   }
+   if ("ondeviceorientationabsolute" in window) {                                      //[1]
+     window.addEventListener("deviceorientationabsolute", bubbleHandler);
+   } else if ("ondeviceorientation" in window) {
+     window.addEventListener("deviceorientation", bubbleHandler);
+   }
 </script>
 
 ```
  ***
  1. Event listener for deviceorientation event.
- 2. When the event is activated, the bun will change its position depending on the tilt angles of the device.
+ 2. Added a check to prevent the bubble from overstepping the level.
+ 3. When the event is activated, the bun will change its position depending on the tilt angles of 
+ the device.
  
  [Try in on codepen.io](https://codepen.io/Halochkin/pen/Bewawx?editors=1100)
  

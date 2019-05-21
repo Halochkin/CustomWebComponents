@@ -51,7 +51,7 @@ In order to explain more clearly the assumption of acceleration, let's consider 
   let shakes = 0;
 
   function makeCocktail(e) {
-    if (e.accelerationIncludingGravity.x > 45 && e.accelerationIncludingGravity.y > 45)  //[2]
+    if (e.accelerationIncludingGravity.x > 25 && e.accelerationIncludingGravity.y > 25)  //[2]
       shakes++; 
     if (shakes === 2) {                                                                  //[3]                                                                  
       alert("Cocktail is ready");
