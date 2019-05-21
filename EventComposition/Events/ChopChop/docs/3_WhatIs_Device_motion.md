@@ -18,7 +18,7 @@ Unlike `deviceorientation` / `deviceorientationabsolute` events which allow to r
    
  ***
    
-#Reference
+### Reference
 * [Gravitational acceleration](https://www.quora.com/What-does-g-9-81-m-s2-mean)
 
 
