@@ -20,10 +20,7 @@ It also eliminates accidental activation or deactivation of the gesture.
 Let's consider an example of a custom orientation gesture that increases the zoom or reduces the zoom 
 of a picture, while activating two touch points at the same time, depending on the angle of inclination 
 of the device, 
-```html
-<img src="https://media.wired.com/photos/5a5945a5e5ee3c6a50ce5287/master/pass/britishforest-696483208.jpg">
 
-```
 
 
 
