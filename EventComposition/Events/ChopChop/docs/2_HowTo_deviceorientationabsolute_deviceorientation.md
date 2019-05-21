@@ -43,7 +43,7 @@ Some browsers may not support `deviceorientationabsolute` (which is similar to `
      });  
    }
  ```
- ### Example: `bubble level`.
+ ### Example1: `bubble level`.
  Consider a simple example in which we will center the bubble, depending on the `beta` and `gamma` angles of the device.
  ```html
  <div id="bubble-level">
@@ -76,6 +76,81 @@ Some browsers may not support `deviceorientationabsolute` (which is similar to `
  2. Added a check to prevent the bubble from overstepping the level.
  3. When the event is activated, the bun will change its position depending on the tilt angles of 
  the device.
+ 
+ ### Example2: `deviceorientation` event zoom the element
+ ```html
+<div orientation-zoom></div>
+
+<script>
+
+  let initialAngle = undefined;
+  let zoomTarget = undefined;
+
+  function dispatchZoomEvent(type) {
+    if (zoomTarget)
+      zoomTarget.dispatchEvent(new CustomEvent("orientation-" + type, {
+        bubbles: true,
+        composed: true
+      })); 
+  }
+
+  function handleOrientation(e) {
+    if (!initialAngle)
+      initialAngle = e.beta;
+    if (e.beta < initialAngle) {
+      dispatchZoomEvent("zoom-in")
+    }
+    if (e.beta > initialAngle) {
+      dispatchZoomEvent("zoom-out")
+    }
+  }
+
+  function start(e) {
+    if (e.touches.length !== 2 || !e.target.hasAttribute("orientation-zoom"))
+      return;
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation);
+    }
+    if ('ondeviceorientation' in window) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+    zoomTarget = e.target;
+  }
+
+  function end(e) {
+    if ('ondeviceorientationabsolute' in window) {
+      window.removeEventListener('deviceorientationabsolute', handleOrientation);
+    }
+    if ('ondeviceorientation' in window) {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    }
+    zoomTarget = undefined;
+    initialAngle = undefined;
+  }
+  document.addEventListener("touchstart", start);
+  document.addEventListener("touchend", end);
+</script>
+
+<script>
+  let zoomCoef = 1;
+  window.addEventListener("orientation-zoom-in", function(e) {
+    if (zoomCoef > 1.5)
+      return;
+    e.target.style.transform = `scale(${zoomCoef += 0.01})`;
+  });
+  window.addEventListener("orientation-zoom-out", function(e) {
+    if (zoomCoef < 0.7)
+      return;
+    e.target.style.transform = `scale(${zoomCoef -= 0.01})`;
+  });
+</script>
+```
+ ***
+ 
+ description will be here
+ 
+ 
+ 
  
  [Try in on codepen.io](https://codepen.io/Halochkin/pen/Bewawx?editors=1100)
  

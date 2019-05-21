@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deviceorientation zoom</title>
+</head>
+<body>
+<h1>Put two fingers on the element and tilt the phone </h1>
+<div orientation-zoom></div>
+
+<script>
+
+  let initialAngle = undefined;
+  let zoomTarget = undefined;
+
+  function dispatchZoomEvent(type) {
+    if (zoomTarget)
+      zoomTarget.dispatchEvent(new CustomEvent("orientation-" + type, {
+        bubbles: true,
+        composed: true
+      }));
+  }
+
+  function handleOrientation(e) {
+    if (!initialAngle)
+      initialAngle = e.beta;
+    if (e.beta < initialAngle) {
+      dispatchZoomEvent("zoom-in")
+    }
+    if (e.beta > initialAngle) {
+      dispatchZoomEvent("zoom-out")
+    }
+  }
+
+  function start(e) {
+    if (e.touches.length !== 2 || !e.target.hasAttribute("orientation-zoom"))
+      return;
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation);
+    }
+    if ('ondeviceorientation' in window) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+    zoomTarget = e.target;
+  }
+
+  function end(e) {
+    if ('ondeviceorientationabsolute' in window) {
+      window.removeEventListener('deviceorientationabsolute', handleOrientation);
+    }
+    if ('ondeviceorientation' in window) {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    }
+    zoomTarget = undefined;
+    initialAngle = undefined;
+  }
+
+  document.addEventListener("touchstart", start);
+  document.addEventListener("touchend", end);
+</script>
+
+<script>
+  let zoomCoef = 1;
+  window.addEventListener("orientation-zoom-in", function (e) {
+    if (zoomCoef > 1.5)
+      return;
+    e.target.style.transform = `scale(${zoomCoef += 0.01})`;
+  });
+  window.addEventListener("orientation-zoom-out", function (e) {
+    if (zoomCoef < 0.7)
+      return;
+    e.target.style.transform = `scale(${zoomCoef -= 0.01})`;
+  });
+</script>
+
+</body>
+</html>
