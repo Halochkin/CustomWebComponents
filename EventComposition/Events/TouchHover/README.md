@@ -131,7 +131,7 @@ before we start our activities, which will block our activities. To avoid confli
 3. After a sucessful start `setupctiveListeners()` removes initial event listener of the `start()` and add new listeners. 
 Then added new event listener for `end()` which allows dispatch `touch-leave` event in the case if `touchend` event will be activated.
 In the case if `touchstart` event will be activated one more time or alert event will be shown `touch-cancel` event will be dispatch. 
-4. In order to be able to pre-turn the default action for the `touchmove` event, used the value of `thirdArg`, which will  set `passive = false` property in the case if it is possible.
+4. In order to be able to prevent the default action for the `touchmove` event, used the value of `thirdArg`, which will  set `passive = false` property in the case if it is possible.
 5. Each time a 'touchmove' event is activated, `onTouchmove(e)` prevents default action and checks the target over which the event occurred. In order to dispatch a `touch-leave` event each time a touch point is moved to a new target, a check has been added that compares the new target to the current target. If they are not equal, it means that the touch point has moved to a new target and `touch-leave` event dispatch. When it is moving over current trget, the `touch-hover` event dispatch.
 6. To prevent the text from being scrolled, disable this feature for the duration of the `touch-hover` gesture.
 In order not to cause side effects, let's save the value of the `userSelect` property, which was at the time of execution in the variable `initialUserSelect` to restore it at the end of the gesture.

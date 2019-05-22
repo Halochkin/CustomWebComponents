@@ -3,15 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Deviceorientation zoom</title>
+    <style>
+        div {
+            height: 600px;
+            width: 600px;
+            background-color: skyblue;
+            margin-left: 200px;
+            margin-top: 200px;
+        }
+
+        body {
+            height: 200vh;
+        }
+
+    </style>
 </head>
 <body>
 <h1>Put two fingers on the element and tilt the phone </h1>
 <div orientation-zoom></div>
 
 <script>
+  let supportsPassive = false;
+  try {
+    let opts = Object.defineProperty({}, 'passive', {
+      get: function () {
+        supportsPassive = true;
+      }
+    });
+    window.addEventListener("test", null, opts);
+    window.removeEventListener("test", null, opts);
+  } catch (e) {
+  }
 
   let initialAngle = undefined;
   let zoomTarget = undefined;
+  let initialUserSelect = undefined;
+  let thirdArg = supportsPassive ? {passive: false, capture: true} : true;
 
   function dispatchZoomEvent(type) {
     if (zoomTarget)
@@ -32,31 +59,52 @@
     }
   }
 
-  function start(e) {
-    if (e.touches.length !== 2 || !e.target.hasAttribute("orientation-zoom"))
-      return;
+  function setupActiveListeners() {
     if ('ondeviceorientationabsolute' in window) {
       window.addEventListener('deviceorientationabsolute', handleOrientation);
     }
     if ('ondeviceorientation' in window) {
       window.addEventListener('deviceorientation', handleOrientation);
     }
-    zoomTarget = e.target;
+    document.addEventListener("touchmove", move, thirdArg);
+    document.addEventListener("touchend", end);
+    initialUserSelect = document.children[0].style.userSelect;
+    document.children[0].style.userSelect = "none";
   }
 
-  function end(e) {
+  function setBackEventListeners() {
     if ('ondeviceorientationabsolute' in window) {
       window.removeEventListener('deviceorientationabsolute', handleOrientation);
     }
     if ('ondeviceorientation' in window) {
       window.removeEventListener('deviceorientation', handleOrientation);
     }
+    document.removeEventListener("touchmove", move, thirdArg);
+    document.removeEventListener("touchend", end);
+    document.children[0].style.userSelect = initialUserSelect;
+    initialUserSelect = undefined;
+  }
+
+  function move(e) {
+    if (e.target.hasAttribute("orientation-zoom"))
+      e.preventDefault();
+  }
+
+  function start(e) {
+    if (e.touches.length !== 1 || !e.target.hasAttribute("orientation-zoom"))
+      return;
+    setupActiveListeners();
+    zoomTarget = e.target;
+  }
+
+  function end(e) {
+    setBackEventListeners();
     zoomTarget = undefined;
     initialAngle = undefined;
   }
 
   document.addEventListener("touchstart", start);
-  document.addEventListener("touchend", end);
+
 </script>
 
 <script>

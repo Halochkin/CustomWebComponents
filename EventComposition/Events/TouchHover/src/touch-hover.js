@@ -112,7 +112,7 @@
     window.addEventListener("blur", cancel);
     document.addEventListener("touchmove", onTouchmove, thirdArg);           //[2a]
 
-    initialUserSelect = document.children[0].style.userSelect;               //[2b]
+    initialUserSelect = document.children[0].style.touchAction;              //[2b]
     document.children[0].style.userSelect = "none";                          //[2c]
   }
 
