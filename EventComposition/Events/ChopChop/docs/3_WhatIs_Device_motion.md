@@ -16,8 +16,6 @@ Unlike `deviceorientation` / `deviceorientationabsolute` events which allow to r
    * `interval` - A part of the event's payload returning the interval (in ms) at which the data is obtained 
    from the accelerometer.
    
- ***
-   
 ### Reference
 * [Gravitational acceleration](https://www.quora.com/What-does-g-9-81-m-s2-mean)
 

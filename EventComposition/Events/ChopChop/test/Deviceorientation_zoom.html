@@ -38,6 +38,8 @@
   let initialAngle = undefined;
   let zoomTarget = undefined;
   let initialUserSelect = undefined;
+  let minAngle = 5;
+  let previousInitial = undefined;
   let thirdArg = supportsPassive ? {passive: false, capture: true} : true;
 
   function dispatchZoomEvent(type) {
@@ -51,11 +53,19 @@
   function handleOrientation(e) {
     if (!initialAngle)
       initialAngle = e.beta;
-    if (e.beta < initialAngle) {
-      dispatchZoomEvent("zoom-in")
+
+    if (Math.abs(initialAngle - e.beta) < minAngle) {
+      previousInitial = initialAngle;
+      return;
+    } else {
+      initialAngle = e.beta;
+      // minAngle = 0.3;
     }
-    if (e.beta > initialAngle) {
-      dispatchZoomEvent("zoom-out")
+    if (previousInitial < initialAngle) {
+      requestAnimationFrame(dispatchZoomEvent("zoom-in"));
+    }
+    if (previousInitial > initialAngle) {
+      requestAnimationFrame(dispatchZoomEvent("zoom-out"));
     }
   }
 
@@ -99,6 +109,7 @@
 
   function end(e) {
     setBackEventListeners();
+    minAngle = 5;
     zoomTarget = undefined;
     initialAngle = undefined;
   }
