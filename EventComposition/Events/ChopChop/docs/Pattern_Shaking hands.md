@@ -1,4 +1,4 @@
-### Pattern: Shaking hands 
+# Pattern: Shaking hands 
 
 As you know, the accelerometer is able to track the movement of the device on three axes with high accuracy of
  measurement, which is about a thousandth of a degree. This means that even if you just hold your device
