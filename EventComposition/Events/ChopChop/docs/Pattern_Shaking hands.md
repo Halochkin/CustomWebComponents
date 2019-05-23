@@ -50,7 +50,6 @@ function handleOrientation() {
 4. Ignore the next code execution until the device tilts more than 5 degrees relative to `initialAngle` value.
 5. Overwrite the starting angle after more than 5 degrees of inclination. The next beta tilt will be counted from the new value.
 
-
 ### Problem 2: 
 From the example, it is obvious that the console will display a message every time the device increases or decreases the
  tilt by every 5 degrees. But this will significantly slow down the animation view and cause inconvenience to the user.
@@ -94,9 +93,6 @@ function handleOrientation() {
 1. After activating the `touchstart` event, the device must be tilted more than 5 degrees to decrease the `initialAngle` value.
 2. The gesture is now activated each time the device is rotated 0.3 degrees. 
 3. After the user deactivates the touch point, the execution conditions are restored.
-
-
-### Example. Orientation-zooming
 
 ### Example2: deviceorientation- zoom
  I'm sure that you agree that when viewing photos it would be much more convenient not to use the second 
