@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bubble level</title>
+    <style>
+        img {
+            height: 600px;
+            width: 600px;
+            position: relative;
+            margin-left: 40px;
+        }
+
+        #bubble {
+            height: 50px;
+            width: 50px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 318px;
+            left: 322px;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        #topAngle, #bottomAngle {
+            margin-left: 333px;
+        }
+
+        #leftAngle {
+            transform: rotate(-90deg);
+            position: absolute;
+            top: 325px;
+        }
+
+        #rightAngle {
+            transform: rotate(90deg);
+            position: absolute;
+            top: 325px;
+            left: 665px;
+        }
+
+        .deg {
+            font-size: 30px;
+        }
+
+        .deg::after {
+            content: "°";
+        }
+
+        #Xdistance::before {
+            content: "distance X: ";
+        }
+
+        #Xdistance::after {
+            content: " px";
+        }
+
+        #Ydistance::before {
+            content: "distance Y: ";
+        }
+
+        #Ydistance::after {
+            content: " px";
+        }
+    </style>
+</head>
+<body>
+
+<div class="deg" id="leftAngle">0</div>
+<div class="deg" id="rightAngle">0</div>
+<div class="deg" id="topAngle">0</div>
+
+<div id="bubble"></div>
+
+<img src="http://www.clker.com/cliparts/e/2/7/5/12576752371852783813mygeomatic_Rapporteur_5.svg.hi.png"
+     alt='360 Degrees Angle'/>
+<div class="deg" id="bottomAngle">0</div>
+
+<div id="Xdistance"></div>
+<div id="Ydistance"></div>
+
+<audio>
+    <source src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-27787/zapsplat_household_light_switch_pull_chord_on_or_off_bathroom_room_reverb_28520.mp3?_=6">
+</audio>
+
+
+<script>
+
+  let bubble = document.querySelector("#bubble");
+  let topAngle = document.querySelector("#topAngle");
+  let bottomAngle = document.querySelector("#bottomAngle");
+  let leftAngle = document.querySelector("#leftAngle");
+  let rightAngle = document.querySelector("#rightAngle");
+  let distX = document.querySelector("#Xdistance");
+  let distY = document.querySelector("#Ydistance");
+
+  let bubbleCenterX = undefined;
+  let bubbleCenterY = undefined;
+  let supportVoice = undefined;
+  let sayHello = false;
+  let voiceInterval = 3000;
+
+  let bubbleHandler = e => bubbleLevel(e);
+
+
+  if ('speechSynthesis' in window) {
+    supportVoice = true;
+    sayHello = true;
+  }
+
+
+  async function playAudio(msg) {
+    let speech1 = new SpeechSynthesisUtterance();
+    speech1.text = msg;
+    window.speechSynthesis.speak(speech1);
+    setTimeout(() => {
+      supportVoice = true;                               //overwrite voice
+    }, voiceInterval)
+  }
+
+
+  function bubbleLevel(e) {
+    topAngle.innerText = e.beta.toFixed(1);
+    bottomAngle.innerText = e.beta.toFixed(1) * -1;
+    leftAngle.innerText = e.gamma.toFixed(1);
+    rightAngle.innerText = e.gamma.toFixed(1) * -1;
+
+    let topPos = parseInt(window.getComputedStyle(bubble, null).getPropertyValue("top"));
+    let leftPos = parseInt(window.getComputedStyle(bubble, null).getPropertyValue("left"));
+
+    if (!bubbleCenterX || !bubbleCenterY) {
+      bubbleCenterY = topPos;
+      bubbleCenterX = leftPos;
+    }
+
+    let distanceY = topPos - bubbleCenterY;
+    let distanceX = topPos - bubbleCenterX;
+
+    distX.innerText = topPos - bubbleCenterY;
+    distY.innerText = leftPos - bubbleCenterX;
+
+    if (sayHello) {
+      sayHello = false;
+      playAudio("Hello Ivar");
+    }
+
+    if (supportVoice) {
+      supportVoice = undefined;
+      if (Math.abs(distanceX) < 20 && Math.abs(distanceY) < 20)
+        playAudio("hot");
+      else if (Math.abs(distanceX) > 20 && Math.abs(distanceX) < 100 && Math.abs(distanceY) > 20 && Math.abs(distanceY) < 100)
+        playAudio("warm");
+      else
+        playAudio("cold")
+    }
+
+    if (topPos + e.beta > 570 || topPos + e.beta < 30 || leftPos + e.gamma > 570 || leftPos + e.gamma < 30)
+      return;
+    bubble.style.top = topPos + e.beta + "px";
+    bubble.style.left = leftPos + e.gamma + "px";
+  }
+
+  if ("ondeviceorientationabsolute" in window) {
+    window.addEventListener("deviceorientationabsolute", function (e) {
+      window.requestAnimationFrame(bubbleHandler(e));
+    });
+  } else if ("ondeviceorientation" in window) {
+    window.addEventListener("deviceorientation", bubbleHandler);
+  }
+</script>
+</body>
+</html>

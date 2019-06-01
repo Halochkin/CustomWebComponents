@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chop-chop flashlight</title>
+</head>
+<body>
+<div>chop-chop event to activate flashlight</div>
+<h5>cds</h5>
+
+<script>
+
+  let initialAngle = undefined;
+  let initialTimestamp = undefined;
+  let chops = 0;
+  let maxDurationMs = 1500;
+  let minAngle = 15;
+  const gammaDiapasone = [40, 90];
+  let maximalAccelerationX = 0;
+  let backward = false;
+
+  function countAcceleration(e) {
+    maximalAccelerationX =
+      e.accelerationIncludingGravity.x > maximalAccelerationX
+        ? e.accelerationIncludingGravity.x
+        : maximalAccelerationX;
+  }
+
+  function inBorder(gamma) {
+    return Math.abs(gamma) > gammaDiapasone[0] && Math.abs(gamma) < gammaDiapasone[1];
+  }
+
+  function checkAngle(initial, current) {
+    return Math.abs(initial - current) > minAngle;
+  }
+
+  function handleOrientation(e) {
+    if (!inBorder(e.gamma)) {
+      document.body.style.backgroundColor = "red";
+      initialAngle = undefined;
+      return;
+    }
+
+    if (!initialAngle) {
+      initialAngle = e.beta; // define initial angle
+      initialTimestamp = e.timeStamp;
+      document.body.style.backgroundColor = "orange";
+    }
+
+    if (initialTimestamp && e.timeStamp - initialTimestamp > 1500) {
+      initialAngle = undefined;
+    }
+
+    if (
+      !backward &&
+      maximalAccelerationX > 30 &&
+      checkAngle(initialAngle, e.beta) &&
+      inBorder(e.gamma) &&
+      e.beta < initialAngle
+    ) {
+      maximalAccelerationX = 0; //refresh acceleration for new
+      initialAngle = e.beta; //overwrite initial angle (less than 0)
+      chops++; // increase chop counter
+      backward = true;
+    }
+
+    if (backward && e.beta > initialAngle &&
+      maximalAccelerationX > 30 &&
+      checkAngle(initialAngle, e.beta) &&
+      inBorder(e.gamma)
+    ) {
+      maximalAccelerationX = 0;
+      initialAngle = e.beta;
+      backward = false;
+    }
+
+
+    if (chops === 2) {
+      document.body.style.backgroundColor = "green";
+      chops = 0;
+      initialAngle = undefined;
+
+
+      window.dispatchEvent(
+        new CustomEvent("chop-chop", {bubbles: true, composed: true})
+      );
+
+    }
+
+
+  }
+
+  if ("ondeviceorientationabsolute" in window) {
+    // Chrome 50+ specific
+    window.addEventListener("deviceorientationabsolute", handleOrientation);
+  }
+  // else if ("ondeviceorientation" in window) {
+  //     window.addEventListener("deviceorientation", handleOrientation);
+  //   }
+
+  if (window.DeviceMotionEvent) {
+    window.addEventListener("devicemotion", countAcceleration);
+  }
+
+
+</script>
+</body>
+</html>
