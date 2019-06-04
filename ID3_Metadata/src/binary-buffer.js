@@ -12,10 +12,19 @@ BinaryBuffer.prototype = {
     return new BinaryBuffer(buffer);
   },
 
-
+  isLetter: function (str) {
+    return str.length === 1 && str.match(/[a-z]/i);
+  },
   // Возвращаем определенный байт
   byteAt: function (i) {
     let arr = new Int8Array(this.buffer);   //todo why it is no 4-6 ???
+
+
+    // for (var j = 0; j < 100; j++) {
+    //   // if (this.isLetter(String.fromCharCode(arr[j])))
+    //   //   console.log(String.fromCharCode(arr[j]));
+    //
+    // }
     return arr[i] & 0xFF;
 
 
@@ -27,7 +36,7 @@ BinaryBuffer.prototype = {
   charAt: function (i) {
     var code = this.byteAt(i);
     if (code == 0) return "?";
-    if (code < 32) return "?";
+    // if (code < 32) return "?";
     return String.fromCharCode(code);
   },
   // Возращаем ASCII строку

@@ -84,9 +84,9 @@
     <source src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-27787/zapsplat_household_light_switch_pull_chord_on_or_off_bathroom_room_reverb_28520.mp3?_=6">
 </audio>
 
+<input id="sound" type="range" name="gain" step="0.05" min="0" max="1" value="0.5" style="width: 400px">
 
 <script>
-
   let bubble = document.querySelector("#bubble");
   let topAngle = document.querySelector("#topAngle");
   let bottomAngle = document.querySelector("#bottomAngle");
@@ -94,31 +94,54 @@
   let rightAngle = document.querySelector("#rightAngle");
   let distX = document.querySelector("#Xdistance");
   let distY = document.querySelector("#Ydistance");
+  let gainLevel = document.querySelector("input[name=gain]");
 
   let bubbleCenterX = undefined;
   let bubbleCenterY = undefined;
-  let supportVoice = undefined;
-  let sayHello = false;
-  let voiceInterval = 3000;
+  let supportVoice = false;
 
   let bubbleHandler = e => bubbleLevel(e);
 
 
-  if ('speechSynthesis' in window) {
-    supportVoice = true;
-    sayHello = true;
+  var context = new AudioContext();
+  var tones = [], gain, oscillator;
+
+
+  tones["F#5"] = 739.99;
+  tones["A5"] = 880;
+
+
+  gainLevel.addEventListener("change", (e) => {
+    playtones(tones["F#5"]);
+  });
+
+
+  function getOscillator() {
+    gain = context.createGain();
+    gain.connect(context.destination);
+    oscillator = context.createOscillator();
+    oscillator.connect(gain);
+    oscillator.type = 'sine';
   }
 
 
-  async function playAudio(msg) {
-    let speech1 = new SpeechSynthesisUtterance();
-    speech1.text = msg;
-    window.speechSynthesis.speak(speech1);
+  async function playtones(tone, delay) {
+    getOscillator();
+    oscillator.frequency.value = tone;
+    gain.gain.setValueAtTime(1, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 1);
+    oscillator.start(context.currentTime);
+    stoptones();
     setTimeout(() => {
-      supportVoice = true;                               //overwrite voice
-    }, voiceInterval)
+      supportVoice = true;
+    }, delay);
   }
 
+  function stoptones() {
+    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 1);
+    oscillator.stop(context.currentTime + 1);
+
+  }
 
   function bubbleLevel(e) {
     topAngle.innerText = e.beta.toFixed(1);
@@ -140,20 +163,20 @@
     distX.innerText = topPos - bubbleCenterY;
     distY.innerText = leftPos - bubbleCenterX;
 
-    if (sayHello) {
-      sayHello = false;
-      playAudio("Hello Ivar");
-    }
+
 
     if (supportVoice) {
-      supportVoice = undefined;
-      if (Math.abs(distanceX) < 20 && Math.abs(distanceY) < 20)
-        playAudio("hot");
-      else if (Math.abs(distanceX) > 20 && Math.abs(distanceX) < 100 && Math.abs(distanceY) > 20 && Math.abs(distanceY) < 100)
-        playAudio("warm");
-      else
-        playAudio("cold")
+      supportVoice = false;
+      if (Math.abs(distanceX) < 10 && Math.abs(distanceY) < 10)
+        playtones(tones["F#5"], 0);
+
+      else if (Math.abs(distanceX) > 20 && Math.abs(distanceX) < 40 && Math.abs(distanceY) > 20 && Math.abs(distanceY) < 40)
+        playtones(tones["A5"], 500);
+
+      else if (Math.abs(distanceX) > 40 && Math.abs(distanceX) < 100 && Math.abs(distanceY) > 40 && Math.abs(distanceY) < 100)
+        playtones(tones["A5"], 1000);
     }
+
 
     if (topPos + e.beta > 570 || topPos + e.beta < 30 || leftPos + e.gamma > 570 || leftPos + e.gamma < 30)
       return;
@@ -162,9 +185,7 @@
   }
 
   if ("ondeviceorientationabsolute" in window) {
-    window.addEventListener("deviceorientationabsolute", function (e) {
-      window.requestAnimationFrame(bubbleHandler(e));
-    });
+    window.addEventListener("deviceorientationabsolute", bubbleHandler);
   } else if ("ondeviceorientation" in window) {
     window.addEventListener("deviceorientation", bubbleHandler);
   }

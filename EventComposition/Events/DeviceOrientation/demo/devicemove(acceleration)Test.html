@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kill the fly</title>
+    <style>
+        #fly {
+            height: 60px;
+            width: 60px;
+            background-image: url("http://pngriver.com/wp-content/uploads/2018/04/Download-Fly-PNG.png");
+            display: block;
+            background-size: cover;
+            background-repeat: round;
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            transition: all 2s cubic-bezier(0.39, 0.58, 0.57, 1);
+            z-index: 1;
+        }
+
+        #swatter {
+            height: 200px;
+            width: 200px;
+            margin-left: 200px;
+            margin-top: 200px;
+            background-color: red;
+            opacity: 0.5;
+            border-radius: 20px;
+            transition: all 2s cubic-bezier(0.39, 0.58, 0.57, 1);
+        }
+    </style>
+</head>
+<body>
+<h1>Shake the phone when the fly is in the green zone</h1>
+<div id="fly"></div>
+<div id="swatter"></div>
+<audio id="shot"
+       src="https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/sandbag-drop-rocks-rattle_fJv49P4u.mp3"></audio>
+<script>
+  const fly = document.querySelector("#fly");
+  const swatter = document.querySelector("#swatter");
+  const shot = document.querySelector("#shot");
+  let alive = true;
+  let rotation = 0;
+
+  function moveFly() {
+    if (!alive)
+      return;
+    let newHeight = Math.floor(Math.random() * window.innerHeight - 250) + "px";
+    let newWidth = Math.floor(Math.random() * window.innerWidth - 50) + "px";
+    fly.style.top = newHeight;
+    fly.style.left = newWidth;
+    fly.style.transform = `rotate(${rotation + 20}deg)`;
+  }
+
+  setInterval(() => {
+    moveFly();
+  }, 2000);
+
+
+  function flyHandler(e) {
+    let topPos = parseInt(window.getComputedStyle(fly, null).getPropertyValue("top"));
+    let leftPos = parseInt(window.getComputedStyle(fly, null).getPropertyValue("left"));
+    if (e.accelerationIncludingGravity.z > 40 && topPos > 200 && topPos < 800 && leftPos > 200 && leftPos < 800) {
+      alive = false;
+      swatter.style.transform = "scale(1.2)";
+      fly.style.backgroundColor = "red";
+      fly.style.border = "25px solid red";
+      document.body.style.backgroundColor = "grey";
+      shot.play();
+    }
+    setTimeout(() => {
+      swatter.style.transform = "";
+    }, 2000)
+  }
+
+  if (window.DeviceMotionEvent) {
+    window.addEventListener("devicemotion", flyHandler);
+  }
+
+</script>
+</body>
+</html>

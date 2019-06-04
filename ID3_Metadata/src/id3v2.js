@@ -1,8 +1,11 @@
-var ID3v2 = function () {
+var ID3v2 = function (file) {
   // Cюда будем сохранять ошибки
   this.errors = [];
   // Версия тега
   this.version = 'Unknown';
+
+
+  this.file = file;
   // Флаги тега
   this.flags = {
     isUnSynchronisation: false,
@@ -38,11 +41,11 @@ ID3v2.prototype.readFromFile = function (file, callback) {
 
 
   // This event will occur when the specified piece of file is finished reading
-  reader.onloadend = function (e) {
+  // reader.onloadend = function (e) {
     // Let's check the successful completion of the reading
-    if (e.target.readyState == FileReader.DONE) {
+  // if (e.target.readyState == FileReader.DONE) {
       // Let's bring the read result from Blob to our specially designed BinaryBuffer
-      var result = new BinaryBuffer(e.target.result);
+  var result = new BinaryBuffer(this.file);
 
       // The first 3 bytes must contain the tag identifier
       if (result.stringAt(0, 3).toUpperCase() !== 'ID3') {
@@ -66,7 +69,9 @@ ID3v2.prototype.readFromFile = function (file, callback) {
 
       // let test = UnSynchsafeInt(new Int16Array(result.buffer.slice(6, 4)));
 
-      self.size = UnSynchsafeInt(result.slice(6, 4));
+  let slicedArr = result.stringAt(22, 10);
+
+  self.size = UnSynchsafeInt(result.slice(15, 11));
 
       if (self.size < 1) {
         self.errors.push('Ошибка: ID3v2 поврежден!');
@@ -112,8 +117,8 @@ ID3v2.prototype.readFromFile = function (file, callback) {
         callback(self);
       };
       reader.readAsArrayBuffer(file.slice(10, self.size));
-    }
-  };
+  // }
+  // };
   // О наличие тега в файле, свидетельствует наличие заголовка тега, который находится в первых 10 байтах файла.
   // *** ID3 Начиная с версии 2.4.0 может находится и в конце файла, но полное описание стандарта ID3 выходит за рамки этой статьи.
   // Читаем первые 10 байт из файла.

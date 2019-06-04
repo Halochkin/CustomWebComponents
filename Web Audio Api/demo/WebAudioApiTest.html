@@ -20,7 +20,7 @@
         #player {
             background-color: #323232;
             display: grid;
-            height: 40vh;
+            height: 40vw;
             grid-template-columns: 20vw 1fr 0.8fr 1fr 1fr;
             grid-template-rows: 10vw 10vw 0.3fr 1fr;
             grid-template-areas: "logo name name name git" "logo song song song time" "progress progress progress progress progress" "sound back play next repeat";
@@ -262,20 +262,24 @@
   }
 
 
-  // function getDuration(url) {
-  //   var xhr = new XMLHttpRequest();
-  //   xhr.open('GET', url, true);
-  //   xhr.responseType = 'arraybuffer';
-  //   xhr.onload = function (e) {
-  //     context.decodeAudioData(this.response, function (decodedArrayBuffer) {
-  //       return decodedArrayBuffer.duration;
-  //     }, function (e) {
-  //       console.log('Error decoding file', e);
-  //     });
-  //   };
-  //   xhr.send();
-  // }
+  function getArrayBuffer(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function (e) {
+      let buffer = e.response;
+      context.decodeAudioData(this.response, function (decodedArrayBuffer) {
 
+        return decodedArrayBuffer.duration;
+      }, function (e) {
+        console.log('Error decoding file', e);
+      });
+    };
+    xhr.send();
+  }
+
+
+  let buffer = getArrayBuffer("../audio/firestarter.mp3");
 
   // window.requestFileSystem(0, 11024*11024 /*1MB*/, function(fs) {
 

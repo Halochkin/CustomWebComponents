@@ -76,7 +76,6 @@ import {cssCustomPropertyChangedMixin} from "./src/StyleChangedMixin.js";
       this.style.setProperty("--custom-css-prop-3", 22);               //[5]
       this.style.setProperty("--custom-css-prop-4", true);             //[6]
     }
-    }
   }
 
   customElements.define("test-block", TestBlock)
