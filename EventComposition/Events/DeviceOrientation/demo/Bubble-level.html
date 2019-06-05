@@ -66,6 +66,7 @@
     </style>
 </head>
 <body>
+<button onclick=" playtones(680, 680, 300, 300);">Play</button>
 
 <div class="deg" id="leftAngle">0</div>
 <div class="deg" id="rightAngle">0</div>
@@ -86,6 +87,7 @@
 
 <input id="sound" type="range" name="gain" step="0.05" min="0" max="1" value="0.5" style="width: 400px">
 
+
 <script>
   let bubble = document.querySelector("#bubble");
   let topAngle = document.querySelector("#topAngle");
@@ -100,46 +102,70 @@
   let bubbleCenterY = undefined;
   let supportVoice = false;
 
+  let osc1dur = 3;
+  let osc2dur = 1;
+
+  let delay = 1;
+
   let bubbleHandler = e => bubbleLevel(e);
 
 
   var context = new AudioContext();
-  var tones = [], gain, oscillator;
+  var tones = [], gain1, gain2, oscillator;
 
 
-  tones["F#5"] = 739.99;
-  tones["A5"] = 880;
+  // tones["F#5"] = 739.99;
+  // tones["A5"] = 880;
 
 
   gainLevel.addEventListener("change", (e) => {
-    playtones(tones["F#5"]);
+    // playtones(tones["F#5"]);
   });
 
 
-  function getOscillator() {
-    gain = context.createGain();
+  function getOscillator(tone, type) {
+    let oscillator = context.createOscillator();
+    oscillator.frequency.value = tone;
+    oscillator.type = type;
+    return oscillator;
+  }
+
+  function getGain(osc) {
+    let gain = context.createGain();
     gain.connect(context.destination);
-    oscillator = context.createOscillator();
-    oscillator.connect(gain);
-    oscillator.type = 'sine';
+    osc.connect(gain);
+    return gain;
   }
 
 
-  async function playtones(tone, delay) {
-    getOscillator();
-    oscillator.frequency.value = tone;
-    gain.gain.setValueAtTime(1, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 1);
-    oscillator.start(context.currentTime);
+  async function playtones(tone1, tone2, delay1, delay2) {
+    osc1 = getOscillator(tone1, 'sine');
+    gain1 = getGain(osc1);
+
+    osc2 = getOscillator(tone2, "sine");
+    gain2 = getGain(osc2);
+
+
+    gain1.gain.setValueAtTime(1, context.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 1);
+
+    gain2.gain.setValueAtTime(osc2dur, context.currentTime + osc2dur);
+    gain2.gain.exponentialRampToValueAtTime(0.001, context.currentTime + osc2dur + delay);
+
+
+    osc1.start(context.currentTime);
+    osc2.start(context.currentTime + delay);
     stoptones();
     setTimeout(() => {
       supportVoice = true;
-    }, delay);
+    }, delay1);
   }
 
   function stoptones() {
-    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 1);
-    oscillator.stop(context.currentTime + 1);
+    gain1.gain.exponentialRampToValueAtTime(0.001, context.currentTime + osc1dur);
+    gain2.gain.exponentialRampToValueAtTime(0.001, context.currentTime + osc2dur + delay);
+    osc1.stop(context.currentTime + osc1dur);
+    osc2.stop(context.currentTime + osc2dur + delay);
 
   }
 
@@ -164,17 +190,16 @@
     distY.innerText = leftPos - bubbleCenterX;
 
 
-
     if (supportVoice) {
       supportVoice = false;
-      if (Math.abs(distanceX) < 10 && Math.abs(distanceY) < 10)
-        playtones(tones["F#5"], 0);
+      // playtones(500 +  (e.gamma.toFixed(2)*1000), 300);
 
-      else if (Math.abs(distanceX) > 20 && Math.abs(distanceX) < 40 && Math.abs(distanceY) > 20 && Math.abs(distanceY) < 40)
-        playtones(tones["A5"], 500);
 
-      else if (Math.abs(distanceX) > 40 && Math.abs(distanceX) < 100 && Math.abs(distanceY) > 40 && Math.abs(distanceY) < 100)
-        playtones(tones["A5"], 1000);
+      // else if (Math.abs(distanceX) > 20 && Math.abs(distanceX) < 40 && Math.abs(distanceY) > 20 && Math.abs(distanceY) < 40)
+      //   playtones(tones["A5"], 500);
+      //
+      // else if (Math.abs(distanceX) > 40 && Math.abs(distanceX) < 100 && Math.abs(distanceY) > 40 && Math.abs(distanceY) < 100)
+      //   playtones(tones["A5"], 1000);
     }
 
 
