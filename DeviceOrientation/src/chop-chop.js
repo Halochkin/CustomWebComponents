@@ -54,7 +54,6 @@
   function handleOrientation(e) {
 
 
-
     if (!firstChop)
       checkInitalAngle(e, hand); //define first chop
 
@@ -84,19 +83,18 @@
 
   let shakes = 0;
 
-  function makeCocktail(e) {
-    if (e.accelerationIncludingGravity.x > 25 && e.accelerationIncludingGravity.y > 25)
-      shakes++;
-    if (shakes === 2) {
-      alert("Cocktail is ready");
-      shakes = 0;
-    }
-  }
+  // function makeCocktail(e) {
+  //   if (e.accelerationIncludingGravity.x > 25 && e.accelerationIncludingGravity.y > 25)
+  //     shakes++;
+  //   if (shakes === 2) {
+  //     alert("Cocktail is ready");
+  //     shakes = 0;
+  //   }
+  // }
 
   if (window.DeviceMotionEvent) {
     window.addEventListener("devicemotion", makeCocktail);
   }
-
 
 
 })();

@@ -27,6 +27,8 @@ static get minSettings() {
       };
     };
 
+
+
 ```
 Using the `minSettings()` allows you to switch between two gestures. It checks whether the base version will become advanced or not. If the conditions are met, the base version is `transformed` into extended version, if not - only the base version is activated.<br>
 The `minDistance` value is the distance between the end event (which meets the minimum duration requirements) and the extended event.<br>

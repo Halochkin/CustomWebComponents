@@ -167,6 +167,8 @@ sendTouchEvent(x1, y1, x2, y2, element, eventType, id, fingers) adds the followi
   }
    customElements.define("switch-button", SwitchButtons);
 
+
+
   ```
   1. Before you start to simulate events - specify the sequence of events to call the desired events.
   2. To dispatch an event to an element - you can use simulateEventSequence(element, event type, number of touch points).

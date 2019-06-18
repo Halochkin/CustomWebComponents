@@ -64,7 +64,7 @@ In order to explain more clearly the assumption of acceleration, let's consider 
 </script>
 ```
 ***
-1. Event listener for devicemotion event.
+1. Event listener for `devicemotion` event.
 2. Let's check the acceleration force. If the user shakes too little, the ingredients will not mix well =) 
 3. After two strong enough shakes, the cocktail is ready.
 
