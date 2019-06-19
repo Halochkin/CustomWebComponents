@@ -13,9 +13,11 @@ the orientation event of the device, it is important to understand the values pr
    from `0°` to `360°` and obtaining from the magnetometer. It equal `0°` when top of the device is pointed directly
     toward the Earth's north pole, and increases as the device is rotated toward West.
    
+   
    <p align="center">
-     <img src="../img/alpha.png">
+     <img src="./img/alpha.png">
    </p><br>
+   
 
  * `beta` - represents the movement of the device around the `X-axis` (front to back motion), express in degrees
   with values ranging from  `-180°` to `180°`. Data obtaining from the accelerometer and equal `0°` when the device's top

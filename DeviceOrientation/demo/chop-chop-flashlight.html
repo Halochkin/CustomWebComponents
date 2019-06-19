@@ -9,98 +9,40 @@
 <h5>cds</h5>
 
 <script>
+  (function () {
 
-  let initialAngle = undefined;
-  let initialTimestamp = undefined;
-  let chops = 0;
-  let maxDurationMs = 1500;
-  let minAngle = 15;
-  const gammaDiapasone = [40, 90];
-  let maximalAccelerationX = 0;
-  let backward = false;
+    // Ranges in which the initial event is activated
+    const gammaDiapasone = [50, 90]; //"axe sharp" vertical angle  (right hand: / -50deg  | -90deg; left hand: \ -50deg, | -90deg;
+    const betaDiapasone = [50, -45]; //horisontal angle
+    const movedAngle = 35;
+    let chops = 2; // number of chops to activate gesture
+    // let hand = undefined; //in right hand gamma value will be negative, in left - positive.
+    let initialAngle = undefined;
+    let eventArr = [];
 
-  function countAcceleration(e) {
-    maximalAccelerationX =
-      e.accelerationIncludingGravity.x > maximalAccelerationX
-        ? e.accelerationIncludingGravity.x
-        : maximalAccelerationX;
-  }
 
-  function inBorder(gamma) {
-    return Math.abs(gamma) > gammaDiapasone[0] && Math.abs(gamma) < gammaDiapasone[1];
-  }
-
-  function checkAngle(initial, current) {
-    return Math.abs(initial - current) > minAngle;
-  }
-
-  function handleOrientation(e) {
-    if (!inBorder(e.gamma)) {
-      document.body.style.backgroundColor = "red";
-      initialAngle = undefined;
-      return;
+    function eventHandler(e) {
+      eventArr.push(e);
     }
 
-    if (!initialAngle) {
-      initialAngle = e.beta; // define initial angle
-      initialTimestamp = e.timeStamp;
-      document.body.style.backgroundColor = "orange";
+    setInterval(() => {
+      if (eventArr.length < 1)
+        return;
+      if (eventArr[eventArr.length - 1][e.beta] < betaDiapasone[0])
+        alert("tilt back");
+
+
+    }, 100);
+
+
+    if (window.DeviceMotionEvent) {
+      window.addEventListener("devicemotion", eventHandler);
     }
-
-    if (initialTimestamp && e.timeStamp - initialTimestamp > 1500) {
-      initialAngle = undefined;
-    }
-
-    if (
-      !backward &&
-      maximalAccelerationX > 30 &&
-      checkAngle(initialAngle, e.beta) &&
-      inBorder(e.gamma) &&
-      e.beta < initialAngle
-    ) {
-      maximalAccelerationX = 0; //refresh acceleration for new
-      initialAngle = e.beta; //overwrite initial angle (less than 0)
-      chops++; // increase chop counter
-      backward = true;
-    }
-
-    if (backward && e.beta > initialAngle &&
-      maximalAccelerationX > 30 &&
-      checkAngle(initialAngle, e.beta) &&
-      inBorder(e.gamma)
-    ) {
-      maximalAccelerationX = 0;
-      initialAngle = e.beta;
-      backward = false;
-    }
+  })();
 
 
-    if (chops === 2) {
-      document.body.style.backgroundColor = "green";
-      chops = 0;
-      initialAngle = undefined;
 
 
-      window.dispatchEvent(
-        new CustomEvent("chop-chop", {bubbles: true, composed: true})
-      );
-
-    }
-
-
-  }
-
-  if ("ondeviceorientationabsolute" in window) {
-    // Chrome 50+ specific
-    window.addEventListener("deviceorientationabsolute", handleOrientation);
-  }
-  // else if ("ondeviceorientation" in window) {
-  //     window.addEventListener("deviceorientation", handleOrientation);
-  //   }
-
-  if (window.DeviceMotionEvent) {
-    window.addEventListener("devicemotion", countAcceleration);
-  }
 
 
 </script>
