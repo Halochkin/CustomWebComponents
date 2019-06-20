@@ -1,4 +1,4 @@
-###Problem: Incorrect Orientation During Hard Motioning
+###Problem: Fake orientation angles
 
 As you know, the tilt angles of the device are obtained from the built-in accelerometer and gyroscope.
 These sensors are made as MEMS microelectromechanical system) - external influence on the sensor first changes the state 
