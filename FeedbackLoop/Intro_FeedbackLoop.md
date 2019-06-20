@@ -1,0 +1,53 @@
+# Intro: Feedback loop
+The value of any web application is determined not only by the ability to accurately and efficiently solve the task, 
+but also by how easy and convenient this application can be used. Even the simplest, and at the same time, the functional
+ application will be unclaimed, if the user at work with it quickly becomes tired, irritated, feels uncomfortable. 
+ In this case, the user usually makes more mistakes and works less productively.
+ 
+ For a more comfortable and efficient non-contact interaction with the computer, the user needs additional feedback. 
+ 
+ Feedback - the influence of the result of functioning of any system on the character of further functioning. 
+ The term "feedback" is used in relation to the course of processes in social, biological, technical, economic 
+ and other systems, as well as in cybernetics and the theory of automatic regulation and control. Examples of feedback
+  during normal work with a computer are elasticity during lowering and lifting of keyboard keys, sound of pressing keys
+   and buttons, joystick vibration, etc. These non-visual signs help the user to understand that their actions have an 
+   impact on the computer. Tactile feedback is a very important factor for efficient and comfortable work with the 
+   computer, for example, during blind typing on the keyboard. So, importance of touch sensations becomes appreciable 
+   at use of projective keyboards, after all the user knocks with fingers on a firm surface and does not test hits and 
+   misses on keys.
+
+When a user interacts with a web app, he can do so using several input devices: mouse, keyboard, touch, camera, and 
+device motions. Any user action from these different input devices are registered as events inside the browser, and 
+the browser then responds to the event appropriately.
+Examples of such appropriate reactions can be:
+* Hovering with the mouse over an element can cause it to change style,
+* touching a link element on a touchscreen will be interpreted as a click which makes the phone navigate to a new page.
+* pressing a key on the keyboard will produce a letter in the input element in focus on screen.
+* etc. etc.
+But there are a number of other reactions that occur when a user interacts with a browser: "Feedback". *Feedback* is 
+a reflection of the user's login action back to the user. Feedback can be a natural side-effect, such as tactile 
+sensations and sounds heard when you press a finger on the keyboard. But feedback can also be obtained, for example,
+ by using the type of cursor that moves around the screen. Normally (when entering text), the appearance of the cursor 
+ is seen by the user as an invitation to enter data and indicates the position from which the characters typed from the 
+ keyboard will be displayed on the display screen. The shape of the cursor often indicates the current character 
+ input mode (bottom underline - insertion mode, rectangle - overlay mode).
+
+  
+  The feedback reactions are also universal. Feedbacks are more or less the same across all apps, all browsers, and all
+OS applications. Sure, feedback signals can be altered: wearing gloves while typing will alter feedback; and the 
+mouse pointer and scrollbar can both be hidden and changed. But in general, the feedback reactions remain universal,
+omnipresent and thus non-intrusive.
+  
+  The  feedbacks' main function is to enable the user to control and correct his or her own actions. The feedbacks are 
+  not directly relevant, neither for the browser nor the app nor the user: it is neither entertaining nor meaningful to 
+watch the mousepointer move around the screen. The feedback is only indirectly relevant as it helps the users control 
+their own actions. The feedback is "guiding signals": they are unobtrusive and do not grab the users attention. 
+The user's perception of them are meant to be automated so that the user can perceive them without giving them
+ conscious focus. The mouse and text cursor achieve this feat by always being the same familiar, boring, small, icons 
+ that becomes consciously invisible although always in the foreground. The scroll bar achieves this by staying in the
+ edges, in our peripheral vision.
+ 
+ Thus, the buttons of various dialogs in the standard window interface can be interpreted as signals to their pressing.
+ But these signals are extremely weak, because all the buttons look the same, differing only in the texts in them, and 
+ they have different functions. That is, out of all the variety of visual media - shape, size, color, text - in the 
+ buttons dialogs used only text.

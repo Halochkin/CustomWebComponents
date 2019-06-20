@@ -5,7 +5,6 @@ Unlike `deviceorientation` / `deviceorientationabsolute` events (which allow to 
  
 Each time a `devicemotion` event is activated, the event object has additional properties
    
-
    * `acceleration` - an object containing data about the current device's acceleration 
    excluding gravity for all three axes.
    * `accelerationIncludingGravity` - data about the current device'sacceleration including gravity (if the device is 
