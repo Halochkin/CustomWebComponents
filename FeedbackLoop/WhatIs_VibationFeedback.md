@@ -1,6 +1,5 @@
 # WhatIs: Vibation Feedback
 
-
 One of the problems when using web applications on touch-screen devices is that they do not provide tactile feedback to 
 the user.
 

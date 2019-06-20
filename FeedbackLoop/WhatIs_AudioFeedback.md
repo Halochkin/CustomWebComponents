@@ -24,7 +24,6 @@ sounds that come from the key being pressed, volume adjustments in, and adjustme
  pressed to support the themes the user selects for different sounds, 
 Sounds may differ depending on the activation of a certain functionality or may be a signal for successful or unsuccessful 
 activation of some functionality. 
-
 Thus, audio feedback methods can support many functionalities for various input devices, such as physical buttons, 
 virtual keyboards, audio alerts, displaying success or failure of a server request and others.
 

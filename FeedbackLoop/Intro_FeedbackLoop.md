@@ -14,7 +14,7 @@ but also by how easy and convenient this application can be used. Even the simpl
    impact on the computer. Tactile feedback is a very important factor for efficient and comfortable work with the 
    computer, for example, during blind typing on the keyboard. So, importance of touch sensations becomes appreciable 
    at use of projective keyboards, after all the user knocks with fingers on a firm surface and does not test hits and 
-   misses on keys.
+  misses on keys.
 
 When a user interacts with a web app, he can do so using several input devices: mouse, keyboard, touch, camera, and 
 device motions. Any user action from these different input devices are registered as events inside the browser, and 

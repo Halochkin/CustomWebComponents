@@ -2,7 +2,7 @@
 
 To use the mouse, the user is completely dependent on the system feedback. Just imagine trying to move the mouse around 
 on a web page without seeing the mousepointer and to click on an element. The visual feedback of the mouse cursor is as 
-central to the mouse as its buttons.  
+central to the mouse as its buttons. 
 
 Similarly, when a user does a motion gesture, he or she needs feedback to "feel" what he is doing. When a user gestures 
 with a phone, there are four senses that can perceive it:

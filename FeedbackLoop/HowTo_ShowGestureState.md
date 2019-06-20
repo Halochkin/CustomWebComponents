@@ -8,7 +8,7 @@ are being mastered at a rapid pace, and the world of UI tactile solutions have b
  Gesture-based input is becoming increasingly important because of the increasing need for devices capable of supporting
   complex, continuous interaction in a range of contexts. However, gesture recognition technologies are not perfect;
    particularly in the circumstances where they would be most useful, such as with portable devices, on the move. 
-   Disturbances to the inputs from walking or moving and inaccuracy caused by noisy sensors can cause even the best of 
+  Disturbances to the inputs from walking or moving and inaccuracy caused by noisy sensors can cause even the best of 
    extant recognition systems to fail. Variation in performance is also normal, as each gesture from the same person will 
    vary, different users will have individual gesturing styles, and furthermore these are all subject to change in 
    different contexts, such as changing activities or emotional states. Some of the accuracy limitations of gesture 
