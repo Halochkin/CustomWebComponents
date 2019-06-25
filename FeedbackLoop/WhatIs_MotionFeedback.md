@@ -38,3 +38,10 @@ sense with any accuracy. And you can see this by moving the phone around a bit w
  place it level and open your eyes. Most will then quickly see quite substantial corrections being available. 
 
 
+
+
+## Adding sound and vibration as motion feedback
+
+Thus, we need to add sound and vibration as feedback for the motion gestures. Sound is a great alternative as sight and screen is often unavailable *and* because the human brain is more adept at computing sound input as a means to correct muscular motions quickly. The user can process sound input x-amount faster than sight.
+The question is :
+what kind of sound feedback should motion gestures use? Which dimensions of motion are there that need sound feedback, and how can we give this feedback to the user in an unobtrusive, yet guiding way?
