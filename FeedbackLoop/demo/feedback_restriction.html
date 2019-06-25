@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback restriction</title>
+</head>
+<body>
+<audio src="../../Web%20Audio%20Api/audio/vivaldi.mp3" id="myAudio1"></audio>
+<audio src="http://dlb.mp3party.net/online/4/4719.mp3" id="myAudio2"></audio>
+<h1>0</h1>
+
+
+<script>
+
+
+  let media1 = document.querySelector("#myAudio1");
+  let media2 = document.querySelector("#myAudio2");
+  let info = document.querySelector("h1");
+
+  let counter = 0;
+
+
+  window.addEventListener("DOMContentLoaded", (e) => {
+    // media2.play();
+    counter = e.timeStamp;
+  });
+
+  media1.addEventListener("canplay", (e) => {
+    media1.play();
+
+    info.innerText = e.timeStamp - counter;
+
+  });
+
+
+  // const playPromise = media1.play();
+  // if (playPromise !== null) {
+  //   playPromise.catch(() => {
+  //     media1.play();
+  //   })
+  // }
+
+
+</script>
+</body>
+</html>
