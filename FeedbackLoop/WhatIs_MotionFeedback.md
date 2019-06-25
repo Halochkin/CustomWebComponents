@@ -13,7 +13,7 @@ also show some visual representation of the motion, as a bubble in a bubble leve
 felt by its user. Furthermore, device motion will apply sentrifugal forces to the unit in the hand. The user can feel 
 where the phone is.
 3. hearing: a select few, abrupt motions might make low "swosh" sounds as the phone flies back and forth through the air.
-4. Proprioception: the user can sense how the muscles and joints and bones in the body are positioned against each other. 
+4. proprioception: the user can sense how the muscles and joints and bones in the body are positioned against each other. 
 This gives the user the ability to physically sense his body motion from within, without gravity.
 
 ## Problem with motion senses
@@ -26,10 +26,12 @@ tilted at an angle that makes it invisible. Secondly, for sight to be an effecti
  be understood, the users cognitive processes just takes too long for the visual ques to be effective as means to control
   the feedback loop and the user's own actions. 
 * hearing: this is essentially non existent.
-* the tactile sense is also faulty. In order for the hand to prevent loosing the phone to the ground, potentially 
-destroying the 500$ love of your life machine, the user will hold on to it tight. This means that it will be hard to 
-distinguish between the tactile pressure that comes from gravity and the tactile pressure that comes from gripping the 
-phone. And our tactile sense is also kinda coarse when it comes to orientation. Sure, we might be able to respond to 
+* the tactile sense is also faulty. 
+
+In order for the hand to prevent loosing the phone to the ground, potentially destroying device wchich can cost 500$ , 
+the user will hold on to it tight. This means that it will be hard to distinguish between the tactile pressure that 
+comes from gravity and the tactile pressure that comes from gripping the phone. 
+And our tactile sense is also kinda coarse when it comes to orientation. Sure, we might be able to respond to 
 increasing pressure quite well so as to keep a batong stick in balance, but to position something 60degree we need to 
 rely on our proprioception sense.
 * proprioception is the strongest feedback we have for our motion gestures. You can sense it if you close your eyes and 
