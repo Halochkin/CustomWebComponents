@@ -66,12 +66,3 @@ They occur in basic interactions, such as those that:
 The sound used for decoration can enhance the expressive or playful moment. It is usually used to convey an emotional
  state. This type of sound should be used intelligently and reserved for moments of high emotional resonance.
 
-
-
-
-
-
-
-
-
-
