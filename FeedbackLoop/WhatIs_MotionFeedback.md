@@ -34,7 +34,7 @@ comes from gravity and the tactile pressure that comes from gripping the phone.
 And our tactile sense is also kinda coarse when it comes to orientation. Sure, we might be able to respond to 
 increasing pressure quite well so as to keep a batong stick in balance, but to position something 60degree we need to 
 rely on our proprioception sense.
-* proprioception is the strongest feedback we have for our motion gestures. You can sense it if you close your eyes and 
+`Proprioception` is the strongest feedback we have for our motion gestures. You can sense it if you close your eyes and 
 then try to move the phone into different positions and degrees. However, most of us are quite unskilled in using this 
 sense with any accuracy. And you can see this by moving the phone around a bit with your eyes closed, then try to quickly
  place it level and open your eyes. Most will then quickly see quite substantial corrections being available. 
