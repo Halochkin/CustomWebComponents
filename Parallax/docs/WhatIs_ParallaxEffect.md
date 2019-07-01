@@ -60,14 +60,11 @@ not work on them. Therefore, you will have to create an alternative option or ab
  simply do not display the necessary graphic information or do not open at all, when 
 the usual browser on the PC or tablet, everything will work.
 
-
-
+### Conclusion
 Parallax effect and parallax-scrolling will be popular in web design for a considerable amount of time. What exactly 
 to use - to decide the webmaster and the customer. But anyway, to use the ready-made parallax-animation is always 
 convenient and possible, because the attention of visitors attracts the effect and causes no less impression than a 
-normal photo.
-
-The main thing is to imagine and understand the essence of the effect; to understand what "parallax" means and how it 
+normal photo. The main thing is to imagine and understand the essence of the effect; to understand what "parallax" means and how it 
 is realized. Then it remains to decompose the objects into layers and set the desired speed for the objects. Which one 
 and how? The designer's fantasy is back in business. Another variant of design style, which simply makes webmasters 
 fantasize and play with speeds, objects, effects.
