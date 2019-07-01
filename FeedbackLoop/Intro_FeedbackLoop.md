@@ -20,10 +20,10 @@ There are two types of user gesture feedback loops:
 
 * `Direct feedback`, is always done when the input event is registered.
  
-  1. Direct feedback should be fine grained, immediate, unobtrusive.
-  2. Direct feedback is dependable, the user will receive it regardless of the event being successful or not. This means
+ 1. Direct feedback should be fine grained, immediate, unobtrusive.
+ 2. Direct feedback is dependable, the user will receive it regardless of the event being successful or not. This means
    that sounds should be made in all directions of movement, not just "the right one" for motion gestures.
-  3. The direct feedback should be universal. The user should recognize it across apps. This also makes it possible and 
+ 3. The direct feedback should be universal. The user should recognize it across apps. This also makes it possible and 
   desirable to reuse them.
   
 * `Indirect feedback`, is the user perceiving the state change that occurs as a consequence of the browser or app 
