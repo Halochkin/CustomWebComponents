@@ -61,6 +61,10 @@ not work on them. Therefore, you will have to create an alternative option or ab
 the usual browser on the PC or tablet, everything will work.
 
 
+// add some more to both lists
+
+
+
 
 Parallax effect and parallax-scrolling will be popular in web design for a considerable amount of time. What exactly 
 to use - to decide the webmaster and the customer. But anyway, to use the ready-made parallax-animation is always 

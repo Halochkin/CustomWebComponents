@@ -71,6 +71,7 @@ be focused.
         this.handleData();
       }, 1000);
     }
+    
     handleData(dist) {
       Array.from(this.children)
         .filter(item => item.tagName === "CHILD-PARALLAX")

@@ -22,3 +22,4 @@ of the mouse cursor in the area of the slider. This creates an illusion of depth
 slide. For example, your cursor enters the slider and the layers begin to move relative to the cursor. 
   
   3. `Mouse parallax`
+ // todo 
