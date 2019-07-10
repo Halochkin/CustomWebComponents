@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parallax orientation</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        parallax-parent {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: lightgrey;
+        }
+
+        parallax-child {
+            transition-duration: 1000ms;
+            background-color: #4c4a4d;
+            box-shadow: 1px 2px 4px 17px rgb(46, 44, 46)
+        }
+
+    </style>
+</head>
+<body>
+
+<!--<img src="https://lh3.googleusercontent.com/G45-xdeSuJ1aUq6oS1mDMq-UIrch26Cjge7c6c16nUVEPkWt3JQTvkwR-WTQ6q4ee9k=w720-h310"-->
+<!--alt="">-->
+
+
+<parallax-parent step-depth="2000">
+    <parallax-child depth="2000">
+        <div id="t"></div>
+    </parallax-child>
+    <parallax-child depth="4000">
+        <div id="n"></div>
+    </parallax-child>
+    <parallax-child depth="6000">
+        <div id="v"></div>
+    </parallax-child>
+    <parallax-child depth="8000">
+        <div id="m"></div>
+    </parallax-child>
+    <parallax-child depth="10000">
+        <div id="s"></div>
+    </parallax-child>
+    <parallax-child depth="12000">
+        <div id="b"></div>
+    </parallax-child>
+
+    <parallax-child depth="14000">
+        <div id="a"></div>
+    </parallax-child>
+
+</parallax-parent>
+
+<script>
+  let elementNumber = 0;
+  let eventArr = [];
+  let depthCoef = 0;  // first element will translate to 0 px each second +10px; To make depth effect
+  let getAngle = e => getOrientationAngles(e);
+
+  function getOrientationAngles(e) {
+    if (e)
+      eventArr.push(e);
+  }
+
+  function getScale(element) {
+    return parseFloat(element.style.transform.match(/scale\((.*)\)/)[1]);
+  }
+
+
+  class ParallaxParent extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+        <style>
+          :host {
+            position: relative;
+            display: block;
+          }
+        </style>
+        <slot></slot>`;
+
+      setInterval(() => {
+        if (eventArr.length > 0) {
+          let lastEvent = eventArr[eventArr.length - 1];
+          for (let child of this.children) {
+            let scale = getScale(child);
+
+            child.updateChild(lastEvent.beta, lastEvent.gamma, scale, depthCoef += 0.1)
+          }
+          depthCoef = 0;
+        }
+      }, 500); //todo: is it correct to setInterval() here? draft version.
+    }
+
+    connectedCallback() {
+      // if ("ondeviceorientationabsolute" in window)
+      window.addEventListener("deviceorientationabsolute", getAngle);
+    }
+
+    disconnectedCallback() {
+      // if ("ondeviceorientationabsolute" in window)
+      window.removeEventListener("deviceorientationabsolute", getAngle);
+    }
+
+
+  }
+
+  class ParallaxChild extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+        <style>
+          :host {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+          }
+        </style>
+        <slot></slot>
+      `;
+    }
+
+
+    static get observedAttributes() {
+      return ["depth"];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (elementNumber === this.parentNode.children.length)
+        elementNumber = 0;
+      if (name === "depth")
+        elementNumber++;
+      this._setSize(parseInt(newValue), elementNumber - 1);
+    }
+
+
+    updateChild(beta, gamma, scale, coef) {
+      beta = 85;
+      gamma = 140;
+      this;
+      this.style.transform = `translate(${(beta / 100) * coef}px, ${(gamma / 10) * coef}px) scale(${scale})`;
+      // this.style.boxShadow = `1px 2px 1px 40px rgb(46, 44, 46)`;
+      // this.style.transform = `translate(${beta / 10}px, ${gamma / 10}px)`;
+    }
+
+    // min depth = 50 === 1.0x scale. So 0.999 will be equivalent 100
+    _setSize(depthValue, childNumber) {
+      let depth = 1 - depthValue / 20000;
+      let element = this.parentNode.children[childNumber];
+      element.style.transform = `scale(${depth})`;
+      element.style.opacity = `0.${childNumber}`;
+    }
+
+    // setParallaxPosition(x, y, z, motion, depth) {
+    //   const myMotion = (this.getAttribute("motion") || "0").split(" ").map(s => parseFloat(s));
+    //   const myMotionX = (myMotion[0] * motion) || 0;
+    //   const myMotionY = (myMotion[1] * motion) || 0;
+    //   const myMotionZ = (myMotion[2] * motion) || 0;
+    //   const myDepth = parseFloat(this.getAttribute("depth")) || 100;
+    //   const factor = depth / myDepth;
+    //   const alpha = myDepth - depth;
+    //   let scale = alpha / (alpha - z);
+    //   if (isNaN(scale))
+    //     scale = (alpha === 0 ? 1 : Number.MAX_VALUE);
+    //   let myScale = alpha / (alpha - myMotionZ);
+    //   if (isNaN(myScale))
+    //     myScale = (alpha === 0 ? 1 : Number.MAX_VALUE);
+    //   this.style.transform = `translate(${(factor * x) + myMotionX}px, ${(factor * y) + myMotionY}px) scale(${scale})`;
+    // }
+  }
+
+  customElements.define("parallax-parent", ParallaxParent);
+  customElements.define("parallax-child", ParallaxChild);
+
+
+</script>
+</body>
+</html>
