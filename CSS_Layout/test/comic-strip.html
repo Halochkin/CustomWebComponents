@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comic strip</title>
+</head>
+<style>
+    parent-container {
+        display: block;
+        background-color: green;
+    }
+
+    child-frame {
+        display: block;
+        background-color: red;
+        height: 900px;
+        width: 400px;
+
+    }
+
+</style>
+<body>
+
+<parent-container minscroll="150" framewidth="800" frameheight="600">
+    <child-frame step="100" maxPosition="3" position="1"></child-frame>
+</parent-container>
+
+<script>
+
+  let currentPos = undefined;
+  let maxPosition = undefined;
+  let scrollXArr = [];
+  let minScrollDistance = undefined;  // min absolute distance which have to be scrolled to switch to the next/previous frame
+  let prevPosition = 0; // initial scrollX (px)
+
+  let onScroll = e => scrollHandler(e);
+
+
+  // function checkScroll(horisontal) {   //todo: fix it. Figure out how to count scroll bar dimention. And then innerWidth / max scroll width
+  //   if (horisontal > minScrollDistance + prevPosition) {
+  //     prevPosition += horisontal;
+  //     currentPos++;
+  //   }
+  //
+  //   else if (horisontal <= prevPosition - minScrollDistance) {
+  //     prevPosition -= horisontal;
+  //      currentPos--;
+  //   }
+  //
+  //
+  //   else if (currentPos >= maxPosition) {
+  //     currentPos = maxPosition;
+  //
+  //   }
+  //
+  //   else if (currentPos <= 1) {
+  //     currentPos = 1;
+  //     // return;
+  //   }
+  //
+  //   return currentPos;
+  // }
+
+
+  function scrollHandler(e) {
+    let newPosition = checkScroll(e.currentTarget.scrollX);  //absolute scrollX
+
+    console.log(newPosition);
+
+
+  }
+
+
+  class ParentContainer extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+      <style>
+        :host{overflow: hidden; }
+      </style>
+      <slot></slot>`;
+
+    }
+
+    static get observedAttributes() {
+      return ["framewidth", "frameheight"];
+    }
+
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (name === "framewidth")
+        this.updateParentWidth(newValue);
+      else if (name === "frameheight")
+        this.updateParentHeight(newValue);
+    }
+
+
+    updateChildren(position) {
+      for (let child of this.children) {
+        child.setAttribute("position", position);
+
+      }
+    }
+
+    updateParentWidth(width) {
+      this.style.width = `${width}px`;
+    }
+
+    updateParentHeight(height) {
+      this.style.height = `${height}px`;
+    }
+
+    connectedCallback() {
+      window.addEventListener("scroll", onScroll.bind(this));
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("scroll", onScroll.bind(this));
+    }
+
+  }
+
+  class ChildFrame extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `<slot></slot>`;
+      this.scrollStep = parseInt(this.getAttribute("step"));  // todo:   or it is better to get this value, using attributeChangedCallback
+      // this.maxPosition = parseInt(this.getAttribute("maxPosition"));  //todo: should be define before attributeChangedCb() ???
+    }
+
+    static get observedAttributes() {
+      return ["position", "maxposition"];
+    }
+
+    //initial position = currentPosition * step;
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (name === "position") {
+        currentPos = parseInt(newValue);
+        this.updatePosition(parseInt(newValue));
+      }
+      else if (name === "maxposition") {
+        maxPosition = parseInt(newValue);
+        minScrollDistance = window.innerWidth / maxPosition; //max Position
+
+
+      }
+    }
+
+    updatePosition(pos) {
+      this.style.transform = `translate(${(pos * this.scrollStep)}px)`;
+    }
+
+
+  }
+
+
+  customElements.define("parent-container", ParentContainer);
+  customElements.define("child-frame", ChildFrame);
+</script>
+</body>
+</html>

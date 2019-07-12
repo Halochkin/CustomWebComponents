@@ -1,10 +1,12 @@
-1. HowTo: css display.
+`1. HowTo: css display.`
 2. Pattern: GoldenPage.
-3. HowTo: css position
-4. Pattern: parallax
-5. HowTo: css grid
-6. Pattern: GoldenGrid.
-7. Pattern: TwelveGrid.
+`3. HowTo: css position.`
+4. Problem: ehm.. %em?
+5. Pattern: NoPointerEventsForShadowDomElements.
+6. Pattern: parallax
+`7. HowTo: css grid`
+8. Pattern: GoldenGrid.
+9. Pattern: TwelveGrid.
 
 
 It feels especially clear how the css position is the entrypoint for parallax. And, it is also evident that both css grid and display are not linked to scrolling the way parallax is. But the GoldenGrid and TwelveGrid likely would like to be able to control scrolling the way parallax and position-layers do. To mark one or two of the layers as none scrollable/fixed is essential.
