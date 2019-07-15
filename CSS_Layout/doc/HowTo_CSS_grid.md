@@ -121,29 +121,6 @@ grid-template-columns: [line-name] size  [line-name] size ... [last-name];
 >grid: grid-template-rows / grid-template--columns
 >```
 
-#### Examples of values
-```
- //grid-template-columns: can usethe same values
-grid-template-rows: none;
-
-grid-template-rows: 100px 1fr;
-grid-template-rows: [linename]  100px;
-grid-template-rows: [linename1] 100px [linename2 linename3];
-grid-template-rows: minmax(100px, 1fr);
-grid-template-rows: fit-content(40%);
-grid-template-rows: repeat(3, 200px);
-
-grid-template-rows: 200px repeat(auto-fill, 100px) 300px;
-grid-template-rows: minmax(100px, max-content)  repeat(auto-fill, 200px) 20%;
-grid-template-rows: [linename1] 100px [linename2] repeat(auto-fit, [linename3 linename4] 300px)	100px;
-grid-template-rows: [linename1 linename2] 100px	repeat(auto-fit, [linename1] 300px) [linename3];
-
-// global
-grid-template-rows: inherit;
-grid-template-rows: initial;
-grid-template-rows: unset;
-```
-
 Try it on [codepen](https://codepen.io/Halochkin/pen/zVXvag?editors=0100)
 
 ### `3.3 grid-template-areas` 
