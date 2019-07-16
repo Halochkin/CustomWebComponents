@@ -5,71 +5,102 @@
     <title>Comic strip</title>
 </head>
 <style>
+
+
     parent-container {
         display: block;
         background-color: green;
+        margin: 10px;
+        position: absolute; /*because child elements have position: absolute and can not be overflowed*/
+    }
+
+    body {
+        margin: 0;
     }
 
     child-frame {
-        display: block;
-        background-color: red;
-        height: 900px;
-        width: 400px;
+        display: inline-block;
+        position: absolute;
+        height: 350px;
+        width: 100%;
+        font-size: 0px;
+        /*transition-duration: 5s;*/
+    }
 
+    #one {
+        background-color: red;
+
+    }
+
+    #two {
+        background-color: orange;
+    }
+
+    #three {
+        background-color: #86dfff;
     }
 
 </style>
 <body>
 
-<parent-container minscroll="150" framewidth="800" frameheight="600">
-    <child-frame step="100" maxPosition="3" position="1"></child-frame>
+<parent-container minscroll="150" framewidth="600" frameheight="300">
+    <child-frame id="one" step="100" position="0"></child-frame>
+    <child-frame id="two" step="100" position="1"></child-frame>
+    <child-frame id="three" step="100" position="2"></child-frame>
 </parent-container>
 
 <script>
 
-  let currentPos = undefined;
-  let maxPosition = undefined;
-  let scrollXArr = [];
-  let minScrollDistance = undefined;  // min absolute distance which have to be scrolled to switch to the next/previous frame
+
+  let frameWidth = 0;
+  let frames = undefined;
   let prevPosition = 0; // initial scrollX (px)
-
-  let onScroll = e => scrollHandler(e);
-
-
-  // function checkScroll(horisontal) {   //todo: fix it. Figure out how to count scroll bar dimention. And then innerWidth / max scroll width
-  //   if (horisontal > minScrollDistance + prevPosition) {
-  //     prevPosition += horisontal;
-  //     currentPos++;
-  //   }
-  //
-  //   else if (horisontal <= prevPosition - minScrollDistance) {
-  //     prevPosition -= horisontal;
-  //      currentPos--;
-  //   }
-  //
-  //
-  //   else if (currentPos >= maxPosition) {
-  //     currentPos = maxPosition;
-  //
-  //   }
-  //
-  //   else if (currentPos <= 1) {
-  //     currentPos = 1;
-  //     // return;
-  //   }
-  //
-  //   return currentPos;
-  // }
-
+  let frameTranslate = 0;
 
   function scrollHandler(e) {
-    let newPosition = checkScroll(e.currentTarget.scrollX);  //absolute scrollX
-
-    console.log(newPosition);
 
 
+    let scrolledLeft = parseInt(e.target.scrollLeft);
+
+    let step = (e.target.scrollWidth - e.target.offsetWidth) / (frames - 1);  //3 frames 2 switch  (1 and 2 ; 2 and 3) thats why frames -1;
+
+    if (scrolledLeft >= prevPosition + step) {
+      prevPosition += step;
+      switchChildren(this, frameTranslate -= 1);
+    }
+
+    else if (scrolledLeft <= prevPosition - step) {
+      prevPosition -= step;
+      switchChildren(this, frameTranslate += 1);
+    }
   }
 
+
+  function switchChildren(element, position) {
+    for (let i = 0; i < element.children.length; i++) {
+      let child = element.children[i];
+      // child.updatePosition(i + position);
+      child.setAttribute("position", i + position);  //todo: I decided to just set attribute, and attributeChangedCallback will call function which will transformX()
+      //todo: Of course we can not set new position attribute, just transform
+    }                                               // todo: the reason why I setAttribute here, because if I will set it in child class, it will trigger infinitive loop.
+  }
+
+  class ScrollPanel extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+        <style>
+            div{
+               height: .1px;  /*very ugly, but there is no other way*/
+            }
+        </style>
+        <div></div>
+      `;
+      // change scrollbar width, depends from number of the frames
+      this.shadowRoot.children[1].style.width = `${frameWidth * frames}px`;
+    }
+  }
 
   class ParentContainer extends HTMLElement {
     constructor() {
@@ -77,10 +108,27 @@
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `
       <style>
-        :host{overflow: hidden; }
-      </style>
-      <slot></slot>`;
+        :host{overflow: hidden }
 
+        scroll-panel {
+          overflow: scroll;
+          display: block;
+         }
+
+         /* Just for fun*/
+        scroll-panel::-webkit-scrollbar-thumb{
+        background: orange;
+        }
+
+        scroll-panel::-webkit-scrollbar {
+            height: 20px;
+            width: 0px;
+        }
+
+      </style>
+      <scroll-panel></scroll-panel>
+      <slot></slot>`;
+      frames = this.children.length;
     }
 
     static get observedAttributes() {
@@ -89,34 +137,21 @@
 
 
     attributeChangedCallback(name, oldValue, newValue) {
-      if (name === "framewidth")
-        this.updateParentWidth(newValue);
-      else if (name === "frameheight")
-        this.updateParentHeight(newValue);
-    }
-
-
-    updateChildren(position) {
-      for (let child of this.children) {
-        child.setAttribute("position", position);
-
+      if (name === "framewidth") {
+        this.style.width = `${newValue}px`;
+        frameWidth = parseInt(newValue);  // define width to use it for scrollbar
       }
+      else if (name === "frameheight")
+        this.style.height = `${newValue}px`;
     }
 
-    updateParentWidth(width) {
-      this.style.width = `${width}px`;
-    }
-
-    updateParentHeight(height) {
-      this.style.height = `${height}px`;
-    }
 
     connectedCallback() {
-      window.addEventListener("scroll", onScroll.bind(this));
+      this.shadowRoot.addEventListener("scroll", scrollHandler.bind(this), true);
     }
 
     disconnectedCallback() {
-      window.removeEventListener("scroll", onScroll.bind(this));
+      this.shadowRoot.removeEventListener("scroll", scrollHandler.bind(this), true);
     }
 
   }
@@ -126,39 +161,28 @@
       super();
       this.attachShadow({mode: "open"});
       this.shadowRoot.innerHTML = `<slot></slot>`;
-      this.scrollStep = parseInt(this.getAttribute("step"));  // todo:   or it is better to get this value, using attributeChangedCallback
-      // this.maxPosition = parseInt(this.getAttribute("maxPosition"));  //todo: should be define before attributeChangedCb() ???
     }
 
+
+    // todo:  We can remove attributeChangedCallback here, but the frames will shown in the reverse order. But will be work correct
+    // It set initial frames translate
     static get observedAttributes() {
-      return ["position", "maxposition"];
+      return ["position"];
     }
-
-    //initial position = currentPosition * step;
 
     attributeChangedCallback(name, oldValue, newValue) {
-      if (name === "position") {
-        currentPos = parseInt(newValue);
-        this.updatePosition(parseInt(newValue));
-      }
-      else if (name === "maxposition") {
-        maxPosition = parseInt(newValue);
-        minScrollDistance = window.innerWidth / maxPosition; //max Position
-
-
-      }
+      this.updatePosition(parseInt(newValue));
     }
 
     updatePosition(pos) {
-      this.style.transform = `translate(${(pos * this.scrollStep)}px)`;
+      this.style.transform = `translateX(${(pos * 100)}%)`;
     }
-
-
   }
 
 
   customElements.define("parent-container", ParentContainer);
   customElements.define("child-frame", ChildFrame);
+  customElements.define("scroll-panel", ScrollPanel);
 </script>
 </body>
 </html>
