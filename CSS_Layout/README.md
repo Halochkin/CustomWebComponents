@@ -57,4 +57,5 @@ It require a little logic to map which coordinates will trigger the loading of w
    to an inner layer. To avoid this, the web component needs to be specified as non-clickable, while the lightdom elements
     specified as clickable. Like so: `:host {Pointerevents: none;} ::slotted(*) {pointerevents: auto;}`.
     
- This pattern desribes how to set :host{ pointer-events: none; and ::slotted(*) {pointer-events :auto} so that the elements in the shadowDom cannot be clicked. With a small demo. 
+ This pattern desribes how to set :host{ pointer-events: none; and ::slotted(*) {pointer-events :auto} so that the elements 
+ in the shadowDom cannot be clicked. With a small demo. 
