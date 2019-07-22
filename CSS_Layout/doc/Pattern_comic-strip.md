@@ -196,6 +196,7 @@ is switched, depending on the direction.
     Regardless of which sizes were defined by CSS.
     3. After the element is placed in the DOM, an event listener for the scroll event is added to the scrollbar, which 
     activates the `scrollHandler` function.
+    
  7. `scrollHandler()` handles a scroll event that was called on a scrollbar element.
     1. The step variable is equal to the value to be overcome by the scrollbar button to switch the next frame.
     2. After the step has been overcome, the value of the previous position will be increased or decreased by the value
