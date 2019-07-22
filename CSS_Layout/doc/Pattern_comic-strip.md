@@ -37,7 +37,7 @@ content in both directions - vertical and horizontal.
 The `comic-strip` is the parent container. It mainly watches the scroll event. Whenever the scroll happens, it shifts `position`
 property on all its comic-frame children to be `+1` or `- 1` to the left or right, depending the direction of the scroll.
 
-# Pattern: comic-strip 
+### Pattern: comic-strip 
 The comic-strip is the parent container. It mainly watches the scroll event. Whenever the scroll happens, it shifts `position`
  property on all its comic-frame children to be `+1` or `- 1` to the left or right, depending the direction of the scroll.
 
