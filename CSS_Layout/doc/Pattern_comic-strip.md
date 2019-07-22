@@ -41,6 +41,7 @@ property on all its comic-frame children to be `+1` or `- 1` to the left or righ
 The comic-strip is the parent container. It mainly watches the scroll event. Whenever the scroll happens, it shifts `position`
  property on all its comic-frame children to be `+1` or `- 1` to the left or right, depending the direction of the scroll.
 
+
 The comic-frame children has the default style settings. It has a transition to gradually move between states. When the
  position is +1, it is transformX(+100%),when it is -1 it is transformX(-100%).
  
