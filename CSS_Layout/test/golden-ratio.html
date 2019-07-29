@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Golden ratio pattern</title>
+</head>
+<body>
+<style>
+
+    :root { /*[1]*/
+        --golden-ratio-coefitient: 1.618; /*[1.1]*/
+        --parent-size: 640px; /*[1.2]*/
+        --golden-ratio: calc(var(--parent-size) / var(--golden-ratio-coefitient)); /*[1.3]*/
+    }
+
+    main {
+        width: var(--parent-size); /*[2]*/
+        height: var(--golden-ratio);
+        display: inline-flex; /*[3]*/
+    }
+
+    #a1 {
+        width: var(--golden-ratio); /*[4]*/
+        height: 100%; /*[5]*/
+        background-color: #4cd2e4;
+    }
+
+    #a2 {
+        width: calc(var(--parent-size) - var(--golden-ratio)); /*[6]*/
+        height: 100%;
+        background-color: orange;
+        display: inline-flex;
+    }
+
+    #a3 { /*[7]*/
+        width: 62%;
+        height: 38%;
+        background-color: red;
+    }
+
+    #a4 { /*[8]*/
+        width: 38%;
+        height: 38%;
+        background-color: blue;
+    }
+
+</style>
+
+<main>
+    <div id="a1"></div>
+    <div id="a2">
+        <div id="a3"></div>
+        <div id="a4"></div>
+    </div>
+</main>
+
+
+</body>
+</html>
