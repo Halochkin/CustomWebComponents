@@ -1,5 +1,21 @@
 
 # Pattern: comic-strip 
+Layout is not alone. Sequence is always with him. Sequence is time. Sequnece is the forth dimension in 4d.
+In the ux (and code), sequence is most often realized as either: 1 scrolling or 2 link-click + back/forward in a SPA.
+Scrolling can be either digital or analog. Analog is the normal scroll mode. Analog scroll moves down/up gradually as if 
+the viewer pans and flat surface vertically. Digital scroll interprets the scroll events as page flips, as if the user
+by scrolling is flipping through pages in a book, or jumping from one frame to another in a comic strip, or sliding 
+from one item to another in a carousel.
+Internal spa navigation is similar to digital scrolling, except that it offers the ability to jump in a semantic grid 
+(think of such a grid as an alphabet, where you from B can jump not only to A and C (as in digital scrolling), but from
+B to for example K, L, T, and Z, all depending on the semantic relationships/where it might be suitable to go from B.
+
+When you are making a layout component, the sequentiality is with you. You can make a web component for layout without 
+sequentiality, but you likely want to make versions of the same web component that include one or more forms of scroll 
+handling for desktop and mobile platforms. The reason for this is that the scroll behavior is likely to be generic and 
+therefore reuseable. You might have some alternative options for scrolling, such as analog or/and digital, and some 
+alternatives for touch, but scrolling and scroll event management and fundamental support for semantic sequentiality 
+is best bundled into the layout component.
 
 Today, various sliders are very popular on websites. Purely visually, the sliders on the sites are blocks on the page, 
 within which the demonstration of announcements of news, articles or images takes place with a set frequency.
