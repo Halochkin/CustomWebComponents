@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>reduce()</title>
+</head>
+<body>
+<script>
+
+  const array1 = [1, 2, 3, 4];
+
+  function reducer(accumulator, currentValue, index, arr) {
+    return accumulator + currentValue
+  }
+
+  console.log((array1.reduce(reducer)));
+
+  let arr = Array.of(array1);
+
+  var arr3 = [1, 2, [3, 4, [5, 6]]];
+
+  let test3 = arr3.flat(1);
+
+
+  let a = [5, 4, -3, 20, 17, -33, -4, 18];
+
+
+  const user = {
+    name: "Max",
+    surname: "Halochkin",
+    age: 21,
+    country: "Ukraine"
+  };
+
+  const {age, country, ...cleanUser} = user;
+
+  console.log(cleanUser);
+
+  let lala = function (a) {
+    alert("ho ho ho");
+  };
+
+  // для каждого пользователя будем хранить количество посещений
+  let visitsCountMap = new Map();
+
+  // объект user является ключом в visitsCountMap
+  visitsCountMap.set(null, 123);
+  visitsCountMap.set(lala, 1234);
+
+  let getter = visitsCountMap.get(lala);
+
+  let abc1 = visitsCountMap.keys();
+
+  let ttttt = visitsCountMap.has(abc1[1].value)
+
+
+</script>
+</body>
+</html>
