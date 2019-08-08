@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Comic strip</title>
+    <title>Responsive layout</title>
 </head>
 <style>
 
@@ -10,6 +10,7 @@
         --column-width-parent: 8; /*%*/
         --column-width-child: 10; /*relativey to the parent width*/
         --column-count: 10;
+
     }
 
     parent-container {
@@ -191,7 +192,7 @@
         }
 
         :host-context(#three) {
-            --column-count-three: 4;
+            --column-count-three: 8;
             height: 25px;
         }
 
@@ -204,7 +205,8 @@
         }
     }
 
-    @media (min-width: 992px) and (max-width: 2200px) {
+    @media
+    (min-width: 992px) and (max-width: 2200px) {
         :host-context(#one) {
             --column-count-one: 1;
         }
@@ -248,8 +250,6 @@
     }
 
   }
-
-
   customElements.define("parent-container", ParentContainer);
   customElements.define("child-element", ChildElement);
 </script>
