@@ -178,4 +178,3 @@ Try it on [codepen](https://codepen.io/Halochkin/pen/KOyOwQ)
 
 * [MDN: Media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries)
 * [MDN: `calc()`](https://developer.mozilla.org/en-US/docs/Web/CSS/calc)
-* 
