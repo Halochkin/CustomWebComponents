@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vibration</title>
+    <style>
+        button {
+            background-color: lightgreen;
+            border-radius: 50%;
+            height: 100px;
+            width: 100px;
+            border-color: red;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+<button>Press me more than 2s</button>
+<script>
+  let button = document.querySelector("button");
+  let durationMs = 2000;
+  let touchTimeout;
+
+  (function () {
+
+
+    window.addEventListener("touchstart", touchThrottler, false);
+    window.addEventListener("touchend", () => {
+      clearTimeout(touchTimeout);
+    }, false);
+
+    function touchThrottler() {
+      touchTimeout = setTimeout(function () {
+        button.dispatchEvent(new CustomEvent("long-press"));
+      }, durationMs);
+    }
+
+  }());
+
+  // handle event
+  button.addEventListener("long-press", function () {
+
+
+  });
+
+
+</script>
+</body>
+</html>
