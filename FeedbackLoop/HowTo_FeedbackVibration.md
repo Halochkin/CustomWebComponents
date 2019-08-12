@@ -47,9 +47,8 @@ Lets make a simple example, which will activate the vibration after pressing the
   let touchTimeout;
 
   (function () {                                                    //[1]
-
     if (!"vibrate" in navigator) {                                  //[2]
-        alert("Your devise does not support vibration")
+      alert("Your devise does not support vibration")
     }
 
     window.addEventListener("touchstart", touchThrottler, false);   //[3]
@@ -58,11 +57,10 @@ Lets make a simple example, which will activate the vibration after pressing the
     }, false);
 
     function touchThrottler() { 
-          touchTimeout = setTimeout(()=> {                          //[3.1]
-          button.dispatchEvent(new CustomEvent("long-press"));      //[3.2]
-        }, durationMs);
+      touchTimeout = setTimeout(()=> {                              //[3.1]
+      button.dispatchEvent(new CustomEvent("long-press"));          //[3.2]
+     }, durationMs);
     }
-
   }());                                                             //[1]
 
   button.addEventListener("long-press", function () {               //[5]
