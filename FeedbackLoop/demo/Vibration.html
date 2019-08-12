@@ -3,27 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Vibration</title>
+    <style>
+        button {
+            background-color: lightgreen;
+            border-radius: 50%;
+            height: 100px;
+            width: 100px;
+            border-color: red;
+            user-select: none;
+        }
+    </style>
 </head>
 <body>
 <button>Press me more than 2s</button>
 <script>
   let button = document.querySelector("button");
   let durationMs = 2000;
-  let pressed;
+  let touchTimeout;
 
-  if (!"vibrate" in navigator) {
-    alert("Your devise does not support vibration")
-  }
+  (function () {
+    if (!"vibrate" in navigator) {
+      alert("Your devise does not support vibration")
+    }
 
-  button.addEventListener("touchstart", e => {
-    pressed = setTimeout(() => {
-      navigator.vibrate(1000);
-    }, durationMs)
+    window.addEventListener("touchstart", touchThrottler, false);
+    window.addEventListener("touchend", () => {
+      clearTimeout(touchTimeout);
+    }, false);
+
+    function touchThrottler() {
+      touchTimeout = setTimeout(function () {
+        button.dispatchEvent(new CustomEvent("long-press"));
+      }, durationMs);
+    }
+
+  }());
+
+  // handle event
+  button.addEventListener("long-press", function () {
+    navigator.vibrate(1000);
+    alert()
   });
 
-  button.addEventListener("touchend", e => {
-    clearTimeout(pressed)
-  });
 
 </script>
 </body>

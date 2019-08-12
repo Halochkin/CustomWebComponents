@@ -40,32 +40,44 @@ navigator.vibrate([]);
 ### Example 
 Lets make a simple example, which will activate the vibration after pressing the button for more than 2 seconds
 ```html
-<button>Touch me longer than 2s</button>
+<button>Press me more than 2s</button>
 <script>
   let button = document.querySelector("button");
   let durationMs = 2000;
-  let pressed;
+  let touchTimeout;
 
-  if !("vibrate" in navigator) {                                     //[1]
-    alert("Your devise does not support vibration")
-  }
+  (function () {                                                    //[1]
 
-  button.addEventListener("touchstart", () => {                      //[2]
-    pressed = setTimeout(() => {                                     //[3]
-      navigator.vibrate(1000);                                       //[4]
-    }, durationMs)
+    if (!"vibrate" in navigator) {                                  //[2]
+        alert("Your devise does not support vibration")
+    }
+
+    window.addEventListener("touchstart", touchThrottler, false);   //[3]
+    window.addEventListener("touchend", () => {                     //[4]
+      clearTimeout(touchTimeout);
+    }, false);
+
+    function touchThrottler() { 
+          touchTimeout = setTimeout(()=> {                          //[3.1]
+          button.dispatchEvent(new CustomEvent("long-press"));      //[3.2]
+        }, durationMs);
+    }
+
+  }());                                                             //[1]
+
+  // handle event
+  button.addEventListener("long-press", function () {               //[5]
+    navigator.vibrate(1000);
   });
-
-  button.addEventListener("touchend", () => { 
-    clearTimeout(pressed)                                            //[5]
-  });
-</script>
 ```
-1. Check the vibration support.
-2. Since in most cases vibration is supported by touchscreen devices, we will use touch events.
-3. When `"touchstart"` event is activated, `setTimeout()` is activated, which activates vibration after 2 seconds.
-4. Vibration activation, with 1 second duration.
-5. If the user cancels the event earlier than 2 seconds, the vibration activation countdown will be canceled with clearTimeout().
+1. Let's add a self-invoking function.
+2. Check the vibration support.
+3. Since in most cases vibration is supported by touchscreen devices, we will use touch events.
+    1. Then `setTimeout()` is activated, which will start the countdown to activate the internal code after 2s.
+    2. When the waiting time expires, there will be a new `"long-press"` composed event dispatch.
+4. If the user cancels the event earlier than 2 seconds (activated `"touchend"` event), the vibration activation 
+   countdown will be canceled with `clearTimeout()`.
+5. Vibration activation, with 1 second duration.
 
 ### References
 
