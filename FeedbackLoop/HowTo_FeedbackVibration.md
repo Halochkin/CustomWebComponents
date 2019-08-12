@@ -65,7 +65,6 @@ Lets make a simple example, which will activate the vibration after pressing the
 
   }());                                                             //[1]
 
-  // handle event
   button.addEventListener("long-press", function () {               //[5]
     navigator.vibrate(1000);
   });
