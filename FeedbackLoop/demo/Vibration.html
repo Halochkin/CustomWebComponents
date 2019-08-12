@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vibration</title>
+</head>
+<body>
+<button>Press me more than 2s</button>
+<script>
+  let button = document.querySelector("button");
+  let durationMs = 2000;
+  let pressed;
+
+  if (!"vibrate" in navigator) {
+    alert("Your devise does not support vibration")
+  }
+
+  button.addEventListener("touchstart", e => {
+    pressed = setTimeout(() => {
+      navigator.vibrate(1000);
+    }, durationMs)
+  });
+
+  button.addEventListener("touchend", e => {
+    clearTimeout(pressed)
+  });
+
+</script>
+</body>
+</html>
