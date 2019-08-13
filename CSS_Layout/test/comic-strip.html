@@ -12,6 +12,7 @@
         background-color: green;
         margin: 10px;
         position: absolute; /*because child elements have position: absolute and can not be overflowed*/
+        overscroll-behavior: contain;
     }
 
     body {
@@ -24,7 +25,8 @@
         height: 350px;
         width: 100%;
         font-size: 0px;
-        /*transition-duration: 5s;*/
+        transition-duration: 1s;
+        scroll-padding: 2220px;
     }
 
     #one {
@@ -55,8 +57,7 @@
   let frameWidth, frames = undefined;
   let prevPosition = 0; // initial scrollX (px)
   let frameTranslate = 0;
-
-
+  let borders = 100;
 
   class ScrollPanel extends HTMLElement {
     constructor() {
@@ -154,10 +155,20 @@
 
   function scrollHandler(e) {
 
-
     let scrolledLeft = parseInt(e.target.scrollLeft);
 
+
     let step = (e.target.scrollWidth - e.target.offsetWidth) / (frames - 1);  //3 frames 2 switch  (1 and 2 ; 2 and 3) thats why frames -1;
+
+
+//     if (scrolledLeft >= prevPosition + step - borders) {
+// // debugger;
+//       for (let child of this.children) {
+//         let currPos = parseInt(child.getAttribute("position") * 100);
+//         child.style.transform = `translateX(${currPos + i++}%)`;
+//       }
+//     }
+
 
     if (scrolledLeft >= prevPosition + step) {
       prevPosition += step;
@@ -167,6 +178,7 @@
     else if (scrolledLeft <= prevPosition - step) {
       prevPosition -= step;
       switchChildren(this, frameTranslate += 1);
+
     }
   }
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vibration</title>
+    <title>Audio feedback</title>
     <style>
         button {
             background-color: lightgreen;
@@ -11,35 +11,49 @@
             width: 100px;
             border-color: red;
             user-select: none;
+            touch-action: none;
+            outline: none;
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false">
+
 <button>Press me more than 2s</button>
 <script>
   let button = document.querySelector("button");
-  let durationMs = 2000;
-  let touchTimeout;
+  let durationMs = 500;
+  let frequencyHz = 466.2;
+  let touchTimeout, oscillator;
+  let audioContext = null;
+
 
   (function () {
-
-
-    window.addEventListener("touchstart", touchThrottler, false);
+    if (!window.AudioContext)
+      return;
+    window.addEventListener("touchstart", touchThrottler, {capture: false, passive: false});
     window.addEventListener("touchend", () => {
       clearTimeout(touchTimeout);
-    }, false);
+    }, {passive: false});
 
-    function touchThrottler() {
+    function touchThrottler(e) {
       touchTimeout = setTimeout(function () {
+        audioContext = new AudioContext();
+        oscillator = audioContext.createOscillator();
+        oscillator.frequency.value = frequencyHz;
+        let gain = audioContext.createGain();
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 2);
+        gain.connect(audioContext.destination);
+        oscillator.connect(gain);
         button.dispatchEvent(new CustomEvent("long-press"));
       }, durationMs);
     }
 
   }());
 
-  // handle event
-  button.addEventListener("long-press", function () {
 
+  button.addEventListener("long-press", function () {
+    // let osc = getOscillator();
+    oscillator.start(0);
 
   });
 
