@@ -27,7 +27,7 @@ applications that have sounds in common, so let's look at some of them.
 The user hears the ringing of spent coins when distributing the budget by target. The case when sounds do not have 
 special value, but complement the picture.
 
-#### Sports apps
+### Sports apps
 For example, athlete-centric applications have a stopwatch function. At startup, like an arbiter, a loud voice counts 
 down the seconds before the start, and at the end loudly tells you that the time has elapsed.  It's convenient to hear 
 a sound from your pocket while you're doing sports.
@@ -47,7 +47,7 @@ For example, if a user hears a sound in the Facebook application after a pile do
 user realizes that the feed has been updated, the phone has the internet, and the user is online.
 In addition, Facebook voiced notifications of new messages, updates, Like button, transitions, message editing.
 
-#### Online shops
+### Online shops
 The sound of the notification can serve as information at the abstract level. For example, if a user orders a product
 with home delivery. The process can be divided into three stages, each user receives a notification, which will be 
 similar to the previous one, but with some changes.
