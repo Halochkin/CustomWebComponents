@@ -6,7 +6,7 @@
 </head>
 <body>
 <audio id="one" src="https://www.sounddogs.com/media/fastpreview/Sounddogs-Preview-11536733.mp3" preload="auto"></audio>
-<div use-long-press-audio="#one" long-press-duration="1000">Press Me</div>
+<div use-long-press-audio="#one" long-press-duration="1000">Press Me 1000ms</div>
 
 <script>
   let primaryEvent;
@@ -24,15 +24,18 @@
     if (e.button !== 0)
       return;
     primaryEvent = e;
+    if (primaryEvent.target.hasAttribute("use-long-press-audio"))
+      document.querySelector(e.target.getAttribute("use-long-press-audio")).play();
+    else
+      return;
     window.addEventListener("mouseup", onMouseup);
-    let longPressStart = new CustomEvent("long-press-start", {bubbles: true, composed: true});
-    dispatchPriorEvent(e.target, longPressStart, e);
+
   }
 
   function onMouseup(e) {
     let duration = e.timeStamp - primaryEvent.timeStamp;
     //trigger long-press iff the press duration is more than long-press-duration attribute value or 300ms ON the exact same mouse event target.
-    if (duration > parseInt(e.target.getAttribute("long-press-duration")) || 300 && e.target === primaryEvent.target) {
+    if (duration > parseInt(e.target.getAttribute("long-press-duration")) || 1000 && e.target === primaryEvent.target) {
       let longPress = new CustomEvent("long-press", {bubbles: true, composed: true, detail: duration});
       dispatchPriorEvent(e.target, longPress, e);
     }
