@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Long-click</title>
+    <style>
+        my-element {
+            background-color: lightgreen;
+            border-radius: 50%;
+            height: 200px;
+            width: 200px;
+            border: 2px solid red;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            margin: 20px;
+            display: block;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        :root {
+            --audio-file-default: "https://www.sounddogs.com/media/fastpreview/Sounddogs-Preview-11536733.mp3";
+            --audio-file-1: "https://www.sounddogs.com/media/fastpreview/Sounddogs-Preview-11545000.mp3";
+            --audio-file-2: "http://weblab011.com/code/riverkwai.mp3";
+        }
+
+
+    </style>
+</head>
+<body>
+<audio src="https://www.sounddogs.com/media/fastpreview/Sounddogs-Preview-11536733.mp3" preload="auto"></audio>
+
+<my-element id="one" long-press-duration="1000">--audio-file-default)</my-element>
+<my-element id="two" audio-file-1 long-press-duration="1000">audio-file-1</my-element>
+<my-element id="three" audio-file-2 long-press-duration="1000">audio-file-2</my-element>
+<my-element id="four" feedback="466.2" long-press-duration="1000">1s setAudioFeedback(webAudioApi)</my-element>
+
+
+<script>
+
+  let primaryEvent;
+  let oscillator, audioContext;
+  let audiofile = document.querySelector("audio");
+
+
+  class MyElement extends HTMLElement {
+
+    setAudioFeedback(element) {
+
+      if (element.hasAttribute("feedback")) {
+        getAudioContext(parseFloat(element.getAttribute("feedback")));
+        return;
+      }
+
+      let cssVariables;
+      let matchVariable;
+
+      /*get sheet which is not external (have no href attribute value)*/
+      for (let sheet of Array.from(document.styleSheets).filter(sheet => sheet.href === null)) {
+        //get css property which was defined on :root element
+        for (let property of Array.from(sheet.cssRules).filter(rule => rule.selectorText === ":root")) {
+          //amount all properties, defined on :root element, select only css variables
+          cssVariables = Array.from(property.style).filter(name => name.startsWith("--"));
+        }
+      }
+
+      let attributes = Array.from(element.attributes).filter(attr => attr.name.startsWith("audio"));
+
+      if (attributes.length)
+        for (let variable of cssVariables) {
+          let varName = "--" + attributes[0].name;
+          if (variable === varName) {
+            audiofile.setAttribute("src", getComputedStyle(element).getPropertyValue(variable).match(/\w([^"]+)/g)[0]);
+          }
+
+        }
+      else
+        audiofile.setAttribute("src", getComputedStyle(element).getPropertyValue("--audio-file-default").match(/\w([^"]+)/g));
+      audiofile.play();
+
+
+    }
+
+  }
+
+  customElements.define("my-element", MyElement);
+
+  function getAudioContext(frequencyHz) {
+    audioContext = new AudioContext();
+    oscillator = audioContext.createOscillator();
+    oscillator.frequency.value = frequencyHz;
+    let gain = audioContext.createGain();
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 2);
+    gain.connect(audioContext.destination);
+    oscillator.connect(gain);
+    oscillator.start(0);
+  }
+
+  function dispatchPriorEvent(target, composedEvent, trigger) {
+    composedEvent.preventDefault = function () {
+      trigger.preventDefault();
+      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
+    };
+    composedEvent.trigger = trigger;
+    return target.dispatchEvent(composedEvent);
+  }
+
+
+  function startSequenceState(e) {
+    primaryEvent = e;
+    window.addEventListener("mouseup", onMouseup, true);
+    window.addEventListener("blur", onBlur, true);
+  }
+
+  function resetSequenceState() {
+    primaryEvent = undefined;
+    window.removeEventListener("mouseup", onMouseup, true);
+    window.removeEventListener("blur", onBlur, true);
+  }
+
+  function onMousedown(e) {
+    if (e.button === 0)
+      startSequenceState(e);
+  }
+
+  function onBlur(e) {
+    dispatchPriorEvent(primaryEvent.target, new CustomEvent("long-press-cancel", {
+      bubbles: true,
+      composed: true
+    }), e);
+    resetSequenceState();
+  }
+
+  function onMouseup(e) {
+    let duration = e.timeStamp - primaryEvent.timeStamp;
+    if (duration > parseInt(e.target.getAttribute("long-press-duration")) && e.target === primaryEvent.target && e.target.tagName === "MY-ELEMENT")
+      dispatchPriorEvent(primaryEvent.target, new CustomEvent("long-press", {
+        bubbles: true,
+        composed: true,
+        detail: duration
+      }), e);
+    resetSequenceState();
+  }
+
+
+  window.addEventListener("mousedown", onMousedown);
+
+
+  window.addEventListener("long-press", (e) => {
+
+
+
+    // let propertyValue = parseFloat(e.target.getAttribute("feedback"));
+    e.target.setAudioFeedback(e.target);
+
+  });
+
+
+</script>
+
+
+</body>
+</html>

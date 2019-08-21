@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>use-long-press-audio</title>
+</head>
+<body>
+<audio id="one" src="https://www.sounddogs.com/media/fastpreview/Sounddogs-Preview-11536733.mp3" preload="auto"></audio>
+<div use-long-press-audio="#one" long-press-duration="1000">Press Me</div>
+
+<script>
+  let primaryEvent;
+
+  function dispatchPriorEvent(target, composedEvent, trigger) {
+    composedEvent.preventDefault = function () {
+      trigger.preventDefault();
+      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
+    };
+    composedEvent.trigger = trigger;
+    return target.dispatchEvent(composedEvent);
+  }
+
+  function onMousedown(e) {
+    if (e.button !== 0)
+      return;
+    primaryEvent = e;
+    window.addEventListener("mouseup", onMouseup);
+    let longPressStart = new CustomEvent("long-press-start", {bubbles: true, composed: true});
+    dispatchPriorEvent(e.target, longPressStart, e);
+  }
+
+  function onMouseup(e) {
+    let duration = e.timeStamp - primaryEvent.timeStamp;
+    //trigger long-press iff the press duration is more than long-press-duration attribute value or 300ms ON the exact same mouse event target.
+    if (duration > parseInt(e.target.getAttribute("long-press-duration")) || 300 && e.target === primaryEvent.target) {
+      let longPress = new CustomEvent("long-press", {bubbles: true, composed: true, detail: duration});
+      dispatchPriorEvent(e.target, longPress, e);
+    }
+    primaryEvent = undefined;
+    window.removeEventListener("mouseup", onMouseup);
+  }
+
+  window.addEventListener("mousedown", onMousedown);
+
+  window.addEventListener("long-press", (e) => {
+    if (e.target.hasAttribute("use-long-press-audio"))
+      document.querySelector(e.target.getAttribute("use-long-press-audio")).play();
+  });
+</script>
+</body>
+</html>
