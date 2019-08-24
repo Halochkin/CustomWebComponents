@@ -1,7 +1,7 @@
 # HowTo: CSS grid
 
-The grid property is a set of horizontal and vertical lines that intersect - one set defines columns and the other sets
- define columns. Elements can be placed in the grid, rows and columns, respectively.
+The grid property is a is a set of intersecting horizontal and vertical grid-lines that divide the space into grid-areas
+into which grid elements can be placed. 
  
 ### 1. Description Grid 
 
@@ -116,7 +116,7 @@ grid-template-columns: [line-name] size  [line-name] size ... [last-name];
  I.e. it turns out so: `[name] 100px [name2] 100px [last name] 100px [last name]`.
 
 > These two properties have abbreviated entries:
->```
+```
 >grid-template: grid-template-rows / grid-template--columns
 >grid: grid-template-rows / grid-template--columns
 >```

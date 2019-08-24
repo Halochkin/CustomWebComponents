@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio-CSS</title>
+    <style>
+        :root {
+            --playAudio: pause; /*"play", "pause" / "loop" */
+        }
+
+    </style>
+</head>
+<body>
+
+<button id="one" value="play">Play</button>
+<button id="two" value="pause">Pause</button>
+<button id="three" value="loop">Loop</button>
+
+<audio-css src="https://www.sounddogs.com/media/fastpreview/Sounddogs-Preview-11545000.mp3"></audio-css>
+
+
+<script type="module">
+
+  import {StyleCallbackMixin} from "https://unpkg.com/joicomponents@1.3.6/src/style/StyleCallbackMixin.js"
+
+  let btn1 = document.querySelector("#one");
+  let btn2 = document.querySelector("#two");
+  let btn3 = document.querySelector("#three");
+
+  class AudioCSS extends StyleCallbackMixin(HTMLElement) {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `<audio>`;
+      this.audioElement = this.shadowRoot.children[0];
+
+    }
+
+    static get observedAttributes() {
+      return ["autoplay", "src",]
+    }
+
+    static get observedStyles() {
+      return ["--playAudio"];
+    }
+
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      this.shadowRoot.firstChild.setAttribute(name, newValue);
+    }
+
+    styleCallback(name, oldValue, newValue) {
+
+
+      newValue = newValue.trim();
+
+      if (newValue === "play")
+        setTimeout(() => {
+          this.audioElement.play();
+        }, 100);
+
+      else if (newValue === "pause")
+        this.audioElement.pause();
+      else if (newValue === "loop")
+        setTimeout(() => {
+          this.audioElement.setAttribute("loop", "");
+          this.audioElement.play();
+        }, 100);
+
+    }
+  }
+
+
+  for (let btn of document.querySelectorAll("button")) {
+    btn.addEventListener("click", (e) => {
+      document.querySelector(":root").style.setProperty("--playAudio", e.target.value);
+    });
+  }
+
+
+  customElements.define("audio-css", AudioCSS);
+</script>
+</body>
+</html>
