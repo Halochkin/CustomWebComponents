@@ -42,7 +42,7 @@ For a clearer explanation, let's consider a simple example.
 ```
 
 1. In lightDOM, a set of custom attributes is added to the inside of the custom element to define the behavior of the 
-<audio> element. For example, we can set `autoplay` or `loop` attributes.
+`<audio>` element. For example, we can set `autoplay` or `loop` attributes.
 2. Open the shadowDOM on custom element.
 3. Inside the shadowDOM add an `<audio>` element _without_ attributes.
 4. Inside audioElement, the audio element is saved. It will be used to transfer attributes defined in lightDom.
