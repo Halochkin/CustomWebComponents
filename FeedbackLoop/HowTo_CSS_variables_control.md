@@ -72,5 +72,5 @@ For a simpler explanation, let's consider a simple example.
    provide the name of the variable, its new and previous values.
    
 ## Reference
-* You can read more about [`styleCallback()`](https://github.com/orstavik/JoiComponents/blob/master/book/chapter5_style/12_Mixin_StyleCallback.md)
+* [`styleCallback()`](https://github.com/orstavik/JoiComponents/blob/master/book/chapter5_style/12_Mixin_StyleCallback.md)
 
