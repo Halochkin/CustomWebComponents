@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Audio Api CSS variable</title>
+    <style>
+        :root {
+            --frequency: 466.2;
+        }
+    </style>
+</head>
+<body>
+
+<web-audio></web-audio>
+
+<script type="module">
+
+  import {StyleCallbackMixin} from "https://unpkg.com/joicomponents@1.3.6/src/style/StyleCallbackMixin.js"
+
+  let oscillator, audioContext;
+
+  function playSound(frequencyHz) {
+    audioContext = new AudioContext();
+    oscillator = audioContext.createOscillator();
+    oscillator.frequency.value = frequencyHz;
+    let gain = audioContext.createGain();
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 2);
+    gain.connect(audioContext.destination);
+    oscillator.connect(gain);
+  }
+
+
+  class WebAudioCSSComponent extends StyleCallbackMixin(HTMLElement) {
+    constructor() {
+      super();
+    }
+
+    static get observedStyles() {
+      return ["--frequency"];
+    }
+
+    styleCallback(name, oldValue, newValue) {
+      newValue = newValue.trim();
+      playSound(newValue);
+      oscillator.start(0);
+    }
+  }
+
+  customElements.define("web-audio", WebAudioCSSComponent);
+
+</script>
+</body>
+</html>
