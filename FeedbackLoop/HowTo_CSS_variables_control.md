@@ -19,30 +19,30 @@ For a simpler explanation, let's consider a simple example.
 ```html
   <style>
       :root {
-          --playAudio: pause; /*"play", "pause" / "loop" */                                                  /*[1]*/
+          --playAudio: pause; /*"play", "pause" / "loop" */                                             /*[1]*/
           --audioSrc: https://www.sounddogs.com/media/fastpreview/Sounddogs-Preview-11545000.mp3;
       }
   </style>
     
-  <audio-css></audio-css>                                                                                    <!--[2]-->
+  <audio-css></audio-css>                                                                               <!--[2]-->
 
-  <script type="module">                                                                                     //[3]
+  <script type="module">                                                                                //[3]
   
    import {StyleCallbackMixin} from "https://unpkg.com/joicomponents@1.3.6/src/style/StyleCallbackMixin.js"  //[4]
 
      class AudioCSS extends StyleCallbackMixin(HTMLElement) {
        constructor() {
          super();
-         this.attachShadow({mode: "open"});                                                                  //[5]
-         this.shadowRoot.innerHTML = `<audio>`;                                                              //[6]
-         this.audioElement = this.shadowRoot.children[0];                                                    //[7]
+         this.attachShadow({mode: "open"});                                                             //[5]
+         this.shadowRoot.innerHTML = `<audio>`;                                                         //[6]
+         this.audioElement = this.shadowRoot.children[0];                                               //[7]
        }
       
-       static get observedStyles() {                                                                         //[8]
+       static get observedStyles() {                                                                    //[8]
          return ["--playAudio", "--audioSrc"]; 
        }
       
-       styleCallback(name, oldValue, newValue) {                                                             //[9]
+       styleCallback(name, oldValue, newValue) {                                                        //[9]
          newValue = newValue.trim();
          if (newValue === "play")
            this.audioElement.play();
