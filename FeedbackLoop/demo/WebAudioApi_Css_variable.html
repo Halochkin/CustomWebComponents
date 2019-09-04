@@ -5,7 +5,25 @@
     <title>Web Audio Api CSS variable</title>
     <style>
         :root {
-            --frequency: 466.2;
+            --audio-adsr: 0.001 0.8 50 0.130;
+            --amplitude-adsr: 0.0015 1.2 60 0.005;
+            --audio-volume: 70%;
+            --audio-frequency: 244.50;
+            --audio-wave: square;
+            /*--audio-play: loop; !*play | stop| loop *!*/
+            /*
+                     <adsr> , <gain> , <frequency>, <oscillatorType> ;
+
+                     where
+                     - <adsr> = <attach> <decay> <sustain> <release>
+                       where <attach> = <number>
+                       where <decay> = <number>
+                       where <sustain> = <number>
+                       where <release> = <number>
+                    - <gain> = <number>
+                    - <frequency> = <number>
+                    - <oscillatorType> = sine | triangle | square | sawtooth | custom
+           */
         }
     </style>
 </head>
@@ -13,38 +31,197 @@
 
 <web-audio></web-audio>
 
+<button id="two">Single</button>
+<button id="three">Loop</button>
+<button id="one">Stop</button>
+
+
 <script type="module">
 
   import {StyleCallbackMixin} from "https://unpkg.com/joicomponents@1.3.6/src/style/StyleCallbackMixin.js"
 
-  let oscillator, audioContext;
 
-  function playSound(frequencyHz) {
-    audioContext = new AudioContext();
-    oscillator = audioContext.createOscillator();
-    oscillator.frequency.value = frequencyHz;
-    let gain = audioContext.createGain();
-    gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 2);
-    gain.connect(audioContext.destination);
-    oscillator.connect(gain);
-  }
+  let btn1 = document.querySelector("#one");
+  let btn2 = document.querySelector("#two");
+  let btn3 = document.querySelector("#three");
+
+  let root = document.querySelector(":root");
 
 
   class WebAudioCSSComponent extends StyleCallbackMixin(HTMLElement) {
     constructor() {
       super();
+
+      this.audioContext = new AudioContext();
+
+      this.gainNode = this.audioContext.createGain();
+
+      this.amplitudeAdsr = undefined;
+
+      this.defaultAdsr = [0.3, 1, 0, 2];
+      this.defaultFrequency = 140.65;
+      this.defaultWave = "triangle";
+
+      this.adsr = undefined;
+      this.gain = undefined;
+      this.frequency = undefined;
+      this.wave = undefined;
+
+      this.filter = undefined;
+
+
+      this.loop = false;
+
+      this.canPlay = true; //true by default
+
     }
 
     static get observedStyles() {
-      return ["--frequency"];
+      return ["--audio-adsr", "--amplitude-adsr", "--audio-volume", "--audio-frequency", "--audio-wave", "--audio-play"];
     }
 
     styleCallback(name, oldValue, newValue) {
-      newValue = newValue.trim();
-      playSound(newValue);
-      oscillator.start(0);
+      if (name === "--audio-adsr")
+        this.adsr = (newValue.split(" ")).map(n => (parseFloat(n)));
+
+      else if (name === "--amplitude-adsr")
+        this.amplitudeAdsr = (newValue.split(" ")).map(n => (parseFloat(n)));
+
+
+      else if (name === "--audio-volume")
+        this.gain = parseFloat(newValue) / 100;
+      else if (name === "--audio-frequency")
+        this.frequency = parseFloat(newValue);
+      else if (name === "--audio-wave")
+        this.wave = newValue.trim();
+
+      else if (name === "--audio-play") {
+        newValue = newValue.trim();
+        if (newValue === "play")
+          requestAnimationFrame(this.playSound.bind(this, true));
+        else if (newValue === "loop")
+          requestAnimationFrame(this.playSound.bind(this, false));
+        else if (newValue === "stop")
+          requestAnimationFrame(this.stopSound.bind(this, false));
+        else if (newValue !== "")  // when we remove value to allow call playSound() using styleCallback();
+          throw new Error("CSS: wrong attribute value for --audio-play: " + newValue);
+      }
+    }
+
+    getOscillator() {
+      let attack = parseFloat((this.adsr || this.defaultAdsr)[0]);
+      let decay = attack + parseFloat((this.adsr || this.defaultAdsr)[1]);
+      let sustain = parseFloat((this.adsr || this.defaultAdsr)[2] / 100);
+      let release = decay + parseFloat((this.adsr || this.defaultAdsr)[3]);
+
+      let amplitudeAttack = parseFloat(this.amplitudeAdsr[0]);
+      let amplitudeDecay = amplitudeAttack + parseFloat(this.amplitudeAdsr[1]);
+      let amplitudeSustain = parseFloat(this.amplitudeAdsr[2] / 100);
+      let amplitudeRelease = amplitudeDecay + parseFloat(this.amplitudeAdsr[3]);
+
+      this.soundDuration = release;
+
+      let frequency = this.frequency || this.defaultFrequency;
+      let type = this.wave || this.defaultWave;
+
+      this.oscillator = this.audioContext.createOscillator();
+      this.oscillator.onended = () => this.oscillatorEnd();
+      this.gainNode = this.audioContext.createGain();
+      this.oscillator.connect(this.gainNode);
+      // this.gainNode.connect(this.audioContext.destination);
+      this.oscillator.frequency.value = frequency;
+      this.oscillator.type = type;
+      // amplitude envelope
+      this.gainNode.gain.setValueAtTime(1, this.audioContext.currentTime + amplitudeAttack); //attack
+      this.gainNode.gain.exponentialRampToValueAtTime(amplitudeSustain, this.audioContext.currentTime + amplitudeDecay);  //decay
+      this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + amplitudeRelease);  //release
+      this.gainNode.connect(this.audioContext.destination);
+      this.oscillator.connect(this.gainNode);
+      this.filter = this.audioContext.createBiquadFilter();
+      this.filter.type = "lowpass";
+      this.filter.frequency.value = 244.5;
+      //filter envelope
+      this.filter.frequency.setValueAtTime(100, this.audioContext.currentTime + attack); //attack
+      this.filter.frequency.exponentialRampToValueAtTime(sustain, this.audioContext.currentTime + decay);  //decay
+      this.filter.frequency.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + release);  //release
+
+      this.gainNode.connect(this.filter);
+      this.filter.connect(this.audioContext.destination);
+    }
+
+
+    oscillatorEnd() {
+      if (!this.canPlay)
+        this.canPlay = true; // can be played again
+      //if loop was active, repeat loop
+      if (this.loop) {
+        this.getOscillator();  //get new oscillator and play it again;
+        this.oscillator.start(this.audioContext.currentTime);
+        //to change oscillator state and init new oscillator
+        this.stopSound(true);
+      }
+    }
+
+
+    playSound(arg) {
+      //get new oscillator each time. We can use the same audioContext, but can`t oscillator. One oscillator - one sound!!!
+      this.getOscillator();
+      // remove property (because press button set it again) If we di=ont remove it styleCallback() will not fire, because we don`t change variable value
+      root.style.removeProperty("--audio-play");
+      //If the 'play' button was pressed before the single sound was not finished
+      if (arg && this.canPlay) {
+        this.canPlay = false; // Blocks the next press of the button until the sound is finished. Avoid simultaneous playback of multiple sounds
+        //if loop was active and we press 'play' button - disable loop
+        if (this.loop) {
+          this.loop = false;
+        }
+        //play sound
+        this.oscillator.start(this.audioContext.currentTime);
+        //to change oscillator state and init new oscillator  !important
+        this.stopSound(true);
+      }
+
+      //loop button
+      //If a loop is activated, it was not active (to prevent restart) and the single sound was not active
+      else if (!arg && !this.loop && this.canPlay) {
+        // active loop
+        this.loop = true;
+        this.oscillator.start(this.audioContext.currentTime);
+        //to change oscillator state and init new oscillator, it is important
+        this.stopSound(true);
+      }
+    }
+
+
+    stopSound(arg) {
+      // get sound duration to stop sound in particulat time
+      let duration = this.soundDuration || 1;
+      // We pass true / false as argument from styleCallback() so, if we pass 'false' (it mean that user pressed 'stop' button
+      if (!arg) {
+        duration = 0; //stop immediately
+      }
+      // Here we stop oscillator and its fire oscillatorEnd()callback.
+      this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
+      this.oscillator.stop(this.audioContext.currentTime + duration);
+
+      // stop loop (should be disactive only after oscillator!
+      if (!arg && this.loop)
+        this.loop = false;
     }
   }
+
+
+  btn1.addEventListener("click", (e) => {
+    root.style.setProperty("--audio-play", "stop");
+  });
+
+  btn2.addEventListener("click", (e) => {
+    root.style.setProperty("--audio-play", "play");
+  });
+
+  btn3.addEventListener("click", (e) => {
+    root.style.setProperty("--audio-play", "loop");
+  });
 
   customElements.define("web-audio", WebAudioCSSComponent);
 

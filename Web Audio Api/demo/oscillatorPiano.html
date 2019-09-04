@@ -33,7 +33,7 @@
   function playNote(key) {
     let frequency = key.getAttribute("frequency");
     let oscillator = getOscillator(frequency);
-    oscillator.start(audioContext.currentTime + 1);
+    oscillator.start(audioContext.currentTime);
     stopNote(oscillator)
   }
 

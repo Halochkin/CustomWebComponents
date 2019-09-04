@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio-CSS</title>
+    <style>
+        :root {
+            --vibration-single: 1000;
+            --vibration-sequence: 1000, 500, 1000, 500, 2000;
+        }
+
+    </style>
+</head>
+<body>
+
+<button id="one">Single</button>
+<button id="two">Stop</button>
+<button id="three">Sequence</button>
+
+<vibration-css></vibration-css>
+<script type="module">
+
+  import {StyleCallbackMixin} from "https://unpkg.com/joicomponents@1.3.6/src/style/StyleCallbackMixin.js"
+
+  let btn1 = document.querySelector("#one");
+  let btn2 = document.querySelector("#two");
+  let btn3 = document.querySelector("#three");
+  let root = document.querySelector(":root");
+
+
+  class AudioCSS extends StyleCallbackMixin(HTMLElement) {
+    constructor() {
+      super();
+      if (!"vibrate" in navigator) {
+        this.vibration = false;
+        alert("Your devise does not support vibration")
+      } else
+        this.vibration = true;
+
+      this.singleVibration = undefined;
+      this.sequenceVibration = undefined;
+    }
+
+    static get observedStyles() {
+      return ["--vibration-single", "--vibration-sequence", "--vibration-play"];
+    }
+
+
+    styleCallback(name, oldValue, newValue) {
+      newValue = newValue.trim();
+      if (name === "--vibration-single")
+        this.singleVibration = parseInt(newValue);
+      else if (name === "--vibration-sequence")
+        this.sequenceVibration = newValue.split(",").map(n => (parseFloat(n)));
+      else if (name === "--vibration-play" && this.vibration) {
+        if (newValue === "single")
+          navigator.vibrate(this.singleVibration);
+        else if (newValue === "stop")
+          navigator.vibrate(0);
+        else if (newValue === "sequence")
+          navigator.vibrate(this.sequenceVibration);
+      }
+    }
+  }
+
+  btn1.addEventListener("click", () => {
+    root.style.setProperty("--vibration-play", "single");
+  });
+
+  btn2.addEventListener("click", () => {
+    root.style.setProperty("--vibration-play", "stop");
+  });
+
+  btn3.addEventListener("click", () => {
+    root.style.setProperty("--vibration-play", "sequence");
+  });
+
+  customElements.define("vibration-css", AudioCSS);
+</script>
+</body>
+</html>
+
+
+
+

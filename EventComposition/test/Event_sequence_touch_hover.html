@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>touch hover</title>
+    <style>
+        * {
+            font-size: 50px;
+            margin: 0;
+            text-decoration: none;
+        }
+
+        body {
+            height: 200vh;
+            width: 100vw;
+        }
+
+        .info {
+            margin: 10vh;
+            color: green;
+        }
+
+        .att {
+            color: red;
+        }
+
+        [touch-hover="click"] {
+            touch-action: none;
+        }
+
+        .hover {
+            background-color: #fffa9e;
+        }
+
+        .leave {
+            background-color: #4cd2e4;
+        }
+
+        .cancel {
+            background-color: tomato;
+        }
+
+
+    </style>
+</head>
+<body>
+<h1 class="info"> You can scroll here</h1>
+
+<hr>
+<a touch-hover="click" href="https://www.bbc.com/news">What's new?</a>
+<h1 touch-hover="click">touch-hover too</h1>
+<h1 class="att" touch-hover="click">Here you can`t scrolling, only touch hovering</h1>
+<h1 touch-hover="click">I am touch-hover too</h1>
+<hr>
+<h1 class="info"> And here</h1>
+
+<button onclick="setTimeout(function(){alert('boo!')}, 2000)">Alert after 2s</button>
+
+
+<script>
+  (function () {
+
+    var supportsPassive = false;
+    try {
+      var opts = Object.defineProperty({}, 'passive', {
+        get: function () {
+          supportsPassive = true;
+        }
+      });
+      window.addEventListener("test", null, opts);
+      window.removeEventListener("test", null, opts);
+    } catch (e) {
+    }
+    var thirdArg = supportsPassive ? {passive: false, capture: true} : true;
+
+    var relatedTarget = undefined;
+    var initialUserSelect = undefined;
+
+    function findParentWithAttribute(node, attName) {
+      for (var n = node; n; n = (n.parentNode || n.host)) {
+        if (n.hasAttribute && n.hasAttribute(attName))
+          return n;
+      }
+      return undefined;
+    }
+
+    function setPseudoClass(target, className) {
+      let classList = target.classList;
+      if (classList.length)
+        for (let _class of classList) {
+          if (_class === "hover" || _class === "leave" || _class === "cancel")
+            target.classList.remove(_class);
+        }
+      target.classList.add(className);
+
+    }
+
+    function dispatchTouchHover(target, name) {
+      setPseudoClass(target, name);
+      setTimeout(function () {
+        target.dispatchEvent(new CustomEvent("touch-" + name, {bubbles: true, composed: true}));
+      }, 0);
+    }
+
+    function getTarget(e) {                                                     //[3a]
+      var finger = e.touches[0];
+      var target = document.elementFromPoint(finger.clientX, finger.clientY);
+      return findParentWithAttribute(target, "touch-hover");                    //[3b]
+    }
+
+    function onTouchmove(e) {
+      e.preventDefault();                                                        //[3]
+      var touchHoverTarget = getTarget(e);
+      if (touchHoverTarget === relatedTarget)
+        return;
+      if (relatedTarget)
+        dispatchTouchHover(relatedTarget, "leave");                         //[4]
+      relatedTarget = touchHoverTarget;
+      if (touchHoverTarget)
+        dispatchTouchHover(touchHoverTarget, "hover");
+    }
+
+    function end() {
+      setBackEventListeners();
+      if (!relatedTarget)
+        return;
+      dispatchTouchHover(relatedTarget, "leave");                                 //[5a]
+      if (relatedTarget.getAttribute("touch-hover") === "click")
+        setTimeout(relatedTarget.click.bind(relatedTarget), 0);                  //[5b]
+      relatedTarget = undefined;
+    }
+
+    function cancel() {                                                          //[6]
+      setBackEventListeners();
+      if (!relatedTarget)
+        return;
+      dispatchTouchHover(relatedTarget, "leave");
+      dispatchTouchHover(relatedTarget, "cancel");
+      relatedTarget = undefined;
+    }
+
+    function setBackEventListeners() {
+      document.removeEventListener("touchmove", onTouchmove, thirdArg);
+      window.removeEventListener("blur", cancel);
+      document.removeEventListener("touchend", end);
+      document.removeEventListener("touchstart", cancel);
+      document.addEventListener("touchstart", start);
+      document.addEventListener("touchend", start);                              //[1]
+      document.children[0].style.userSelect = initialUserSelect;                //[5]
+      initialUserSelect = undefined;
+    }
+
+    function setupActiveListeners() {
+      document.removeEventListener("touchend", start);
+      document.removeEventListener("touchstart", start);
+      document.addEventListener("touchend", end);
+      document.addEventListener("touchstart", cancel);
+      window.addEventListener("blur", cancel);
+      document.addEventListener("touchmove", onTouchmove, thirdArg);           //[2a]
+      initialUserSelect = document.children[0].style.touchAction;              //[2b]
+      document.children[0].style.userSelect = "none";                          //[2c]
+    }
+
+    function start(e) {                                                           //[1a]
+      if (e.touches.length !== 1)
+        return;
+      var touchHoverTarget = getTarget(e);
+      if (!touchHoverTarget)
+        return;
+      // e.preventDefault();
+      // see problem 2:
+      // the start listeners are not passive, to prevent them making the scroll behavior laggy?
+      setupActiveListeners();                                                     //[2]
+      dispatchTouchHover(touchHoverTarget, "hover");
+      relatedTarget = touchHoverTarget;
+    }
+
+    document.addEventListener("touchstart", start);        //thirdArg here too?? or tell the user to add touch-action none at the appropriate place? i think touch-action: none is best!
+    //problem 2: not making this one passive. This means that scrolling and context menu default actions can enter
+    //before we start our activities, which will block our activities.
+    document.addEventListener("touchend", start);                                 //[1]
+  })();
+
+</script>
+
+<script>
+  // window.addEventListener("touch-hover", function (e) {
+  //   // e.target.classList.add()
+  // });
+  // window.addEventListener("touch-leave", function (e) {
+  //   // e.target.style.backgroundColor = "pink";
+  // });
+  // window.addEventListener("click", function (e) {
+  //   e.target.style.backgroundColor = "orange";
+  // });
+  // window.addEventListener("touch-cancel", function (e) {
+  //   e.target.style.backgroundColor = "lightgreen";
+  // });
+</script>
+
+</body>
+</html>
