@@ -31,7 +31,7 @@ As mentioned earlier, in case the user closes the tab `disconnectedCallback` is 
 Let's look at an example that will change the color of the block depending on the number of fingers pressed. Green is if two, blue is if one, and red is if more than two.
 ```javascript
 
-  import {UnloadCallbackMixin} from "https://rawgit.com/Halochkin/Components/master/unloadCallbackMixin/src/unloadCallbackMixin.js"
+  import {UnloadCallbackMixin} from Web Components
 
  class TestBlock extends UnloadCallbackMixin(HTMLElement) { 
 

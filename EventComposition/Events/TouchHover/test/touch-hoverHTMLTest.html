@@ -1,4 +1,4 @@
-<script src="../src/touch-hover.js"></script>
+<script src="../src/touch-hover2.js"></script>
 
 <style>
     * {
@@ -24,6 +24,19 @@
     [touch-hover="click"] {
         touch-action: none;
     }
+
+    .hover {
+        background-color: #fffa9e;
+    }
+
+    .leave {
+        background-color: #4cd2e4;
+    }
+
+    .cancel {
+        background-color: tomato;
+    }
+
 </style>
 
 <h1 class="info"> You can scroll here</h1>
@@ -39,16 +52,16 @@
 <button onclick="setTimeout(function(){alert('boo!')}, 2000)">Alert after 2s</button>
 
 <script>
-  window.addEventListener("touch-hover", function (e) {
-    e.target.style.backgroundColor = "yellow";
-  });
-  window.addEventListener("touch-leave", function (e) {
-    e.target.style.backgroundColor = "pink";
-  });
-  window.addEventListener("click", function (e) {
-    e.target.style.backgroundColor = "orange";
-  });
-  window.addEventListener("touch-cancel", function (e) {
-    e.target.style.backgroundColor = "lightgreen";
-  });
+  // window.addEventListener("touch-hover", function (e) {
+  //   e.target.style.backgroundColor = "yellow";
+  // });
+  // window.addEventListener("touch-leave", function (e) {
+  //   e.target.style.backgroundColor = "pink";
+  // });
+  // window.addEventListener("click", function (e) {
+  //   e.target.style.backgroundColor = "orange";
+  // });
+  // window.addEventListener("touch-cancel", function (e) {
+  //   e.target.style.backgroundColor = "lightgreen";
+  // });
 </script>

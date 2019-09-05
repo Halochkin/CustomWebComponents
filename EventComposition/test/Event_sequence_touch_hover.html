@@ -85,9 +85,9 @@
     }
 
     function setPseudoClass(target, className) {
-      let classList = target.classList;
-      if (classList.length)
-        for (let _class of classList) {
+
+      if (target.classList.length)
+        for (let _class of target.classList) {
           if (_class === "hover" || _class === "leave" || _class === "cancel")
             target.classList.remove(_class);
         }
@@ -107,6 +107,7 @@
       var target = document.elementFromPoint(finger.clientX, finger.clientY);
       return findParentWithAttribute(target, "touch-hover");                    //[3b]
     }
+
 
     function onTouchmove(e) {
       e.preventDefault();                                                        //[3]
