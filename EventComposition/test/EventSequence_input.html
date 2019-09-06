@@ -4,123 +4,109 @@
     <meta charset="UTF-8">
     <title>Event sequence (input)</title>
     <style>
-        .altered {
-            color: orange;
-            background-color: #fff0ba;
+        input::after {
+            width: 2px;
+            height: 1em;
+            content: ".";
+            display: block;
+            background-color: yellow;
         }
 
-        .reset {
-            color: blue;
-            background-color: skyblue;
+        input[checked]::after {
+            width: 10px;
+            content: "X";
         }
 
-        .submit {
-            color: green;
+        input.input-altered::after {
+            background-color: red;
         }
 
-        input[type='radio']:after {
-            width: 15px;
-            height: 15px;
-            border-radius: 15px;
-            background-color: gray;
-            content: '';
-            display: inline-block;
-        }
-
-        input.altered[type='radio']:after {
+        input.input-reset::after {
             background-color: orange;
         }
 
-        input.reset[type='radio']:after {
-            background-color: blue;
+        input.input-submitted::after {
+            background-color: green;
         }
-
-        input[type=range].altered::-webkit-slider-runnable-track {
-            background: #fff0ba;
-        }
-
-        input[type=range].reset::-webkit-slider-runnable-track {
-            background: skyblue;
-        }
-
 
     </style>
 </head>
 <body>
 
-<form name="test">
-    <input type="radio" value="a">radio<br>
-    <hr>
-    <input type="radio">radio <br>
-    <hr>
-    <input type="checkbox" value="d">checkbox<Br>
-    <hr>
-    <input type="time" value="00:00">time<br>
-    <hr>
-    <input type="color" value="#000000">color<br>
-    <hr>
-    <input type="range" min="0" max="11" value="5">range<br>
-    <hr>
-    <input type="text" value="abc">text<br>
-    <hr>
 
-    <input type="submit" name="case" value="Submit">
+<form name="test">
+    <input type="radio" name="group1">a<br>
+    <input type="radio" name="group1" checked>b<br>
+    <input type="radio" name="group1">c<br>
     <hr>
+    <input type="radio" name="group2">radio-lonesome<br>
+    <hr>
+    <input type="checkbox" value="d">checkbox 1<br>
+    <input type="checkbox" value="d" checked>checkbox 2<br>
+    <hr>
+    <input type="submit" name="case" value="Submit">
 </form>
+<script>
+  //this is an app that manages form submit via xhr.
+  window.addEventListener("submit", e => e.preventDefault(), false);
+</script>
 
 <script>
 
-  let formElem = document.querySelector("FORM");
+  (function () {
 
-  (() => {
-    let lastTarget;
-
-    formElem.addEventListener("submit", (e) => {
-      e.preventDefault();
-      let inputs = formElem.elements;
-      for (let input of inputs) {
-        input.classList.remove("altered" || "reset");
-        input.classList.add("submit");
-      }
-    });
-
-
-    function switchClass(target, oldClass, newClass) {
-      target.classList.add(newClass);
-      if (target.classList.contains(oldClass))
-        target.classList.remove(oldClass)
+    function removePseudoPseudoClasses(input) {
+      input.classList.remove("input-altered");
+      input.classList.remove("input-reset");
+      input.classList.remove("input-submitted");
     }
 
-    function checkValue(target, value, defaultValue) {
-      if (value !== defaultValue)
-        switchClass(target, "reset", "altered");
-      else if (value === defaultValue)
-        switchClass(target, "altered", "reset");
+    //make sure the "checked" attribute in the DOM is in sync with the checked property
+    //now, the CSS querySelectors can use [checked] to query if the checkbox or radiobutton is checked.
+    //this essentially renders the :checked pseudo-class redundant.
+    function correctCheckedAttribute(input) {
+      if (input.checked && !input.hasAttribute("checked"))
+        input.setAttribute("checked", "");
+      else if (!input.checked && input.hasAttribute("checked"))
+        input.removeAttribute("checked");
     }
 
+    function correctCheckedAndAddPseudoPseudo(input) {
+      if (input.defaultCheckedOG === undefined)
+        input.defaultCheckedOG = input.defaultChecked;
+      correctCheckedAttribute(input);
 
-    window.addEventListener("input", (e) => {
+      removePseudoPseudoClasses(input);
+      if (input.defaultCheckedOG !== input.checked)
+        input.classList.add("input-altered");
+      else
+        input.classList.add("input-reset");
+    }
 
-      let target = e.target;
-      let type = target.type;
-
-      // require boolean logic (e.target.checked) true / false
-      if (type === "radio" || type === "checkbox") {
-        // reset previous radio button
-        if (lastTarget) {
-          lastTarget.checked = false;
-          switchClass(lastTarget, "altered", "reset");
+    function onSubmit(e) {
+      for (let input of Array.from(e.target.elements)) {
+        if (input.type === "radio" || input.type === "checkbox") {
+          input.defaultCheckedOG = input.checked;
+          removePseudoPseudoClasses(input);
+          correctCheckedAttribute(input);
+          input.classList.add("input-submitted");
         }
-        checkValue(target, target.checked, target.defaultChecked);
-        // define last pressed radio button
-        if (e.target.type === "radio")
-          lastTarget = e.target;
       }
-      //all other types require value
-      else {
-        checkValue(target, target.value, target.defaultValue);
+    }
+
+    function onInput(e) {
+      if (e.target.type === "checkbox")
+        correctCheckedAndAddPseudoPseudo(e.target);
+      if (e.target.type === "radio") {
+        const allInputs = Array.from(e.target.form.elements);
+        const targetRadioGroup = allInputs.filter(el => el.type === "radio" && el.name === e.target.name);
+        for (let radio of targetRadioGroup)
+          correctCheckedAndAddPseudoPseudo(radio);
       }
-    })
+    }
+
+    window.addEventListener("input", onInput, true);
+    window.addEventListener("submit", onSubmit, true);
   })();
 
 
