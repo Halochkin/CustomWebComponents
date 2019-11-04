@@ -1,0 +1,68 @@
+<style>
+    * {
+        margin: 0;
+    }
+
+    #frame {
+        border: 2px solid red;
+        height: 105vw;
+        width: 95vw;
+        justify-content: center;
+        display: flex;
+        line-height: 20;
+        margin: auto;
+        overflow: hidden;
+    }
+
+
+</style>
+
+<script src="../src/pull-eventTouch.js"></script>
+
+
+<div id="frame" pull pull-padding="50" pull-distance="200" pull-distortion="30"><span
+        id="text">Hello pull-top event</span></div>
+
+<button>Alert aster 2s</button>
+
+<script>
+  let frame = document.querySelector("#frame");
+  let text = document.querySelector("span");
+
+  document.querySelector("button").addEventListener("click", function () {
+    setTimeout(function () {
+      alert("boo")
+    }, 2000)
+  });
+
+
+  window.addEventListener("pull-start", e => {
+    frame.style.backgroundColor = "lightgreen";
+    text.innerText = "now pull it";
+  });
+
+
+  window.addEventListener("pull-activated", function (e) {
+    if (e.detail.moved.activated) {
+      frame.style.backgroundColor = "yellow";
+      text.innerText = "Ready to refresh, lift the finger";
+
+    }
+    else {
+      frame.style.backgroundColor = "orange";
+      text.innerText = "Pull more";
+    }
+  });
+
+  window.addEventListener("pull-fired", function (e) {
+    frame.style.backgroundColor = "green";
+    text.innerText = "Congratulations!!!";
+  });
+
+  window.addEventListener("pull-cancel", function (e) {
+    frame.style.backgroundColor = "red";
+    text.innerText = "Canceled";
+  })
+
+
+</script>

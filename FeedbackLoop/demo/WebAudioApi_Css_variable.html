@@ -5,47 +5,343 @@
     <title>Web Audio Api CSS variable</title>
     <style>
         :root {
-            --audio-adsr: 0.001 0.8 50 0.130;
-            --amplitude-adsr: 0.0015 1.2 60 0.005;
-            --audio-volume: 70%;
-            --audio-frequency: 244.50;
-            --audio-wave: square;
-            /*--audio-play: loop; !*play | stop| loop *!*/
-            /*
-                     <adsr> , <gain> , <frequency>, <oscillatorType> ;
+            width: 600px;
+            --audio-settings: square 244.50 0.0015 1.2 60 0.005, lowpass 244.50 0.001 0.8 50 0.130, lowpass 320.5 0.5 0.9 60 0.001;
 
-                     where
-                     - <adsr> = <attach> <decay> <sustain> <release>
-                       where <attach> = <number>
-                       where <decay> = <number>
-                       where <sustain> = <number>
-                       where <release> = <number>
-                    - <gain> = <number>
-                    - <frequency> = <number>
-                    - <oscillatorType> = sine | triangle | square | sawtooth | custom
-           */
         }
+
+        span[ready] {
+            color: green;
+        }
+
+        input[type=number] {
+            width: 60px;
+        }
+
+        #oscillator {
+            border: 3px solid green;
+            background-color: rgba(0, 128, 0, 0.11);
+        }
+
+        #filter1 {
+            border: 3px solid orange;
+            background-color: rgba(255, 165, 0, 0.11);
+
+        }
+
+        #filter2 {
+            border: 3px solid red;
+            background-color: rgba(255, 0, 0, 0.11);
+
+        }
+
+        #filter3 {
+            border: 3px solid blue;
+            background-color: rgba(0, 0, 255, 0.11);
+        }
+
+        .disconnect {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
 
 <web-audio></web-audio>
 
-<button id="two">Single</button>
+<button id="two">Play</button>
 <button id="three">Loop</button>
 <button id="one">Stop</button>
+<br>
+<br>
+<br>
+<h2>Output: </h2>
+<span>Oscillator:</span><span id="outputOsc">      </span><br>
+<span>Filter1:</span><span></span><span id="outputFilter1">  </span><br>
+<span>Filter2:</span><span id="outputFilter2">  </span><br>
+<span>Filter3:</span><span id="outputFilter3">  </span><br>
 
+
+<form id="oscillator">
+    <h3>OSCILLATOR</h3>
+    <b><label for="OscFreq">Frequency Mhz: (244) </label></b>
+    <br>100 <input id="OscFreq" name="oscFrequency" type="range" min="100"
+                   max="1000"
+                   step="10" value="250">1000
+    <br>
+    <br>
+    <b><label for="oscillatorType">Oscillator type </label></b>
+    <select name="" id="oscillatorType">
+        <option value="sine">sine</option>
+        <option value="square">square</option>
+        <option value="sawtooth">sawtooth</option>
+        <option value="triangle">triangle</option>
+    </select>
+    <br>
+    <br>
+    <b><span>ADSR: </span></b>
+    <label for="OscA">A </label><input id="OscA" placeholder="0.0015" type="number" min="1" max="3000">
+    <label for="OscD">D </label><input id="OscD" placeholder="1.2" type="number" min="1" max="3000">
+    <label for="OscS">S </label><input id="OscS" placeholder="60" type="number" min="1" max="100">
+    <label for="OscR">R </label><input id="OscR" placeholder="0.005" type="number" min="1" max="3000">
+    <br>
+    <br>
+</form>
+
+
+<form id="filter1">
+    <h3>FILTER 1:</h3>
+    <b><label for="filter1Freq">Mhz: (0) </label></b>
+    100 <input id="filter1Freq" name="filter1Frequency" type="range" min="100" max="1000" step="10" value="250">1000
+    <br>
+    <br>
+    <b><label for="filter1type">Oscillator type </label></b>
+    <select name="" id="filter1type">
+        <option value="lowpass">lowpass</option>
+        <option value="highpass">highpass</option>
+        <option value="lowshelf">lowshelf</option>
+        <option value="highshelf">highshelf</option>
+        <option value="bandpass">bandpass</option>
+        <option value="peaking">peaking</option>
+        <option value="notch">notch</option>
+        <option value="allpass">allpass</option>
+    </select>
+    <br>
+    <br>
+    <b><span>ADSR: </span></b>
+    <label for="filter1A">A </label><input id="filter1A" placeholder="0.001" type="number" min="1" max="3000">
+    <label for="filter1D">D </label><input id="filter1D" placeholder="0.8" type="number" min="1" max="3000">
+    <label for="filter1S">S </label><input id="filter1S" placeholder="50" type="number" min="1" max="100">
+    <label for="filter1R">R </label><input id="filter1R" placeholder="0.130" type="number" min="1" max="3000">
+    <br>
+    <label class="disconnect" id="disconnectLabel" for="disconnect1">Disconnect <input id="disconnect1" type="checkbox">
+    </label>
+    <br>
+</form>
+
+<form id="filter2">
+    <b><h3>FILTER 2:</h3></b>
+    <b><label for="filter2Label">Mhz: (0) </label></b>
+    100 <input id="filter2Label" name="filter2Freq" type="range" min="100" max="1000" step="10" value="250">1000
+    <br>
+    <br>
+    <b><label for="filter2type">Oscillator type </label></b>
+    <select name="" id="filter2type">
+        <option value="lowpass">lowpass</option>
+        <option value="highpass">highpass</option>
+        <option value="lowshelf">lowshelf</option>
+        <option value="highshelf">highshelf</option>
+        <option value="bandpass">bandpass</option>
+        <option value="peaking">peaking</option>
+        <option value="notch">notch</option>
+        <option value="allpass">allpass</option>
+    </select>
+    <br>
+    <br>
+    <b><span>ADSR: </span></b>
+    <label for="filter2A">A </label><input id="filter2A" placeholder="0.001" type="number" min="1" max="3000">
+    <label for="filter2D">D </label><input id="filter2D" placeholder="0.8" type="number" min="1" max="3000">
+    <label for="filter2S">S </label><input id="filter2S" placeholder="50" type="number" min="1" max="100">
+    <label for="filter2R">R </label><input id="filter2R" placeholder="0.130" type="number" min="1" max="3000">
+    <br>
+    <button class="disconnect">Disconnect</button>
+    <br>
+</form>
+
+<form id="filter3">
+    <h3>FILTER 3:</h3>
+    <label for="filter3Label">Mhz: (0) </label>
+    100 <input id="filter3Label" name="filter3Freq" type="range" min="100" max="1000" step="10" value="250">1000
+    <br>
+    <br>
+    <label for="filter3type">Oscillator type </label>
+    <select name="" id="filter3type">
+        <option value="lowpass">lowpass</option>
+        <option value="highpass">highpass</option>
+        <option value="lowshelf">lowshelf</option>
+        <option value="highshelf">highshelf</option>
+        <option value="bandpass">bandpass</option>
+        <option value="peaking">peaking</option>
+        <option value="notch">notch</option>
+        <option value="allpass">allpass</option>
+    </select>
+    <br>
+    <br>
+    <b><span>ADSR: </span></b>
+    <label for="filter3A">A </label><input id="filter3A" placeholder="0.001" type="number" min="1" max="3000">
+    <label for="filter3D">D </label><input id="filter3D" placeholder="0.8" type="number" min="1" max="3000">
+    <label for="filter3S">S </label><input id="filter3S" placeholder="50" type="number" min="1" max="100">
+    <label for="filter3R">R </label><input id="filter3R" placeholder="0.130" type="number" min="133" max="3000">
+    <br>
+    <button class="disconnect">Disconnect</button>
+    <br>
+</form>
 
 <script type="module">
 
   import {StyleCallbackMixin} from "https://unpkg.com/joicomponents@1.3.6/src/style/StyleCallbackMixin.js"
 
+  let root = document.querySelector(":root");
+
+
+  let oscObj = {};
+  let filter1Obj = {};
+  let filter2Obj = {};
+  let filter3Obj = {};
+
+
+  //------
+  let oscADSR = {};
+  let filter1ADSR = {};
+  let filter2ADSR = {};
+  let filter3ADSR = {};
+
+
+  let outputOscillator = document.querySelector("#outputOsc");
+  let outputFilterOne = document.querySelector("#outputFilter1");
+  let outputFilterTwo = document.querySelector("#outputFilter2");
+  let outputFilterThree = document.querySelector("#outputFilter3");
+
+
+  function adsrHandler(target, obj, length) {
+
+    let adsrPropertyName = target.id.charAt(target.id.length - 1);
+    obj[adsrPropertyName] = parseFloat(target.value);
+
+    return checkObject(obj, length);
+  }
+
+
+  function checkObject(obj, length) {
+    let propertiesLength = 0;
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key))
+        propertiesLength++;
+      if (propertiesLength === length) // A S D R was set
+        return obj;
+    }
+    return false;
+  }
+
+  function updateLabel(element, obj) {
+    let string = ` ${obj.type || "--"} ${obj.frequency || "--"} ${obj.ADSR ? obj.ADSR.A ? obj.ADSR.A : "--" : "--"} ${obj.ADSR ? obj.ADSR.D ? obj.ADSR.D : "--" : "--"} ${obj.ADSR ? obj.ADSR.S ? obj.ADSR.S : "--" : "--"} ${obj.ADSR ? obj.ADSR.R ? obj.ADSR.R : "--" : "--"}`;
+    if (obj !== oscObj)
+      string = "," + string;
+    element.innerText = string;
+    return string;
+  }
+
+
+  function setDisconnectButton(elem, freq) { //I use frequency as a filter identification
+
+    elem.value = freq;
+    elem.classList.remove("disconnect");
+  }
+
+
+  function onChange(e) {
+    let parentId = e.target.parentNode.id;
+
+    if (e.target.type === "range")
+    // set current range value to label
+      e.target.labels[0].innerText = `Frequency Mhz: (${e.target.value})`;
+
+
+    if (parentId === "oscillator") {
+      if (e.target.type === "number") {
+        adsrHandler(e.target, oscADSR, 4);
+        oscObj.ADSR = oscADSR;
+      }
+      if (e.target.tagName === "SELECT")
+        oscObj.type = e.target.value;
+      if (e.target.type === "range")
+        oscObj.frequency = e.target.value;
+
+      updateLabel(outputOscillator, oscObj)
+    }
+
+
+    if (parentId === "filter1") {
+      if (e.target.type === "number") {
+        adsrHandler(e.target, filter1ADSR, 4);
+        filter1Obj.ADSR = filter1ADSR;
+      }
+      if (e.target.tagName === "SELECT")
+        filter1Obj.type = e.target.value;
+      if (e.target.type === "range")
+        filter1Obj.frequency = e.target.value;
+    }
+
+
+    if (parentId === "filter2") {
+      if (e.target.type === "number") {
+        adsrHandler(e.target, filter2ADSR, 4);
+        filter2Obj.ADSR = filter2ADSR;
+      }
+      if (e.target.tagName === "SELECT")
+        filter2Obj.type = e.target.value;
+      if (e.target.type === "range")
+        filter2Obj.frequency = e.target.value;
+    }
+
+
+    if (parentId === "filter3") {
+      if (e.target.type === "number") {
+        adsrHandler(e.target, filter3ADSR, 4);
+        filter3Obj.ADSR = filter3ADSR;
+      }
+      if (e.target.tagName === "SELECT")
+        filter1Obj.type = e.target.value;
+      if (e.target.type === "range")
+        filter3Obj.frequency = e.target.value;
+    }
+
+
+    if (checkObject(oscObj, 3) && checkObject(oscADSR, 4)) {
+      outputOscillator.setAttribute("ready", "");
+      root.style.setProperty("--audio-settings", updateLabel(outputOscillator, oscObj).trim());
+    }
+
+
+    if (outputOscillator.hasAttribute("ready") && checkObject(filter1Obj, 3) && checkObject(filter1ADSR, 4)) {
+      outputFilterOne.setAttribute("ready", "");
+      root.style.setProperty("--audio-settings", updateLabel(outputOscillator, oscObj) + updateLabel(outputFilterOne, filter1Obj));
+      setDisconnectButton(document.querySelector("#disconnectLabel"), filter1Obj.frequency)
+    }
+
+    if (outputFilterOne.hasAttribute("ready") && checkObject(filter2Obj, 3) && checkObject(filter2ADSR, 4)) {
+      outputFilterTwo.setAttribute("ready", "");
+      root.style.setProperty("--audio-settings", updateLabel(outputOscillator, oscObj) + updateLabel(outputFilterOne, filter1Obj) + updateLabel(outputFilterTwo, filter2Obj));
+      setDisconnectButton(document.querySelector("#disconnectLabel"), filter2Obj.frequency)
+    }
+
+    if (outputFilterTwo.hasAttribute("ready") && checkObject(filter3Obj, 3) && checkObject(filter3ADSR, 4)) {
+      outputFilterThree.setAttribute("ready", "");
+      root.style.setProperty("--audio-settings", updateLabel(outputOscillator, oscObj) + updateLabel(outputFilterOne, filter1Obj)
+        + updateLabel(e.target.parentElement, filter2Obj) + updateLabel(outputFilterThree, filter3Obj));
+      setDisconnectButton(document.querySelector("#disconnectLabel"), filter3Obj.frequency)
+
+    }
+  }
+
+  document.querySelectorAll("body > *").forEach(item => item.addEventListener("change", onChange));
+
+  document.querySelectorAll("input[type=checkbox]").forEach(item => item.addEventListener("click", function (e) {
+    root.style.setProperty("--disconnect-filter", e.target.value);
+    e.target.classlist.set("disconnected")
+  }));
+
+
+  // document.querySelector("oscillator")
 
   let btn1 = document.querySelector("#one");
   let btn2 = document.querySelector("#two");
   let btn3 = document.querySelector("#three");
 
-  let root = document.querySelector(":root");
+  let filter1 = document.querySelector("#filter1");
+  let filter2 = document.querySelector("#filter2");
+  let filter3 = document.querySelector("#filter3");
 
 
   class WebAudioCSSComponent extends StyleCallbackMixin(HTMLElement) {
@@ -53,48 +349,38 @@
       super();
 
       this.audioContext = new AudioContext();
-
       this.gainNode = this.audioContext.createGain();
-
-      this.amplitudeAdsr = undefined;
-
-      this.defaultAdsr = [0.3, 1, 0, 2];
-      this.defaultFrequency = 140.65;
-      this.defaultWave = "triangle";
-
-      this.adsr = undefined;
-      this.gain = undefined;
-      this.frequency = undefined;
-      this.wave = undefined;
-
-      this.filter = undefined;
-
-
+      this.oscillatorProperties = undefined;
+      this.filters = [];
       this.loop = false;
-
       this.canPlay = true; //true by default
+      this.biquadFilters = [];
 
     }
 
+
     static get observedStyles() {
-      return ["--audio-adsr", "--amplitude-adsr", "--audio-volume", "--audio-frequency", "--audio-wave", "--audio-play"];
+      return ["--audio-settings", "--audio-play", "--disconnect-filter"];
     }
 
     styleCallback(name, oldValue, newValue) {
-      if (name === "--audio-adsr")
-        this.adsr = (newValue.split(" ")).map(n => (parseFloat(n)));
 
-      else if (name === "--amplitude-adsr")
-        this.amplitudeAdsr = (newValue.split(" ")).map(n => (parseFloat(n)));
+      if (name === "--audio-settings") {
+        let components = newValue.trim().split(",");
+        this.oscillatorProperties = components[0].trim().split(" ");
+        for (let i = 1; i < components.length; i++) {
+          if (!components[1])
+            return;
+          let filter = components[i].trim().split(" ");
 
-
-      else if (name === "--audio-volume")
-        this.gain = parseFloat(newValue) / 100;
-      else if (name === "--audio-frequency")
-        this.frequency = parseFloat(newValue);
-      else if (name === "--audio-wave")
-        this.wave = newValue.trim();
-
+          this.filters.push(filter);
+        }
+      }
+      if (name === "--disconnect-filter") {
+        let filter = this.biquadFilters.map(item => item.frequency.value === parseFloat(newValue));
+        this.gainNode.disconnect(filter);
+        alert("filter removed")
+      }
       else if (name === "--audio-play") {
         newValue = newValue.trim();
         if (newValue === "play")
@@ -104,49 +390,87 @@
         else if (newValue === "stop")
           requestAnimationFrame(this.stopSound.bind(this, false));
         else if (newValue !== "")  // when we remove value to allow call playSound() using styleCallback();
+
           throw new Error("CSS: wrong attribute value for --audio-play: " + newValue);
       }
+
     }
 
-    getOscillator() {
-      let attack = parseFloat((this.adsr || this.defaultAdsr)[0]);
-      let decay = attack + parseFloat((this.adsr || this.defaultAdsr)[1]);
-      let sustain = parseFloat((this.adsr || this.defaultAdsr)[2] / 100);
-      let release = decay + parseFloat((this.adsr || this.defaultAdsr)[3]);
 
-      let amplitudeAttack = parseFloat(this.amplitudeAdsr[0]);
-      let amplitudeDecay = amplitudeAttack + parseFloat(this.amplitudeAdsr[1]);
-      let amplitudeSustain = parseFloat(this.amplitudeAdsr[2] / 100);
-      let amplitudeRelease = amplitudeDecay + parseFloat(this.amplitudeAdsr[3]);
+    setFilter(filter) {
 
-      this.soundDuration = release;
+      let filterType = filter[0];
+      let filterFrequency = parseFloat(filter[1]);
+      let filterAttack = parseFloat(filter[2]);
+      let filterDecay = filterAttack + parseFloat((filter)[3]);
+      let filterSustain = parseFloat((filter)[4]) / 100;
+      let filterRelease = filterDecay + parseFloat(filter[5]);
 
-      let frequency = this.frequency || this.defaultFrequency;
-      let type = this.wave || this.defaultWave;
+      this.filter = this.audioContext.createBiquadFilter();
 
-      this.oscillator = this.audioContext.createOscillator();
-      this.oscillator.onended = () => this.oscillatorEnd();
-      this.gainNode = this.audioContext.createGain();
-      this.oscillator.connect(this.gainNode);
-      // this.gainNode.connect(this.audioContext.destination);
-      this.oscillator.frequency.value = frequency;
-      this.oscillator.type = type;
-      // amplitude envelope
-      this.gainNode.gain.setValueAtTime(1, this.audioContext.currentTime + amplitudeAttack); //attack
-      this.gainNode.gain.exponentialRampToValueAtTime(amplitudeSustain, this.audioContext.currentTime + amplitudeDecay);  //decay
-      this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + amplitudeRelease);  //release
+      this.filter.type = filterType;
+      this.filter.frequency.value = filterFrequency;
+      //filter envelope
+      this.filter.frequency.setValueAtTime(100, this.audioContext.currentTime + filterAttack); //attack
+      this.filter.frequency.exponentialRampToValueAtTime(filterSustain, this.audioContext.currentTime + filterDecay);  //decay
+      this.filter.frequency.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + filterRelease);  //release
+      this.biquadFilters.push(this.filter);
+
+      //connect
       this.gainNode.connect(this.audioContext.destination);
       this.oscillator.connect(this.gainNode);
-      this.filter = this.audioContext.createBiquadFilter();
-      this.filter.type = "lowpass";
-      this.filter.frequency.value = 244.5;
-      //filter envelope
-      this.filter.frequency.setValueAtTime(100, this.audioContext.currentTime + attack); //attack
-      this.filter.frequency.exponentialRampToValueAtTime(sustain, this.audioContext.currentTime + decay);  //decay
-      this.filter.frequency.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + release);  //release
-
       this.gainNode.connect(this.filter);
       this.filter.connect(this.audioContext.destination);
+    }
+
+
+    getOscillator() {
+
+      // let filterType = filter[0];
+      // let filterFrequency = parseFloat(filter[1]);
+      // let filterAttack = parseFloat(filter[2]);
+      // let filterDecay = filterAttack + parseFloat((filter)[3]);
+      // let filterSustain = parseFloat((filter)[4]) / 100;
+      // let filterRelease = filterDecay + parseFloat(filter[5]);
+      if (!this.oscillatorProperties)
+        return;
+
+      let oscillatorType = this.oscillatorProperties[0];
+      let oscillatorFrequency = this.oscillatorProperties[1];
+      let oscillatorAttack = parseFloat(this.oscillatorProperties[2]);
+      let oscillatorDecay = oscillatorAttack + parseFloat(this.oscillatorProperties[3]);
+      let oscillatorSustain = parseFloat(this.oscillatorProperties[4]) / 100;
+      let oscillatorRelease = oscillatorDecay + parseFloat(this.oscillatorProperties[5]);
+
+
+      this.oscillator = this.audioContext.createOscillator();
+      this.oscillator.onended = (e) => {
+        this.oscillatorEnd();
+      };
+
+      this.gainNode = this.audioContext.createGain();
+
+      this.gainNode = this.audioContext.createGain();
+      this.oscillator.connect(this.gainNode);
+
+
+      // this.setFilter();
+
+
+      // this.gainNode.connect(this.audioContext.destination);
+      this.oscillator.frequency.value = oscillatorFrequency;
+      this.oscillator.type = oscillatorType;
+      // amplitude envelope
+      this.gainNode.gain.setValueAtTime(1, this.audioContext.currentTime + oscillatorAttack); //attack
+      this.gainNode.gain.exponentialRampToValueAtTime(oscillatorSustain, this.audioContext.currentTime + oscillatorDecay);  //decay
+      this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + oscillatorRelease);  //release
+
+
+      // filter
+
+      for (let filter of this.filters) {
+        this.setFilter(filter);
+      }
     }
 
 
@@ -164,20 +488,16 @@
 
 
     playSound(arg) {
-      //get new oscillator each time. We can use the same audioContext, but can`t oscillator. One oscillator - one sound!!!
       this.getOscillator();
-      // remove property (because press button set it again) If we di=ont remove it styleCallback() will not fire, because we don`t change variable value
+      if (!this.oscillator)
+        return;
       root.style.removeProperty("--audio-play");
-      //If the 'play' button was pressed before the single sound was not finished
       if (arg && this.canPlay) {
         this.canPlay = false; // Blocks the next press of the button until the sound is finished. Avoid simultaneous playback of multiple sounds
-        //if loop was active and we press 'play' button - disable loop
         if (this.loop) {
           this.loop = false;
         }
-        //play sound
         this.oscillator.start(this.audioContext.currentTime);
-        //to change oscillator state and init new oscillator  !important
         this.stopSound(true);
       }
 
@@ -203,7 +523,7 @@
       // Here we stop oscillator and its fire oscillatorEnd()callback.
       this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
       this.oscillator.stop(this.audioContext.currentTime + duration);
-
+      // this.filters = [];
       // stop loop (should be disactive only after oscillator!
       if (!arg && this.loop)
         this.loop = false;
@@ -223,8 +543,11 @@
     root.style.setProperty("--audio-play", "loop");
   });
 
+
   customElements.define("web-audio", WebAudioCSSComponent);
 
 </script>
+
+
 </body>
 </html>

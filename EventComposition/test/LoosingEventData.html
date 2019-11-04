@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LoosingEventData</title>
+</head>
+<body>
+<div id="top">Div
+    <div>div
+        <p>P<span>Span</span></p>
+    </div>
+</div>
+
+<button onclick="setTimeout(()=>{alert('click')},2000)">2s alert</button>
+<script>
+  let divElem = document.querySelector("#top");
+  let pElem = document.querySelector("P");
+  let spanElem = document.querySelector("SPAN");
+  let initialEvent;
+
+  let event = "touchend";
+
+  divElem.addEventListener(event, (e) => {
+    initialEvent = e;
+  }, true);
+
+
+  function compareEvents(ev1, ev2) {
+    let diff = new Map();
+    let values;
+
+    for (var prop in ev1) {
+      if (ev1[prop] !== ev2[prop]) {
+        diff.set(prop, {event1: ev1[prop], event2: ev2[prop]});
+      }
+
+      if (ev1[prop].length && typeof ev1[prop] !== 'string' && typeof ev1[prop][Symbol.iterator] === 'function') {
+
+        for (var prop1 of ev1[prop]) {
+          if (ev1[prop][prop1] !== ev2[prop][prop1]) {
+
+            diff.set([prop1], {event1: ev1[prop][prop1], event2: ev2[prop][prop1]});
+          }
+        }
+      }
+
+
+    }
+    return diff
+  }
+
+
+  pElem.addEventListener(event, (e) => {
+    let comparison = compareEvents(e, initialEvent);
+    console.log(comparison);
+  }, true)
+
+
+</script>
+</body>
+</html>
