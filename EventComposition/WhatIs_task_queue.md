@@ -25,6 +25,12 @@ while the selected element is removed from the queue.
 
 ### Why the composed event will be queued after the defaultAction? 
 
+the Problem is, why do we need to dispatch/propagate a composed event BEFORE the trigger event propagates completely? And 
+the answer to that mystery is that "a) the default action that accompanies the trigger event (ie. the showing of the
+ context menu that accompanies a click event), is added to the que at the same time as the trigger event is dispatched,
+ combined with b) the fact that to dispatch a composed event AFTER the trigger event has propageted, you MUST also put it in the task que. This means that X) if you try to make a composed event propagate AFTER a trigger event has finished its propagation, then Y) it will ALWAYS run after the composed event".
+
+
 What events are happening in the browser? There are so many of them:
 - mouse clicks;
 - Scrolling;
