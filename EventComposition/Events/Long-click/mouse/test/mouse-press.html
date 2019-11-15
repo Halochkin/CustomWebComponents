@@ -1,0 +1,192 @@
+<meta charset="UTF-8">
+<style>
+    #one {
+        border: 2px solid red;
+        height: 300px;
+        width: 300px;
+        margin-top: 30px;
+        margin-left: 50px;
+    }
+</style>
+<div id="one" mouse-press mouse-press-durationMs="1000"></div>
+<script>
+  (function () {
+
+
+    function dispatchPriorEvent(target, composedEvent, trigger) {
+      composedEvent.preventDefault = function () {
+        trigger.preventDefault();
+        trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
+      };
+      composedEvent.trigger = trigger;
+      return target.dispatchEvent(composedEvent);
+    }
+
+
+    function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
+      composedEvent.trigger = trigger;
+      trigger.stopTrailingEvent = function () {
+        composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
+      };
+      trigger.preventDefault();
+      return setTimeout(function () {
+        target.dispatchEvent(composedEvent)
+      }, 0);
+    }
+
+
+    function captureEvent(e, stopProp) {
+      e.preventDefault();
+      stopProp && e.stopImmediatePropagation ? e.stopImmediatePropagation() : e.stopPropagation();
+    }
+
+
+    function filterOnAttribute(e, attributeName) {                                                 //4. FilterByAttribute
+      for (let el = e.target; el; el = el.parentNode) {
+        if (!el.hasAttribute)
+          return null;
+        if (el.hasAttribute(attributeName))
+          return el;
+      }
+      return null;
+    }
+
+    function makeMousePressEvent(name, trigger, detail) {
+      const composedEvent = new CustomEvent("mouse-press-" + name, {bubbles: true, composed: true, detail: detail});
+      composedEvent.x = trigger.pageX;
+      composedEvent.y = trigger.pageY;
+      return composedEvent;
+    }
+
+
+    function onMousedown(e) {
+      if (e.button !== 0)
+        return;
+
+      if (e.defaultPrevented)
+        return;
+
+      primaryEvent = e;
+      window.addEventListener("mouseup", onMouseup, true);
+      // const longPress = new LongPressEvent("long-press-start");
+      // dispatchPriorEvent(e.target, longPress, e);
+      // //the event must be dispatched *before* the addVisualFeedback is run.
+      // addVisualFeedback(e.clientX, e.clientY);
+      const target = filterOnAttribute(e, "mouse-press");
+      if (!target)
+        return;
+      duration = setTimeout(function () {
+        const composedEvent = makeMousePressEvent("activated", e);
+        // captureEvent(trigger, false);
+        // globalSequence = updateSequence(globalSequence, composedEvent);
+        // replaceDefaultAction(target, composedEvent, e);
+      }, parseInt(e.target.getAttribute("mouse-press-durationms")) || 1500);
+      composedEvent = makeMousePressEvent("start", e);
+      // captureEvent(trigger, false);
+      // dispatchPriorEvent(target, composedEvent, e);
+      //
+      replaceDefaultAction(target, composedEvent, e);
+      document.removeEventListener("mousedown", onMousedown, true);
+      window.addEventListener("mousedown", onMousedownSecondary, true);
+      window.addEventListener("blur", onBlur, true);
+      window.addEventListener("selectstart", onSelectstart, true);
+    }
+
+
+    function onMousedownSecondary(trigger) {
+      const cancelEvent = makeMousePressEvent("cancel", trigger);
+      // const target = globalSequence.target;
+      // globalSequence = stopSequence();
+      replaceDefaultAction(trigger.target, cancelEvent, trigger);
+    }
+
+
+    function onMouseup(e) {
+
+      if (primaryEvent.type !== "mouse-press-activated") {
+        composedEvent = makeMousePressEvent("cancel", e);
+        clearTimeout(duration);
+      }
+      if (!composedEvent)
+        return;
+      // captureEvent(e.trigger, false);
+      // const target = globalSequence.target;
+      // globalSequence = stopSequence();
+
+      dispatchPriorEvent(e.target, composedEvent, e);
+
+      // replaceDefaultAction(e.target, composedEvent, e);
+      window.removeEventListener("mouseup", onMouseup, true);
+      window.removeEventListener("blur", onBlur, true);
+      window.removeEventListener("selectstart", onSelectstart, true);
+      window.removeEventListener("mousedown", onMousedownSecondary, true);
+      document.addEventListener("mousedown", onMousedown, true);
+    }
+
+    function onBlur(trigger) {
+      const blurInEvent = makeMousePressEvent("cancel", trigger);
+      // const target = globalSequence.target;
+      // globalSequence = stopSequence();
+      dispatchPriorEvent(trigger.target, composedEvent, e);
+
+      replaceDefaultAction(trigger.target, blurInEvent, trigger);
+    }
+
+    function onSelectstart(trigger) {
+      trigger.preventDefault();
+      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
+    }
+
+    window.addEventListener("mousedown", onMousedown, true);
+  })();
+</script>
+
+
+<script>
+
+  let element = document.querySelector("#one");
+  const body = document.querySelector("body");
+  let blindMan = document.createElement("div");
+
+
+  blindMan.style.position = "fixed";
+  blindMan.style.zIndex = 2147483647;
+  blindMan.style.pointerEvents = "none";
+  blindMan.style.overflow = "visible";
+
+
+  function getRealtiveCoord(e) {
+    let clientBound = e.target.getBoundingClientRect();
+    let absX = e.x - clientBound.x - window.scrollX;
+    let absY = e.y - clientBound.y - window.scrollY;
+    return {x: absX, y: absY};
+  }
+
+  function addVisualFeedback(e) {
+    if (blindMan.isConnected) {
+      blindMan = blindMan.cloneNode();
+    }
+    let coord = getRealtiveCoord(e);
+    console.log(coord);
+    blindMan.style.left = e.x + "px";
+    blindMan.style.top = e.y + "px";
+    blindMan.innerText = `• x:${coord.x}y:${coord.y}`;
+    element.appendChild(blindMan);
+
+  }
+
+
+  window.addEventListener("mouse-press-start", e => {
+    element.style.backgroundColor = "skyblue";
+  });
+
+  window.addEventListener("mouse-press-activated", e => {
+    element.style.backgroundColor = "green";
+    addVisualFeedback(e);
+  });
+
+
+  window.addEventListener("mouse-press-cancel", e => {
+    element.style.backgroundColor = "red";
+  });
+</script>

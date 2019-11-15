@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Long click</title>
+    <style>
+        #one {
+            border: 2px solid red;
+            height: 300px;
+            width: 300px;
+            margin-top: 30px;
+            margin-left: 50px;
+        }
+    </style>
+    <script src="../src/long-click.js"></script>
+</head>
+<body>
+<div id="one" mouse-press mouse-press-durationMs="1000"></div>
+<script>
+
+  let element = document.querySelector("#one");
+  const body = document.querySelector("body");
+  let blindMan = document.createElement("div");
+
+
+  blindMan.style.position = "fixed";
+  blindMan.style.zIndex = 2147483647;
+  blindMan.style.pointerEvents = "none";
+  blindMan.style.overflow = "visible";
+
+
+  function getRealtiveCoord(e) {
+    let clientBound = e.target.getBoundingClientRect();
+    let absX = e.x - clientBound.x - window.scrollX;
+    let absY = e.y - clientBound.y - window.scrollY;
+    return {x: absX, y: absY};
+  }
+
+  function addVisualFeedback(e) {
+    if (blindMan.isConnected) {
+      blindMan = blindMan.cloneNode();
+    }
+    let coord = getRealtiveCoord(e);
+    console.log(coord);
+    blindMan.style.left = e.x + "px";
+    blindMan.style.top = e.y + "px";
+    blindMan.innerText = `• x:${coord.x}y:${coord.y}`;
+    element.appendChild(blindMan);
+
+  }
+
+
+  window.addEventListener("mouse-press-start", e => {
+    element.style.backgroundColor = "skyblue";
+  });
+
+  window.addEventListener("mouse-press-activated", e => {
+    element.style.backgroundColor = "green";
+    addVisualFeedback(e);
+  });
+
+
+  window.addEventListener("mouse-press-cancel", e => {
+    element.style.backgroundColor = "red";
+  });
+
+</script>
+</body>
+</html>
+
+
+<!--<script>-->
+<!--(function () {-->
+
+<!--class BlindManDomLayer extends HTMLElement {-->
+<!--constructor() {-->
+<!--super();-->
+<!--this.attachShadow({mode: "open"});-->
+<!--this.shadowRoot.innerHTML = `-->
+<!--<style>-->
+<!--@keyframes starting-press {-->
+<!--0% {-->
+<!--transform: scale(0);-->
+<!--opacity: 0.2;-->
+<!--}-->
+<!--100% {-->
+<!--transform: scale(1);-->
+<!--opacity: 1.0;-->
+<!--}-->
+<!--}-->
+<!--:host {-->
+<!--margin: 0;-->
+<!--padding: 0;-->
+<!--position: fixed;-->
+<!--z-index: 2147483647;-->
+<!--pointer-events: none;-->
+<!--/*overflow: visible;*/-->
+<!--animation: starting-press 600ms forwards;-->
+<!--}-->
+<!--</style>-->
+<!--<slot></slot>`;-->
+<!--}-->
+<!--}-->
+
+<!--customElements.define("blind-man-dom-layer", BlindManDomLayer);-->
+
+<!--var blindMan = document.createElement("blind-man-dom-layer");-->
+<!--var feedbackElement;-->
+<!--var timeToLive;-->
+<!--var primaryEvent;-->
+
+<!--class LongPressEvent extends Event {-->
+<!--constructor(type, props = {bubbles: true, composed: true}) {-->
+<!--super(type, props);-->
+<!--}-->
+
+<!--setImage(el, ttl) {-->
+<!--feedbackElement = el;-->
+<!--timeToLive = ttl;-->
+<!--}-->
+<!--}-->
+
+<!--function dispatchPriorEvent(target, composedEvent, trigger) {-->
+<!--composedEvent.preventDefault = function () {-->
+<!--trigger.preventDefault();-->
+<!--trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();-->
+<!--};-->
+<!--composedEvent.trigger = trigger;-->
+<!--return target.dispatchEvent(composedEvent);-->
+<!--}-->
+
+<!--function addVisualFeedback(x, y) {-->
+<!--//using left and top instead of transform: translate(x, y) so as to simplify scale animation-->
+<!--if (blindMan.isConnected) {-->
+<!--blindMan = blindMan.cloneNode();-->
+<!--feedbackElement = feedbackElement.cloneNode();-->
+<!--}-->
+<!--blindMan.style.left = x + "px";-->
+<!--blindMan.style.top = y + "px";-->
+<!--blindMan.appendChild(feedbackElement);-->
+<!--document.body.appendChild(blindMan);-->
+<!--}-->
+
+<!--function removeVisualFeedback(endState, ttl) {-->
+<!--blindMan.classList.add(endState);-->
+<!--feedbackElement.classList.add(endState);-->
+<!--var a = blindMan;-->
+<!--var b = feedbackElement;-->
+<!--setTimeout(function () {-->
+<!--b.classList.remove(endState);-->
+<!--b.remove();-->
+<!--a.classList.remove(endState);-->
+<!--a.remove();-->
+<!--}, ttl);-->
+<!--}-->
+
+<!--function onMousedown(e) {-->
+<!--if (e.button !== 0)-->
+<!--return;-->
+<!--primaryEvent = e;-->
+<!--window.addEventListener("mouseup", onMouseup, true);-->
+<!--const longPress = new LongPressEvent("long-press-start");-->
+<!--dispatchPriorEvent(e.target, longPress, e);-->
+<!--//the event must be dispatched *before* the addVisualFeedback is run.-->
+<!--addVisualFeedback(e.clientX, e.clientY);-->
+<!--}-->
+
+<!--function onMouseup(e) {-->
+<!--var duration = e.timeStamp - primaryEvent.timeStamp;-->
+<!--const endState = duration > 600 ? "long-press" : "long-press-cancel";-->
+<!--const longPress = new LongPressEvent(endState);-->
+<!--dispatchPriorEvent(e.target, longPress, e);-->
+<!--const delay = timeToLive !== undefined ? timeToLive : 250;-->
+<!--removeVisualFeedback("long-press", delay);-->
+<!--primaryEvent = undefined;-->
+<!--window.removeEventListener("mouseup", onMouseup, true);-->
+<!--}-->
+
+<!--window.addEventListener("mousedown", onMousedown, true);-->
+<!--})();-->
+<!--</script>-->
+<!--<h1>Election 2020: Long-press to select!</h1>-->
+<!--<h3 id="theDonald">Trump</h3>-->
+<!--<h3 id="Pocahuntas">Warren</h3>-->
+
+<!--<script>-->
+<!--const blackHole = document.createElement("div");-->
+<!--blackHole.style.width = "20px";-->
+<!--blackHole.style.height = "20px";-->
+<!--blackHole.style.background = "black";-->
+<!--blackHole.style.borderRadius = "50%";-->
+<!--blackHole.style.margin = "-10px 0 0 -10px";-->
+
+<!--class BeatingHeart extends HTMLElement {-->
+<!--constructor() {-->
+<!--super();-->
+<!--this.attachShadow({mode: "open"});-->
+<!--this.shadowRoot.innerHTML = `-->
+<!--<style>-->
+<!--@keyframes throb {-->
+<!--0% {-->
+<!-- -webkit-text-stroke: 1px red;-->
+<!--}-->
+<!--100% {-->
+<!-- -webkit-text-stroke: 3px darkred;-->
+<!--}-->
+<!--}-->
+<!--:host {-->
+<!--margin: -10px 0 0 -10px;-->
+<!--box-sizing: border-box;-->
+<!--width: 20px;-->
+<!--height: 20px;-->
+<!-- -webkit-text-stroke: 3px red;-->
+<!--}-->
+<!--:host(*.long-press) {-->
+<!--animation: throb 400ms infinite alternate forwards;-->
+<!--color: red;-->
+<!--/*box-sizing: border-box;*/-->
+<!--}-->
+<!--</style>&#9829`;-->
+<!--}-->
+<!--}-->
+
+<!--customElements.define("beating-heart", BeatingHeart);-->
+<!--const persistance = new BeatingHeart();-->
+
+<!--document.querySelector("#theDonald").addEventListener("long-press-start", function (e) {-->
+<!--e.setImage(blackHole);-->
+<!--});-->
+<!--document.querySelector("#Pocahuntas").addEventListener("long-press-start", function (e) {-->
+<!--e.setImage(persistance, 2147483647);-->
+<!--});-->
+<!--window.addEventListener("long-press-start", e => console.log(e.type));-->
+<!--window.addEventListener("long-press", e => console.log(e.type));-->
+<!--</script>-->
+
