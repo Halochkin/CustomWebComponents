@@ -105,7 +105,7 @@ modern browsers. This places the message event in the event queue with the "fire
 user interface thread is released to handle the events, the message event occurs in the current window. There is no minimum
 delay in using postMessage.
 
-> tasks added in the event loop task queue using the postMessage strategy is also dispatched AFTER the defaultAction. 
+> Tasks added in the event loop task queue using the postMessage strategy is also dispatched AFTER the defaultAction. 
 Thus, using postMessage to create async event doesn't provide a fix for the need for composed events needing to propagate 
 prior to the trigger event.
 
@@ -139,8 +139,6 @@ so that it will start propagating immediately and thus precede the triggering ev
 
   let element1 = document.querySelector("#test1");
   const composedEvent = new CustomEvent("custom-contextmenu", {bubbles: true, composed: true});
-
-
 
   function dispatchPriorEvent(target, composedEvent, trigger) {   //1
     composedEvent.preventDefault = function () {                  //2
