@@ -164,4 +164,7 @@ so that it will start propagating immediately and thus precede the triggering ev
 </script>
 ```
 
+### References
 
+* [MDN: dispatchEvent()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent)
+* [Browser default actions](https://javascript.info/default-browser-action)
