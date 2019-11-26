@@ -105,7 +105,7 @@ modern browsers. This places the message event in the event queue with the "fire
 user interface thread is released to handle the events, the message event occurs in the current window. There is no minimum
 delay in using postMessage.
 
-> tasks added in the event loop task queue using the postMessage strategy is also dispatched AFTER the defaultAction. 
+> Tasks added in the event loop task queue using the postMessage strategy is also dispatched AFTER the defaultAction. 
 Thus, using postMessage to create async event doesn't provide a fix for the need for composed events needing to propagate 
 prior to the trigger event.
 
@@ -119,6 +119,7 @@ prior to the trigger event.
 <script>
 
   let element1 = document.querySelector("#test1");
+<<<<<<< HEAD:EventComposition/trash/WhatIs_task_queue.md
 
     class LongPressEvent extends Event { 
       constructor(type,  trigger, props = {bubbles: true, composed: true}) {
@@ -135,6 +136,22 @@ prior to the trigger event.
   element1.addEventListener("contextmenu", trigger => {                          //[a]
       const longPress = new LongPressEvent("custom-contextmenu", trigger);     
       trigger.target.dispatchEvent(longPress);                                   //[b]
+=======
+  const composedEvent = new CustomEvent("custom-contextmenu", {bubbles: true, composed: true});
+
+  function dispatchPriorEvent(target, composedEvent, trigger) {   //1
+    composedEvent.preventDefault = function () {                  //2
+      trigger.preventDefault();
+      alert();
+      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
+    };
+    composedEvent.trigger = trigger;                              //3
+    target.dispatchEvent(composedEvent);                          //4
+  }
+
+  element1.addEventListener("contextmenu", trigger => {
+     dispatchPriorEvent(trigger.target, composedEvent, trigger);
+>>>>>>> origin/master:EventComposition/WhatIs_task_queue.md
   });
 
     window.addEventListener("contextmenu", e=>{
