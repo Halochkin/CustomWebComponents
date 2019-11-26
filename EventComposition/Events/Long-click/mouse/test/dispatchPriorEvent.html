@@ -5,91 +5,305 @@
     <title>Title</title>
 </head>
 <body>
+<style>
 
-<div id="test1">Open context menu</div>
-<div id="test2">Open context menu too</div>
+    blind-man-dom-layer {
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        display: inline-block;
+        animation: throb 400ms infinite alternate forwards;
+    }
+
+    @keyframes throb {
+        0% {
+            transform: scale(0);
+            opacity: 0.2;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1.0;
+        }
+    }
+</style>
+
+
+<div id="test1" mycolor="red">Red</div>
+<div id="test2" mycolor="green">Green</div>
 
 <script>
+  /*
+    Event data/details should:
+    X. Events should extend Event, not be new CustomEvent.
+    1. Be added directly to the event object. Not be added in a details prop, as it deviates from most commonly used
+    native events and produces unnecessary fluff in the api.
 
-  let element1 = document.querySelector("#test1");
-  let element2 = document.querySelector("#test2");
-  const composedEvent = new CustomEvent("custom-contextmenu", {bubbles: true, composed: true});
+    2. Be immutable. Listeners for the event SHOULD NOT!! be able to mutate data on the event. They listen, they do
+    not write. To enforce this, event object should be frozen before dispatch.
+
+    3. When you need to set properties on an event, such as when you control feedback, the property is a setter function
+    that will operate on a global property in the sif. It is a method, a gateway to the events global property,not data
+    on the event. All data on the event should be frozen/immutable.
+
+    4. Data likely to be mutated during event propagation should be associated with the target element or the window/document
+    element in the dom.
+    */
+  (function () {
+    class BlindManDomLayer extends HTMLElement {
+      constructor() {
+        super();
+        // this.attachShadow({
+        //   mode: "open"
+        // });
+        // this.shadowRoot.innerHTML = `
+        //     <span>Hello!!!</span>
+        //
+        //     `;
+      }
+    }
+
+    customElements.define("blind-man-dom-layer", BlindManDomLayer);
+    var blindMan = document.createElement("blind-man-dom-layer");
+    var feedbackElement;
+    var myColor;
+
+    class LongPressEvent extends Event { // Event extend Event, not be new CustomEvent
+      constructor(type, details, trigger, props = {  //todo should we add bubbles and composed properties in this way???;
+        bubbles: true,
+        composed: true
+      }) {
+        super(type, props);
+        // for (let key in details) { // details added directly to the event object as a properties
+        //   this[key] = details[key];
+        // }
+        // this.trigger = trigger;
+        Object.freeze(this);
+      }
+
+      setMyColor(target, color) { //setter function that operates on a global property in the sif
+        feedbackElement = target;
+        if (color)
+          myColor = color;
+      }
+
+      preventDefault() {
+        this.trigger.preventDefault();
+      }
+    }
+
+    function setColor() {
+      if (!myColor)
+        return;
+      blindMan = blindMan.cloneNode();
+      feedbackElement = feedbackElement.cloneNode();
+      blindMan.style.backgroundColor = myColor;
+      blindMan.appendChild(feedbackElement);
+      document.body.appendChild(blindMan);
+    }
 
 
-  function dispatchPriorEvent(target, composedEvent, trigger) {   //1
-    composedEvent.preventDefault = function () {                  //2
-      trigger.preventDefault();
-      alert();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
-    };
-    composedEvent.trigger = trigger;                              //3
-    target.dispatchEvent(composedEvent);                          //4
-  }
+    window.addEventListener("contextmenu", trigger => {
+      let color = trigger.target.getAttribute("mycolor");
 
-  function replaceDefaultAction(target, composedEvent, trigger) {      //[3] ReplaceDefaultAction
-    composedEvent.trigger = trigger;
-    trigger.stopTrailingEvent = function () {
-      composedEvent.stopImmediatePropagation ? composedEvent.stopImmediatePropagation() : composedEvent.stopPropagation();
-    };
-    trigger.preventDefault();
-    return setTimeout(function () {
-      target.dispatchEvent(composedEvent)
-    }, 0);
-  }
 
-  element1.addEventListener("contextmenu", trigger => {
-    // trigger.preventDefault();
-    dispatchPriorEvent(trigger.target, composedEvent, trigger);
+      const composedEvent = new Event("custom+contextmenu", {myColor: color, bubbles: true, composed: true});
+
+      const longPress = new LongPressEvent("custom-contextmenu", {
+        myColor: color
+      }, trigger);
+
+      console.log(composedEvent);
+      console.log(longPress);
+
+      console.log(lala);
+
+      debugger;
+
+
+      trigger.target.dispatchEvent(longPress); //4 //inline this call
+      setColor(color);
+    });
+  })();
+
+  document.querySelector("#test1").addEventListener("custom-contextmenu", e => {
+    e.preventDefault();
+    e.setMyColor(e.target, e.target.getAttribute("mycolor"));
   });
 
-  element2.addEventListener("contextmenu", trigger => {
-    replaceDefaultAction(trigger.target, composedEvent, trigger);
-  });
-
-
-  window.addEventListener("contextmenu", e => {
-    composedEvent.preventDefault();
-    e.target.style.color = "yellow";
+  window.addEventListener("custom-contextmenu", e => {
+    e.preventDefault();
+    e.setMyColor(e.target, e.target.getAttribute("mycolor"));
   });
 
 </script>
 
 
-<!--<hr>-->
-
-<!--<script>-->
-
-
-<!--function onClick(e){-->
-<!--if (e.defaultPrevented || e.customPrevented)-->
-<!--return;-->
-<!--dispatchPriorEvent(e.target, new CustomEvent("echo-click", {bubbles: true, composed: true}), e);-->
-<!--}-->
-
-<!--document.addEventListener("click", onClick, true);-->
-<!--</script>-->
-
-<!--<p>-->
-<!--The demo below illustrate how the PriorEvent works.-->
-<!--It uses three different event listeners on different elements to control the behavior of-->
-<!--the composed and triggering event and their default actions.-->
-<!--</p>-->
-<!--<ul>-->
-<!--<li>you can click me</li>-->
-<!--<li><a id="a" href="https://normal.com">normal link, will navigate</a></li>-->
-<!--<li><a id="b" href="https://click-prevented.com">prevented on click, will not navigate</a></li>-->
-<!--<li><a id="c" href="https://echo-click-prevented.com">prevented on echo-click, will not propagate "click" nor navigate</a></li>-->
-<!--<li><a id="d" href="https://echo-click-prevented-via-trigger.com">prevented on echo-click via trigger property, propagates click but will not navigate</a></li>-->
-<!--</ul>-->
-
-<!--<script>-->
-<!--window.addEventListener("click", function(e){alert("click event")});-->
-<!--window.addEventListener("echo-click", function(e){alert("echo-click event")});-->
-
-<!--document.querySelector("#b").addEventListener("click", e => e.preventDefault());-->
-<!--document.querySelector("#c").addEventListener("echo-click", e => e.preventDefault());-->
-<!--document.querySelector("#d").addEventListener("echo-click", e => e.trigger.preventDefault());-->
-
-<!--</script>-->
 </body>
 </html>
+
+
+<!--
+<script>
+  (function () {
+
+    class BlindManDomLayer extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.innerHTML = `
+<style>
+  @keyframes starting-press {
+    0% {
+      transform: scale(0);
+      opacity: 0.2;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1.0;
+    }
+  }
+  :host {
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    z-index: 2147483647;
+    pointer-events: none;
+    /*overflow: visible;*/
+    animation: starting-press 600ms forwards;
+  }
+</style>
+<slot></slot>`;
+      }
+    }
+
+    customElements.define("blind-man-dom-layer", BlindManDomLayer);
+
+    var blindMan = document.createElement("blind-man-dom-layer");
+    var feedbackElement;
+    var timeToLive;
+    var primaryEvent;
+
+    class LongPressEvent extends Event {
+      constructor(type, props = {bubbles: true, composed: true}) {
+        super(type, props);
+      }
+
+      setImage(el, ttl) {
+        feedbackElement = el;
+        timeToLive = ttl;
+      }
+    }
+
+    function dispatchPriorEvent(target, composedEvent, trigger) {
+      composedEvent.preventDefault = function () {
+        trigger.preventDefault();
+        trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
+      };
+      composedEvent.trigger = trigger;
+      return target.dispatchEvent(composedEvent);
+    }
+
+    function addVisualFeedback(x, y) {
+      //using left and top instead of transform: translate(x, y) so as to simplify scale animation
+      if (blindMan.isConnected){
+        blindMan = blindMan.cloneNode();
+        feedbackElement = feedbackElement.cloneNode();
+      }
+      blindMan.style.left = x + "px";
+      blindMan.style.top = y + "px";
+      blindMan.appendChild(feedbackElement);
+      document.body.appendChild(blindMan);
+    }
+
+    function removeVisualFeedback(endState, ttl) {
+      blindMan.classList.add(endState);
+      feedbackElement.classList.add(endState);
+      var a = blindMan;
+      var b = feedbackElement;
+      setTimeout(function () {
+        b.classList.remove(endState);
+        b.remove();
+        a.classList.remove(endState);
+        a.remove();
+      }, ttl);
+    }
+
+    function onMousedown(e) {
+      if (e.button !== 0)
+        return;
+      primaryEvent = e;
+      window.addEventListener("mouseup", onMouseup, true);
+      const longPress = new LongPressEvent("long-press-start");
+      dispatchPriorEvent(e.target, longPress, e);
+      //the event must be dispatched *before* the addVisualFeedback is run.
+      addVisualFeedback(e.clientX, e.clientY);
+    }
+
+    function onMouseup(e) {
+      var duration = e.timeStamp - primaryEvent.timeStamp;
+      const endState = duration > 600 ? "long-press" : "long-press-cancel";
+      const longPress = new LongPressEvent(endState);
+      dispatchPriorEvent(e.target, longPress, e);
+      const delay = timeToLive !== undefined ? timeToLive : 250;
+      removeVisualFeedback("long-press", delay);
+      primaryEvent = undefined;
+      window.removeEventListener("mouseup", onMouseup, true);
+    }
+
+    window.addEventListener("mousedown", onMousedown, true);
+  })();
+</script>
+<h1>Election 2020: Long-press to select!</h1>
+<h3 id="theDonald">Trump</h3>
+<h3 id="Pocahuntas">Warren</h3>
+
+<script>
+  const blackHole = document.createElement("div");
+  blackHole.style.width = "20px";
+  blackHole.style.height = "20px";
+  blackHole.style.background = "black";
+  blackHole.style.borderRadius = "50%";
+  blackHole.style.margin = "-10px 0 0 -10px";
+
+  class BeatingHeart extends HTMLElement {
+    constructor(){
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+<style>
+  @keyframes throb {
+    0% {
+      -webkit-text-stroke: 1px red;
+    }
+    100% {
+      -webkit-text-stroke: 3px darkred;
+    }
+  }
+  :host {
+    margin: -10px 0 0 -10px;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+    -webkit-text-stroke: 3px red;
+  }
+  :host(*.long-press) {
+    animation: throb 400ms infinite alternate forwards;
+    color: red;
+    /*box-sizing: border-box;*/
+  }
+</style>&#9829`;
+    }
+  }
+  customElements.define("beating-heart", BeatingHeart);
+  const persistance = new BeatingHeart();
+
+  document.querySelector("#theDonald").addEventListener("long-press-start", function(e){
+    e.setImage(blackHole);
+  });
+  document.querySelector("#Pocahuntas").addEventListener("long-press-start", function(e){
+    e.setImage(persistance, 2147483647);
+  });
+  window.addEventListener("long-press-start", e => console.log(e.type));
+  window.addEventListener("long-press", e => console.log(e.type));
+</script>
+-->

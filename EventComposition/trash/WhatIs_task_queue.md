@@ -70,7 +70,7 @@ This is almost what native composed events do:
     2. The native composed event such as click cam prevent the default action.
 
 
-The problem is that the browser queues the default action task in the event loop just _before_ the trigger event begins its
+The browser queues the default action task in the event loop just _before_ the trigger event begins its
 propagation. from the developers perspective it "looks like" the default action is only added after the trigger event has
 completed its propagation. but it is not so. The browser does not review the state of the event after it has completed
 propagation, which is bad, but instead the browser adds both the trigger event and the default action to the event loop
@@ -110,25 +110,6 @@ Thus, using postMessage to create async event doesn't provide a fix for the need
 prior to the trigger event.
 
 
-### dispatchPriorEvent
-
-The [PriorEvent](https://github.com/orstavik/JoiEvents/blob/bb0ab1b2c67e504954d64346da6cbd47d84400ea/docs/2_EventToEvent/7_Pattern3_PriorEvent.md) 
-pattern propagates the custom composed event before the triggering event. Composed event is dispatched synchronously, 
-so that it will start propagating immediately and thus precede the triggering event.
-
-
-```javascript
-  function dispatchPriorEvent(target, composedEvent, trigger) {   
-    composedEvent.preventDefault = function () {                 
-      trigger.preventDefault();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
-    };
-    composedEvent.trigger = trigger;                              
-    target.dispatchEvent(composedEvent);                          
-  }
-
-```
-
 ### Example 
 
 ```html
@@ -138,33 +119,45 @@ so that it will start propagating immediately and thus precede the triggering ev
 <script>
 
   let element1 = document.querySelector("#test1");
-  const composedEvent = new CustomEvent("custom-contextmenu", {bubbles: true, composed: true});
 
+    class LongPressEvent extends Event { 
+      constructor(type,  trigger, props = {bubbles: true, composed: true}) {
+        super(type, props);
+        this.trigger = trigger;
+        Object.freeze(this);
+      }
 
+      preventDefault(){
+        this.trigger.preventDefault();
+      }
+    }
 
-  function dispatchPriorEvent(target, composedEvent, trigger) {   //1
-    composedEvent.preventDefault = function () {                  //2
-      trigger.preventDefault();
-      alert();
-      trigger.stopImmediatePropagation ? trigger.stopImmediatePropagation() : trigger.stopPropagation();
-    };
-    composedEvent.trigger = trigger;                              //3
-    target.dispatchEvent(composedEvent);                          //4
-  }
-
-  element1.addEventListener("contextmenu", trigger => {
-     dispatchPriorEvent(trigger.target, composedEvent, trigger);
+  element1.addEventListener("contextmenu", trigger => {                          //[a]
+      const longPress = new LongPressEvent("custom-contextmenu", trigger);     
+      trigger.target.dispatchEvent(longPress);                                   //[b]
   });
 
     window.addEventListener("contextmenu", e=>{
-      composedEvent.preventDefault();                //todo: Do we need to prevent composed event inside initial event listener to prevent default action??
+      e.preventDefault();                
       e.target.style.color = "yellow";
     });
 
 </script>
 ```
 
+
 ### References
 
 * [MDN: dispatchEvent()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent)
 * [Browser default actions](https://javascript.info/default-browser-action)
+
+
+### Hangouts discussion
+
+
+The problem is, why do we need to dispatch/propagate a composed event **BEFORE** the trigger event propagates completely? 
+And the answer to that mystery is that "a) the default action that accompanies the trigger event (ie. the showing of the
+context menu that accompanies a click event), is added to the que at the same time as the trigger event is dispatched,
+combined with b) the fact that to dispatch a composed event AFTER the trigger event has propageted, you MUST also put 
+it in the task que. This means that X) if you try to make a composed event propagate **AFTER** a trigger event has finished
+its propagation, then Y) it will **ALWAYS** run after the composed event".
