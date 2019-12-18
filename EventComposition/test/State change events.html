@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        span {
+            height: 100px;
+            width: 500px;
+            display: block;
+            border: 1px dashed gray;
+        }
+    </style>
+</head>
+<body>
+
+<a href="http://localhost:63342/ComponentsGithub/Components/EventComposition/test/SetTimeoutZero.html">#</a>
+<span></span>
+
+<script>
+
+  let textblock = document.querySelector("span");
+
+
+  const persistState = async (state) => {
+    debugger;
+    const record = {...state, cliendId: self.clientId};
+
+    // Persist record to IndexedDB or SessionStorage....
+  };
+
+  const getPersistedState = async (clientId) => {
+    debugger
+  };
+
+  if (document.wasDiscarded) {
+    getPersistedState(self.lastClientId);
+  }
+
+
+  const getState = () => {
+    if (document.visibilityState === 'hidden') {
+      return 'hidden';
+    }
+    if (document.hasFocus()) {
+      return 'active';
+    }
+    return 'passive';
+  };
+
+
+  getState();
+
+
+  window.addEventListener("pagehide", function (e) {
+    textblock.innerText += e.type + " " + getState() + ". |  ";
+    debugger;
+
+  });
+
+  window.addEventListener("pageshow", function (e) {
+    textblock.innerText += e.type + " " + getState() + ". |  ";
+    debugger;
+
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    e.preventDefault();
+    e.returnValue = false;
+    textblock.innerText += e.type + " " + getState() + ". |  ";
+    debugger;
+
+  });
+
+  window.addEventListener("unload", function (e) {
+    textblock.innerText += e.type + " " + getState() + ". |  ";
+    debugger;
+  });
+
+  document.addEventListener('freeze', (e) => {
+    debugger;
+
+    textblock.innerText += e.type + " " + getState() + ". |  ";
+  });
+
+  document.addEventListener('resume', (e) => {
+    debugger;
+    textblock.innerText += e.type + " " + getState() + ". |  ";
+
+  });
+
+
+  window.addEventListener('blur', (e) => {
+    debugger;
+    textblock.innerText += e.type + " " + getState() + ". |  ";
+  });
+
+</script>
+</body>
+</html>

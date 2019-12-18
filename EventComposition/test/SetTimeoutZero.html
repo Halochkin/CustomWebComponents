@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pattern: setTimeoutZeroZero CancelTimeoutZero </title>
+</head>
+<body>
+<script>
+
+  (function () {
+
+
+      var timeouts = [];
+      var messageName = "zero-timeout-message";
+      let postMessageIsOver = false;
+
+      let performanceInitial;
+      performanceCheck = performance.now();
+
+
+      setTimeoutZero(A);  //call initial function
+
+
+      function A() {
+        console.log(performance.now() - performanceInitial + " ms");
+        setTimeoutZero(B);
+      }
+
+      function B() {
+        console.log(performance.now() - performanceInitial + " ms");
+
+        setTimeoutZero(C);
+      }
+
+      function C() {
+        console.log(performance.now() - performanceInitial + " ms");
+        setTimeoutZero(D);
+      }
+
+      function D() {
+        console.log(performance.now() - performanceInitial + " ms");
+        setTimeoutZero(E);
+      }
+
+      function E() {
+        console.log(performance.now() - performanceInitial + " ms");
+        setTimeoutZero(F);
+      }
+
+      function F() {
+        console.log(performance.now() - performanceInitial + " ms");
+        setTimeoutZero(G);
+      }
+
+      function G() {
+        console.log(performance.now() - performanceInitial + " ms");
+        setTimeoutZero(H);
+      }
+
+      function H() {
+        console.log(performance.now() - performanceInitial + " ms");
+        setTimeoutZero(I);
+      }
+
+      function I() {
+        console.log(performance.now() - performanceInitial + " ms");
+
+        setTimeoutZero(J);
+      }
+
+      function J() {
+        postMessageIsOver = true; // indicate that last function of sendMessage() is finished and now setTimeout() will start
+        console.log(performance.now() - performanceInitial + " ms");
+        console.log("Total " + (performance.now() - performanceCheck) + " ms");
+        performanceCheck = undefined; // to overwrite it next
+        console.log("- - - - - - - - - - ");
+      }
+
+
+      function setTimeoutZero(fn) {
+
+        if (!postMessageIsOver) {   //will call functions before last one will be trigger and overwrite this variable. After overwriting functions will be used setTimeout() 0
+          performanceInitial = performance.now();
+          sendMessage(fn);       //send message to the listener
+        } else {
+          performanceInitial = performance.now(); // uses to show duration between functions, overwrites each time
+          if (!performanceCheck)
+            performanceCheck = performance.now();
+          setTimeoutFunc(fn);
+        }
+
+      }
+
+      function sendMessage(fn) {
+        timeouts.push(fn);
+        window.postMessage(messageName, "*");
+      }
+
+      function setTimeoutFunc(fn) {
+        setTimeout(function () {
+          fn();
+        }, 0);
+      }
+
+
+      function handleMessage() { // handle postMessage()
+        timeouts.shift()(); // call function from array. And print duration between functions
+        if (postMessageIsOver) { // when last function will be active - start use setTimeout() 0 nstead of postMessage()
+          setTimeoutZero(A); // recall initial function
+        }
+      }
+
+
+      window.addEventListener("message", handleMessage, true);
+      window.setTimeoutZero = setTimeoutZero;
+    }
+
+  )();
+
+
+</script>
+</body>
+</html>

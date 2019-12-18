@@ -104,22 +104,9 @@
 
     window.addEventListener("contextmenu", trigger => {
       let color = trigger.target.getAttribute("mycolor");
-
-
-      const composedEvent = new Event("custom+contextmenu", {myColor: color, bubbles: true, composed: true});
-
       const longPress = new LongPressEvent("custom-contextmenu", {
         myColor: color
       }, trigger);
-
-      console.log(composedEvent);
-      console.log(longPress);
-
-      console.log(lala);
-
-      debugger;
-
-
       trigger.target.dispatchEvent(longPress); //4 //inline this call
       setColor(color);
     });

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event loop </title>
+</head>
+<body>
+
+<!--<a href="#link1" id="test1" mycolor="red">setTimeout()</a>-->
+<!--<a href="#link2" id="test2" mycolor="green">postMessage()</a>-->
+<style>
+    div {
+        height: 400px;
+        width: 400px;
+        border: 5px solid red;
+    }
+
+    .animate {
+        animation: rotation 6s infinite linear;
+    }
+
+
+</style>
+
+<script>
+
+  (function () {
+    let timestamp;
+    let mousemoveArr = [];
+
+
+    window.addEventListener("mousemove", function (e) {
+
+
+      if (!timestamp)
+        timestamp = e.timeStamp;
+
+
+      mousemoveArr.push(new Date().getMilliseconds());
+
+
+      if (mousemoveArr.length === 100) {
+        console.log(e.timeStamp - timestamp + " ms");
+        timestamp = undefined;
+        mousemoveArr = [];
+      }
+
+    });
+
+
+  })();
+
+
+</script>
+</body>
+</html>

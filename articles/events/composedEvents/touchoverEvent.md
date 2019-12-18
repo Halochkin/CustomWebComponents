@@ -142,6 +142,7 @@ In order not to cause side effects, let's save the value of the `userSelect` pro
 11. If an event is cancelled (e.g. an alert message), the active event listener will also be deleted. Provided the cancellation event occurred on an existing target both `touch-leave` and `touch-cancel` events will be dispatch.
 <hr>
 Both `touch-hover` and `touch-cancel` events are bubbles, so the event listener can be attached to the window.
+
 ```javascript
  window.addEventListener("touch-hover", function (e) {
    //stuff here

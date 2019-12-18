@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dispatch event (RAF)</title>
+</head>
+
+<style>
+    #one {
+        border: 3px solid red;
+    }
+
+    #two {
+        border: 3px solid orange;
+    }
+
+    #three {
+        border: 3px solid green;
+    }
+</style>
+
+<body>
+
+<div id="one">bubble
+    <div id="two">target
+        <div id="three">capture</div>
+    </div>
+</div>
+<br>
+<hr>
+<a id="a" href="#"> clear x 100</a>
+<br>
+<a id="b" href="#">setTimeout()0 x 100</a>
+<br>
+<a id="c" href="#">postMessage() x 100</a>
+<br>
+<a id="d" href="#">promise x 100</a>
+
+<script>
+  let target = document.querySelector("#two");
+
+  let m = 0;
+
+  let elements = document.querySelectorAll("div");
+
+
+  elements.forEach(function (element) {
+    element.addEventListener("custom-event", function (e) {
+      this.style.marginLeft = m + "px";
+      // console.log("event");
+    }, true)
+  });
+
+
+  const composedEvent = new CustomEvent("custom-event", {bubbles: true, composed: true});
+  let initialTimestamp;
+
+
+  function dispatchSetTimeout() {
+
+    for (let i = 0; i <= 100; i++) {
+      m++;
+      setTimeout(function () {
+        target.dispatchEvent(composedEvent);
+        if (i === 100) {
+          m = 0;
+          console.log("setTimeout() 0 : " + i + " iterations for: " + (performance.now() - initialTimestamp) + " ms");
+        }
+      }, 0)
+    }
+
+  }
+
+
+  function dispatch() {
+    for (let i = 0; i <= 100; i++) {
+      m++;
+      target.dispatchEvent(composedEvent);
+      if (i === 100) {
+        m = 0;
+        console.log("without delay " + i + " iterations for: " + (performance.now() - initialTimestamp) + " ms");
+
+      }
+    }
+  }
+
+  function handleMessage() {
+    for (let i = 0; i <= 100; i++) {
+      m++;
+      target.dispatchEvent(composedEvent);
+      if (i === 100) {
+        m = 0;
+        console.log("sendMessage() " + i + " iterations for: " + (performance.now() - initialTimestamp) + " ms");
+
+      }
+    }
+  }
+
+  function sendPromise() {
+
+
+    for (let i = 0; i <= 100; i++) {
+
+
+      Promise.resolve().then(function () {
+        m++;
+        target.dispatchEvent(composedEvent);
+        if (i === 100) {
+          m = 0;
+          console.log("Promise " + i + " iterations for: " + (performance.now() - initialTimestamp) + " ms");
+
+        }
+      });
+
+
+    }
+
+
+  }
+
+
+  document.querySelector("#a").addEventListener("click", function (e) {
+    initialTimestamp = performance.now();
+    dispatch();
+  });
+
+  document.querySelector("#b").addEventListener("click", function (e) {
+    initialTimestamp = performance.now();
+    dispatchSetTimeout();
+  });
+
+  document.querySelector("#c").addEventListener("click", function (e) {
+    initialTimestamp = performance.now();
+    sendMessage();
+  });
+
+
+  document.querySelector("#d").addEventListener("click", function (e) {
+    initialTimestamp = performance.now();
+    sendPromise();
+  });
+
+
+  function sendMessage(fn) {
+    window.postMessage("", "*");
+  }
+
+
+  window.addEventListener("message", handleMessage, true);
+
+</script>
+</body>
+</html>

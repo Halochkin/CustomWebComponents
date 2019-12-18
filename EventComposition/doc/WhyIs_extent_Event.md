@@ -1,6 +1,6 @@
 # Why is extend event
 
-
+The reason we need extends, is just to a) make the composed event easier to make and keep in order in the composed event, and b) make the event slightly simpler to use in the event listeners (because you can do a) "event instanceof LongPress" and b) "event.x" instead of "event.detail.x".
 
 
 Event data/details should:
