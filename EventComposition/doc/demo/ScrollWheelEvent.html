@@ -1,0 +1,83 @@
+<!--
+1.Why scroll and wheel events occurs?
+
+    1.a wheel
+        Fires when a mouse wheel has been rotated around any axis, or when an equivalent input device (such as a mouse-ball,
+        certain tablets or touchpads, etc.) has emulated such an action.
+        The typical default action of the wheel event type is to scroll (or in some cases, zoom) the document by the
+        indicated amount.
+        Wheel events fires BEFORE scroll event and default action.
+    1.b scroll
+        Fires when the user scrolls an element by any means (arrow keys, scrollbar or mouse wheel). You cannot prevent the
+        scrolling.
+
+      The demo below shows that:
+       - activation of 1 event wheel activates 12 scroll events;
+       - 1 wheel event scrolls element to 100px;
+       - 1 scroll event scrolls elements from 1 to 14 px. BUT sum of 12 scroll events (which occurs per one
+       wheel event) = 100px as described above.
+-->
+
+<style>
+    #outer {
+        height: 500px;
+        width: 200px;
+        overflow-y: scroll;
+    }
+
+    #inner {
+        height: 1000px;
+        width: 180px;
+        background-color: aquamarine;
+    }
+
+    body {
+        margin: 0
+    }
+
+</style>
+<div id="outer">
+    <div id="inner">Hello</div>
+</div>
+
+<script>
+  let outer = document.querySelector("#outer");
+  let inner = document.querySelector("#inner");
+  let initialScroll = 0;
+  let initialWheel = 0;
+  let scrollEvCounter = 0;
+  let wheelEvCounter = 0;
+
+
+  function log(initial, e) {
+    let pos = inner.getBoundingClientRect().top;
+    let counter = e.type === "scroll" ? scrollEvCounter++ : wheelEvCounter++;
+    let previous = e.type === "scroll" ? initialScroll : initialWheel;
+
+    counter++;
+    console.log(counter + " times " + e.type + " event and " + (previous - pos).toFixed(0) + "px per event " + (pos * -1).toFixed(0) + " from start");
+    initialScroll = pos;
+    initialWheel = pos;
+
+  }
+
+  outer.addEventListener("wheel", function (e) {
+    log(initialWheel, e);
+  });
+
+  outer.addEventListener("scroll", function (e) {
+    log(initialScroll, e);
+  });
+
+</script>
+
+<!--
+2. Which event came first?
+
+    According to the demo above, event sequence will be next:
+                    wheel
+                      |
+                    scroll
+3.
+
+-->
