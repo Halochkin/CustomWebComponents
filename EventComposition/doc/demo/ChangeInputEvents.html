@@ -1,0 +1,64 @@
+<!--
+1. Why change and input events occurs on input (type="text")?
+
+    1.a change event
+        For <input type="text">, the change event doesn't fire until the control loses focus,
+        i.e. after onblur event if the value has changed.
+        For example, while you are typing something in the text field below, there is no event.
+        But as soon as you move the focus to another element, for example, press a button,
+        the on exchange event will occur.
+
+    1.b input event
+        An oninput event is similar to an onchange event , the difference is that an oninput
+        event occurs immediately after the item's value has changed and an onchange event occurs
+        when the item loses focus after the content has been changed.
+        Input event data - the string containing the data that has been added to the element,
+        which MAY be the empty string if the content has been deleted.
+-->
+<input id="input" type="text" size="30" placeholder="type in something to fire input event">
+<input type="button" value="Just a button which activate change event">
+<p id="output"></p>
+<script>
+  let InputElement = document.querySelector("#input");
+  let spanElement = document.querySelector("#output");
+
+  InputElement.addEventListener("change", (e) => {
+    e.target.style.border = "3px solid green";
+    console.log("change");
+    alert("Text has been changed");
+  });
+
+  InputElement.addEventListener("blur", () => {
+    console.log("blur");
+  });
+
+  InputElement.addEventListener("input", (e) => {
+    e.target.style.border = "2px solid orange";
+    console.log("input");
+    updateValue(e);
+  });
+
+  function updateValue(e) {
+    spanElement.innerText = e.target.value;
+  }
+
+</script>
+
+<!--
+2. Which event came first?
+
+    According to the demo above, event sequence will be next:
+                    input
+                      |
+                    change
+                      |
+                     blur
+
+3. Why browser adds change event if it already has input event?
+
+    The change event occurs at the end of the input element value change when this change is fixed.
+    The input event is fired every time the value of the element changes. This is unlike the change
+    event, which only fires when the value is committed, such as by pressing the enter key, selecting
+    a value from a list of options, and the like.
+
+-->

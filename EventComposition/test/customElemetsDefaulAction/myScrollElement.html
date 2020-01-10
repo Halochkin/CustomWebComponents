@@ -1,0 +1,42 @@
+<style>
+    scroll-element {
+        display: inline-block;
+        border: 1px dashed gray;
+    }
+</style>
+
+<script>
+  class myScrollElement extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({
+        mode: "open"
+      });
+      this.shadowRoot.innerHTML = `<span style="display: inline-block"><slot></slot></span>`;
+      this.top = 0;
+      this.span = this.shadowRoot.firstChild;
+      this.addEventListener("wheel", this.onWheel.bind(this));
+    };
+
+    onWheel(e) {
+      this.top -= e.deltaY / 5;
+      const maxHeight = this.span.getBoundingClientRect().height - this.getBoundingClientRect().height;
+      this.top = this.top > 0 ? 0 : this.top < -maxHeight ? this.top = -maxHeight : this.top;
+      setTimeout(this.updateShadow.bind(this), 0);
+    }
+
+    updateShadow() {
+      this.span.style.marginTop = this.top + "px";
+    }
+  }
+
+  customElements.define("scroll-element", myScrollElement);
+</script>
+
+<scroll-element style="display: block; width: 300px; height: 100px; overflow: hidden;">
+    <h3>one</h3>
+    <h3>two</h3>
+    <h3>three</h3>
+    <h3>four</h3>
+    <h3>five</h3>
+</scroll-element>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events default actions </title>
+    <style>
+        div {
+            height: 300px;
+            width: 300px;
+            border: 1px dashed gray;
+        }
+
+        #myTextFieldA:focus {
+            background-color: lemonchiffon;
+        }
+
+        #b {
+            overflow-y: scroll;
+        }
+
+        #d {
+            overflow-y: scroll;
+        }
+
+        #b > img {
+            height: 50px;
+            width: 50px;
+        }
+
+        #overflowedB {
+            height: 500px;
+            width: 250px;
+            background-color: #83ccc9;
+        }
+
+        #overflowedD {
+            height: 500px;
+            width: 250px;
+            background-color: #008000;
+        }
+
+    </style>
+
+</head>
+<body>
+<div id="a">
+    <b>Click</b>
+    <br>
+    <span>Click me to select</span>
+    <br>
+    <input type="text" id="myTextFieldA" value="click me to focus">
+    <br>
+    <input type="checkbox" title="Click to check"> Click to check
+</div>
+<div id="b">
+    <b>Mousedown</b>
+    <br>
+    <span>Rmb to start select me</span>
+    <br><br>
+    <span>You can drag this text, (if you select it), or drag the image using active Rmb</span>
+    <br>
+    <img src="https://pbs.twimg.com/profile_images/634623226547671040/WhKz84Gj_400x400.jpg" alt="I see you">
+    <br>
+    <br>
+    <div id="overflowedB">Press Rmb and middle mouse button to start scroll</div>
+</div>
+<div id="c">
+    Rbm to open context menu
+</div>
+<div id="d">
+    <br>
+    <div id="overflowedD">Use mouse wheel to start scroll</div>
+</div>
+<div id="e">
+    <b>Beforeinput</b>
+    <br>
+    <span id="foo" contentEditable>
+        You can edit me
+    </span>
+    <br>
+    <br>
+    <label>
+        <input placeholder="Enter some text" name="name"/>
+    </label>
+    <p id="values"></p>
+
+</div>
+
+<div id="g">
+    <b>keydown</b>
+    <br>
+    <span>Use Tab to change the focus</span>
+    <br>
+    <input type="text" placeholder="focus me and press Tab">
+    <input type="text" placeholder="press Tab">
+    <input type="text" placeholder="press Tab">
+    <input type="text" placeholder="press Tab">
+    <br>
+    <span>Ctrl + p  to open print preview window</span>
+    <br>
+    <a href="#click">Focus me using Tab button and press Enter</a>
+</div>
+<div id="h"></div>
+<div id="i"></div>
+<div id="j"></div>
+<div id="k"></div>
+<div id="l"></div>
+<div id="m"></div>
+
+
+</body>
+</html>

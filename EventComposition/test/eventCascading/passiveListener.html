@@ -1,0 +1,34 @@
+<style>
+    my-scroll {
+        height: 300px;
+        width: 300px;
+        border: 1px dashed gray;
+        overflow-y: scroll;
+        display: block;
+    }
+
+
+</style>
+
+<my-scroll></my-scroll>
+
+<script>
+  class myScroll extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+<style>
+ #two {
+        height: 500px;
+        width: 250px;
+        background-color: #83ccc9;
+    }
+</style>
+            <div id="two"></div>
+        `;
+    }
+  }
+
+  customElements.define("my-scroll", myScroll)
+</script>

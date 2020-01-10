@@ -1,0 +1,34 @@
+<style>
+    #red, #green {
+        max-width: 100px;
+        padding: 10px;
+    }
+
+    #red {
+        background-color: orangered;
+    }
+
+    #green {
+        background-color: yellowgreen;
+    }
+</style>
+
+<div id="game">
+    <div id="red">
+        <div id="green"></div>
+    </div>
+</div>
+
+<script>
+  const filter = handler => ev =>
+    ev.target === ev.currentTarget ? handler(ev) : null;
+
+  const onClick = (selector, handler) => {
+    document.querySelector(selector).addEventListener('click', handler);
+  };
+
+  onClick('#game', () => console.log('game over'));
+  onClick('#red', filter(() => console.log('you lost')));
+  onClick('#green', () => console.log('you won'));
+</script>
+

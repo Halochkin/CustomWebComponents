@@ -1,0 +1,118 @@
+<!--
+1. Why change and input events occurs on input (type="text")?
+
+    1.a change event
+        For <input type="text">, the change event doesn't fire until the control loses focus.
+        For example, while you are typing something in the text field below, there is no event.
+        But as soon as you move the focus to another element, for example, press a button,
+        the on exchange event will occur.
+    1.b input event
+        
+
+
+-->
+
+<script>
+
+  class myInputElement extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `<input value="custom-input" type="text">`;
+      this.addEventListener("focusin", this.onFocusIn.bind(this));
+
+    }
+
+
+    onFocusIn() {
+      this.addEventListener("keypress", this.onInput.bind(this));
+      this.addEventListener("focusout", this.onFocusOut.bind(this));
+    }
+
+    onFocusOut() {
+      this.removeEventListener("keypress", this.onInput.bind(this));
+    }
+
+    onInput(e) {
+      if (e.defaultPrevented || e.key === "Enter")
+        return;
+      e.preventDefault();
+      this.key = e.key;
+      const taskId = setTimeout(this.doInputAndDispatchCustomInputEvent.bind(this), 0);
+      e.preventDefault = function () {
+        clearTimeout(taskId);
+      }
+    }
+
+
+    doInputAndDispatchCustomInputEvent() {
+      this.shadowRoot.children[0].value += this.key;
+      this.dispatchEvent(new CustomEvent("custom-input", {composed: true, bubbles: true}));
+    }
+  }
+
+  customElements.define("my-input", myInputElement)
+
+</script>
+custom input
+<div id="custom-wrapper">
+    <my-input></my-input>
+</div>
+<hr>
+<span>default input</span>
+<div id="wrapper">
+    <input id="defaultInput" type="text" value="default input">
+</div>
+
+
+<script>
+  const customDiv = document.querySelector("#custom-wrapper");
+  const customInput = document.querySelector("my-input");
+  const div = document.querySelector("#wrapper");
+  const input = document.querySelector("#defaultInput");
+
+
+  function customLog(e) {
+    // console.log("s");
+    console.log("CUSTOM " + e.type, e.currentTarget.tagName, e.eventPhase, "text field is " + (customInput.key ? "filled" : "empty"));
+  }
+
+  function log(e) {
+    console.log("DEFAULT" + e.type, e.currentTarget.tagName, e.eventPhase, "text field is " + (input.value ? "filled" : "empty"));
+  }
+
+  function preventD(e) {
+    console.log("calling: " + e.type + ".preventDefault() -------------------------------------------------------------------------");
+    e.preventDefault();
+  }
+
+  customDiv.addEventListener("keypress", customLog, true);
+  customInput.addEventListener("keypress", customLog);
+  customDiv.addEventListener("keypress", customLog);
+
+  window.addEventListener("click", preventD, true);  //preventDefault() called first on the click event
+
+  customDiv.addEventListener("change", customLog, true);
+  customInput.addEventListener("change", customLog);
+  customDiv.addEventListener("change", customLog);
+
+  customDiv.addEventListener("custom-input", customLog, true);
+  customInput.addEventListener("custom-input", customLog);
+  customDiv.addEventListener("custom-input", customLog);
+
+
+  div.addEventListener("keypress", log, true);
+  input.addEventListener("keypress", log);
+  div.addEventListener("keypress", log);
+
+  window.addEventListener("click", preventD, true);  //preventDefault() called first on the click event
+
+  div.addEventListener("input", log, true);
+  input.addEventListener("input", log);
+  div.addEventListener("input", log);
+
+  div.addEventListener("change", log, true);
+  input.addEventListener("change", log);
+  div.addEventListener("change", log);
+
+</script>

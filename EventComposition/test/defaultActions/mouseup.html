@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mouseup event default action</title>
+    <style>
+        div {
+            height: 50px;
+            width: 150px;
+            border: 1px dashed gray;
+        }
+    </style>
+</head>
+<body>
+<div>Mouseup me (Rmb or Lmb)</div>
+<script>
+  let element = document.querySelector("div");
+
+  element.addEventListener("mouseup", ev => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+    console.log("mouseup");
+  }, false);
+
+
+  element.addEventListener("contextmenu", ev => {
+    // ev.preventDefault();
+    console.log("cotextmenu");
+  });
+
+
+  element.addEventListener("auxclick", ev => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    console.log("auxclick");
+  }, true);
+</script>
+
+</body>
+</html>
