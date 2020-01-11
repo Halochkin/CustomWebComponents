@@ -17,7 +17,7 @@
        - 1 scroll event scrolls elements from 1 to 14 px. BUT sum of 12 scroll events (which occurs per one
        wheel event) = 100px as described above.
 -->
-
+<meta charset="UTF-8">
 <style>
     #outer {
         height: 500px;
@@ -48,14 +48,32 @@
   let scrollEvCounter = 0;
   let wheelEvCounter = 0;
 
+  function toggleOnDetails(cb, arg, e) {
+    const details = document.createElement("details");
+    details.style.display = "none";
+    details.ontoggle = function () {
+      details.remove();
+      cb(arg, e, " TOGGLE ");
+    };
+    document.body.appendChild(details);
+    details.setAttribute("open", "");
+  }
 
-  function log(initial, e) {
+  function timeOut(cb, arg, e) {
+
+    setTimeout(function () {
+      cb(arg, e, " TIMEOUT ")
+    }, 200);
+  }
+
+  function log(initial, e, msg, element) {
+    msg = msg || "";
     let pos = inner.getBoundingClientRect().top;
     let counter = e.type === "scroll" ? scrollEvCounter++ : wheelEvCounter++;
     let previous = e.type === "scroll" ? initialScroll : initialWheel;
 
-    counter++;
-    console.log(counter + " times " + e.type + " event and " + (previous - pos).toFixed(0) + "px per event " + (pos * -1).toFixed(0) + " from start");
+    // console.log(e.type + msg + " " + (previous - pos).toFixed(0) + "px per event " + (pos * -1).toFixed(0) + " from start");
+    console.log(e.type + msg);
     initialScroll = pos;
     initialWheel = pos;
 
@@ -63,11 +81,16 @@
 
   outer.addEventListener("wheel", function (e) {
     log(initialWheel, e);
+    toggleOnDetails(log, initialWheel, e);
+    timeOut(log, initialWheel, e);
+
   });
 
   outer.addEventListener("scroll", function (e) {
     log(initialScroll, e);
-  });
+    toggleOnDetails(log, initialWheel, e);
+    timeOut(log, initialWheel, e);
+  }, {passive: false});
 
 </script>
 
