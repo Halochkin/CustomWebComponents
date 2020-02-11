@@ -1,0 +1,128 @@
+<style>
+    #outer {
+        height: 500px;
+        width: 200px;
+        overflow-y: scroll;
+    }
+
+    #inner {
+        height: 1000px;
+        width: 180px;
+        background-color: aquamarine;
+    }
+
+    body {
+        margin: 0
+    }
+
+</style>
+
+
+<div id="outer">
+    <div id="inner">Hello, wheel me</div>
+</div>
+
+<script>
+
+  let previousTopWheel = 0;
+  let previousTopScroll = 0;
+
+  function toggleTick(cb) {
+    const details = document.createElement("details");
+    details.style.display = "none";
+    details.ontoggle = function () {
+      details.remove();
+      cb();
+    };
+    document.body.appendChild(details);
+    details.open = true;
+  }
+
+  const div = document.querySelector("#outer");
+  const scrollable = document.querySelector("#inner");
+
+  function log(e) {
+    console.log(e.type, e.currentTarget.tagName, e.eventPhase, " scrollTop :", (e.target.scrollTop - e.type === "wheel" ? previousTopWheel : previousTopScroll).toFixed(0) + " px", e.type, " px per event");
+    e.type === "wheel" ? previousTopWheel = e.target.scrollTop : previousTopScroll = e.target.scrollTop;
+  }
+
+  function preventD(e) {
+    console.log("calling: " + e.type + ".preventDefault()");
+    e.preventDefault();
+  }
+
+  //wheel : 7px  -> 100px scrollTop.
+  // .scrollTop 0 += 100px. NO!
+  //
+  // [                      NO! Because this would be jerky start, and an abrupt end, and slow scroll in the middle
+  //   .scrollTop += 12px,
+  //   .scrollTop += 12px,
+  //   .scrollTop += 12px,
+  //   .scrollTop += 12px,
+  //   .scrollTop += 12px.
+  // ]
+  // [                      YES, bezier curve! slow start, fast middle, slow end. Like an animation.
+  //   .scrollTop += 5px,   raf 1
+  //   .scrollTop += 10px,  raf 2
+  //   .scrollTop += 20px,  raf 3
+  //   .scrollTop += 30px,  ...   peak scroll speed around raf 6.
+  //   .scrollTop += 10px.  raf 11
+  //   .scrollTop += 5px.  raf 12
+  // ]
+  //
+  // how to see this in action, check scroll position every raf? Can you find 1 and 1 or 2 and 2 or 3 and 3 scroll actions for every raf?
+  //is it better to use setTimeout 1?
+
+  //event cascade 1:
+  // wheel -> 12 x change of .scrollTop
+  //event cascade 2:
+  // change of .scrollTop -> scroll event
+
+  //event cascade 1:
+  // click -> change of details DOM
+  //event cascade 2:
+  // change of details DOM -> toggle event
+  // it all looks like so:
+  // click -> change of details DOM -> toggle event,
+  // but it isn't, it is broken in two, the tasks are added in two batches in the event loop.
+
+  //1. the click event propagates
+  div.addEventListener("wheel", log, true);
+  // details.addEventListener("wheel", log, true);
+  scrollable.addEventListener("wheel", log);
+  // details.addEventListener("wheel", log);
+  div.addEventListener("wheel", log);
+  //1b. if we call preventDefault on click, then no change to the DOM and no toggle event
+  // div.addEventListener("wheel", preventD);
+
+
+  //2. here the defaultAction is done, and we would see the defaultAction having changed the DOM
+  //   when the defaultAction is being performed, the toggle event is added to the event loop.
+
+  //2x. the change of the DOM is added to the event loop at the same time as the click propagate.
+  //    but the toggle event is not, it is only added to the event loop during the process that changes the DOM.
+  //    we see that the DOM has updated, but that no toggle event has been dispatched if we pause the execution of the toggleTick.
+  window.addEventListener("wheel", function () {
+    toggleTick(function () {
+      //debugger;
+      console.log("task queued from wheel");
+    });
+  });
+
+
+  const raf = function () {
+    requestAnimationFrame(function () {
+      console.log("raf");
+      raf();
+    });
+  };
+  raf();
+
+
+  //3. after the DOM has changed, a toggle event is dispatched.
+  div.addEventListener("scroll", log, true);
+
+
+  // details.addEventListener("scroll", log, true);
+  scrollable.addEventListener("scroll", log);    //doesn't work, because the toggle is dispatched on the details as target
+</script>

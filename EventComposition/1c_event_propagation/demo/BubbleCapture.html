@@ -1,17 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>WhatIs: Propagation</title>
-    <style>
-        body * {
-            border: 1px solid blue;
-        }
-    </style>
-</head>
-<body>
 <div id="box">
-    <h1 id="sunshine">Hello sunshine!</h1>
+  <h1 id="sunshine">Hello sunshine!</h1>
 </div>
 <div id="outside">think</div>
 
@@ -27,6 +15,7 @@
   const box = document.querySelector("#box");
   const outside = document.querySelector("#outside");
   const sunshine = document.querySelector("#sunshine");
+
   //bubble phase listeners
   window.addEventListener("click", log);
   root.addEventListener("click", log);
@@ -36,6 +25,7 @@
   sunshine.addEventListener("click", function (e) {
     log(e, "bubble");
   });
+
   //capture phase listeners
   window.addEventListener("click", log, true);
   root.addEventListener("click", log, true);
@@ -45,6 +35,7 @@
   sunshine.addEventListener("click", function (e) {
     log(e, "capture");
   }, true);
+
   //event listeners added last
   window.addEventListener("click", function (e) {
     log(e, "added last");
@@ -53,7 +44,3 @@
     log(e, "added last");
   }, true);
 </script>
-
-
-</body>
-</html>

@@ -1,0 +1,138 @@
+<form oninput="c.value=parseInt(a.value)+parseInt(b.value)" style="border: 1px solid orange;">0
+    <input type="range" id="a" value="50">50
+    +<input type="number" id="b" value="50">
+    =
+    <output name="c" for="a b"></output>
+    <br>
+    <br>
+    <input type="text" value="lala" id="id" name="id"/>
+    <br>
+    <br>
+    <select name="pets" id="pet-select">
+        <option value="none">--Please choose an option--</option>
+        <option value="dog">Dog</option>
+        <option value="cat">Cat</option>
+        <option value="hamster">Hamster</option>
+        <option value="parrot">Parrot</option>
+        <option value="spider">Spider</option>
+        <option value="goldfish">Goldfish</option>
+    </select>
+    <br>
+    <br>
+    <textarea id="story" name="story"
+              rows="5" cols="33">
+It was a dark and stormy night...
+</textarea>
+    <br>
+    <br>
+
+    <input type="reset" value="Reset">
+    <br>
+    <button type="reset">Reset</button>
+    <br>
+    <div id="resetter">.reset()</div>
+</form>
+
+<hr>
+
+
+<!--/*So, what is a reset event and how it works?
+MDN say that reset event fires when a <form> is reset.
+
+We have 3 ways to fire it:
+1. <input type="reset" value="Reset">
+2. <button type="reset">Reset</button>
+3. Call .reset() on FORM element
+
+
+It is necessary to note that:
+* Reset event does not clear default text (which has been set to the value attribute of input element);
+* When a form element form is reset, the user agent must fire a simple event named reset, that *bubbles* and is *cancelable*, at form;
+* If that event is not canceled, must invoke the reset algorithm of each resettable element whose form owner is form.
+* When the reset algorithm is invoked by the reset() method, the reset event fired by the reset algorithm must not be trusted.
+* Each resettable element defines its own reset algorithm. Changes made to form controls as part of these algorithms do not count as changes caused by the user (and thus, e.g., do not cause input events to fire).
+
+Which elements are resettable?
+ <input>
+ <output>
+ <select>
+ <textarea>
+
+-->
+
+
+<script>
+
+
+  (function () {
+    function toggleTick(cb) {
+      const details = document.createElement("details");
+      details.style.display = "none";
+      details.ontoggle = cb;
+      document.body.appendChild(details);
+      details.open = true;
+      Promise.resolve().then(details.remove.bind(details));
+      return {
+        cancel: function () {
+          details.ontoggle = undefined;
+        },
+        resume: function () {
+          details.ontoggle = cb;
+        }
+      };
+    }
+
+    const ResetController = {
+      state: new WeakMap(),
+      focusin: function (e) {
+        // grab default value, but only one time
+        if (ResetController.state.has(e.target))
+          return;
+        ResetController.state.set(e.target, e.target.value);
+      },
+
+      click: function (e) {
+        // check whether target was a reset button and a child of FORM element
+        if (e.target.parentElement.tagName !== "FORM" || e.target.type !== "reset")
+          return;
+        // iterate all children and check if theit values are different from default values
+        for (let element of e.target.parentElement.elements) {
+          // we don`t focus on output element so this is a best way to clear it
+          if (element.tagName === "OUTPUT")
+            element.innerText = "";
+          // check if an element has been set to the state
+          let value = ResetController.state.get(element);
+          // Loop will iterate ALL children's include <Input type=reset>
+          if (value && element.type !== "reset")
+            element.value = value;
+        }
+        //timeout event to dispatch it AFTER click event
+        toggleTick(() => {
+          const resetEvent = new InputEvent("my-reset", {composed: true, bubbles: true});
+          e.target.parentElement.dispatchEvent(resetEvent);
+        });
+      },
+    };
+
+    window.addEventListener("click", ResetController.click);
+    window.addEventListener("focusin", ResetController.focusin);
+
+
+  })();
+
+
+  document.querySelector("#resetter").addEventListener("click", (e) => {
+    e.target.parentNode.reset();
+  });
+
+  // window.addEventListener("focusin", e => console.log(e.type))
+  // window.addEventListener("input", e => console.log(e.type));
+
+  window.addEventListener("click", e => console.log(e.type));
+  window.addEventListener("reset", e => console.log(e.type));
+  window.addEventListener("reset", e => e.preventDefault());
+  window.addEventListener("click", e => e.preventDefault());
+
+  window.addEventListener("my-reset", e => console.warn(e.type));
+  window.addEventListener("submit", e => console.log(e.type));
+</script>

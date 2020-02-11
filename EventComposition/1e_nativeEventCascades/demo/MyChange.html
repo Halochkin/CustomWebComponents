@@ -1,0 +1,70 @@
+<input id="one" type="text" value="I am custom"/>
+<input id="two" type="text" value="I am native"/>
+<meta charset="utf-8">
+
+<script>
+  (function () {
+    function toggleTick(cb) {
+      const details = document.createElement("details");
+      details.style.display = "none";
+      details.ontoggle = cb;
+      document.body.appendChild(details);
+      details.open = true;
+      Promise.resolve().then(details.remove.bind(details));
+      return {
+        cancel: function () {
+          details.ontoggle = undefined;
+        },
+        resume: function () {
+          details.ontoggle = cb;
+        }
+      };
+    }
+
+    const ChangeController = {
+
+      target: undefined,
+      value: undefined,  // || document.querySelector("input[type=text]").value;
+      beforeinput: function (e) {
+
+        if (e.inputType !== "insertLineBreak" || ChangeController.value === ChangeController.target.value)
+          return;
+        //delay event. Because beforeinput event fires erlier than focusout. It meant that event will fires in different order relatively to native change
+        toggleTick(() => {
+          const changeEvent = new InputEvent("my-change", {composed: true, bubbles: true});
+          e.target.dispatchEvent(changeEvent);
+          ChangeController.value = e.target.value;
+        });
+      },
+
+      focusin: function (e) {
+        if (e.target.tagName === "INPUT" && !ChangeController.target) {
+          ChangeController.target = e.target;
+          if (!ChangeController.value)
+            ChangeController.value = e.target.value;
+        }
+
+      },
+
+      focusout: function (e) {
+        if (ChangeController.value === ChangeController.target.value)
+          return;
+        const changeEvent = new InputEvent("my-change", {composed: true, bubbles: true});
+        e.target.dispatchEvent(changeEvent);
+        ChangeController.value = e.target.value;
+      }
+    };
+
+    window.addEventListener("focusin", ChangeController.focusin, true);
+    window.addEventListener("focusout", ChangeController.focusout, true);
+    window.addEventListener("beforeinput", ChangeController.beforeinput, true);
+
+    let one = document.querySelector("#one");
+    let two = document.querySelector("#two");
+
+    one.addEventListener("my-change", e => console.warn("my-change"));
+    two.addEventListener("change", e => console.warn("change"));
+
+
+  })();
+</script>

@@ -1,0 +1,69 @@
+<meta charset="UTF-8">
+
+<script>
+  // todo make class which defines an element similat to native input element with shadow DOM and div inside
+
+  class inputChange extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+      <style>
+        :host{
+         display: inline-block;
+         height: 20px;
+         width: 120px;
+         border: 1px solid gray;
+         font-family: Arial;
+         padding: 1px;
+        }
+
+        .blink {
+         font-size: 110%;
+         line-height: 100%;
+         display: inline;
+         position: absolute;
+         margin-left: -.1em;
+         animation: blinker 1s cubic-bezier(.215, .61, .355, 1) forwards infinite;
+        }
+
+        @keyframes blinker {
+            60% {
+          opacity: 0;
+            }
+        }
+      </style>
+      <div>
+        <span  class="blink">|</span>
+      </div>
+      `;
+    }
+  }
+
+  customElements.define("input-change", inputChange);
+
+</script>
+<!--tabindex allows us to make a native focus behavior-->
+<input-change tabindex="0"></input-change>
+
+<br>
+<br>
+<br>
+<input type="text" placeholder="I am native input">
+
+
+<script type="module">
+  import {CustomEvents} from "../CustomEvents.js";
+  import {MyInputController} from "./InputToChangeAction.js";
+
+  window.customEvents || (window.customEvents = new CustomEvents());
+  customEvents.define(new MyInputController());
+
+  let myElement = document.querySelector("input-change");
+
+  myElement.addEventListener("my-input", function (e) {
+
+  });   // }, {passive: false});      //on an element, the default is interpreted as active
+
+
+</script>

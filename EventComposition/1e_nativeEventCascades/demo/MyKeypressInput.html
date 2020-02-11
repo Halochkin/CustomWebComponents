@@ -1,0 +1,77 @@
+<input id="one" type="text" value="I am custom"/>
+<input id="two" type="text" value="I am native"/>
+
+<script>
+  (function () {
+    // block all beforeinput events and stop their default actions
+    window.addEventListener("beforeinput", e => e.preventDefault());
+
+    function toggleTick(cb) {
+      const details = document.createElement("details");
+      details.style.display = "none";
+      details.ontoggle = cb;
+      document.body.appendChild(details);
+      details.open = true;
+      Promise.resolve().then(details.remove.bind(details));
+      return {
+        cancel: function () {
+          details.ontoggle = undefined;
+        },
+        resume: function () {
+          details.ontoggle = cb;
+        }
+      };
+    }
+
+    const InputController = {
+      props: {
+        composed: true,
+        bubbles: true,
+        cancelable: true
+      },
+      keydown: function (e) {
+        if (e.key !== "Backspace")
+          return;
+        const beforeInputEvent = new InputEvent("my-beforeinput", InputController.props);
+        const inputEvent = new InputEvent("my-input", InputController.props);
+        inputEvent.key = e.key;
+        toggleTick(function () {
+          e.target.dispatchEvent(beforeInputEvent);
+          // this is start update the input element
+          e.target.value = e.target.value.substr(0, e.target.value.length - 1);
+          // this is end update the input element
+          e.target.dispatchEvent(inputEvent);
+        });
+      },
+      // here we set a new characters
+      keypress: function (e) {
+
+        const beforeInputEvent = new InputEvent("my-beforeinput", InputController.props);
+        const inputEvent = new InputEvent("my-input", InputController.props);
+        inputEvent.key = e.key;
+        toggleTick(function () {
+          e.target.dispatchEvent(beforeInputEvent);
+          if (beforeInputEvent.defaultPrevented)
+            return;
+          e.target.value += e.key;
+          e.target.dispatchEvent(inputEvent);
+        });
+      }
+    };
+
+    window.addEventListener("keydown", InputController.keydown, true);
+    window.addEventListener("keypress", InputController.keypress, true);
+
+
+    let one = document.querySelector("#one");
+    let two = document.querySelector("#two");
+
+    one.addEventListener("my-beforeinput", e => console.warn("my-beforeinput"));
+    one.addEventListener("my-input", e => console.warn("my-input"));
+
+    two.addEventListener("beforeinput", e => console.log("beforeinput"));
+    two.addEventListener("input", e => console.log("input"));
+
+    two.addEventListener("my-beforeinput", e => e.preventDefault());
+  })();
+</script>

@@ -1,0 +1,31 @@
+<script src="UnderlyingEventPropagationFunction.js"></script>
+
+<div id="outer">
+    <h1 id="inner">Click on me!</h1>
+</div>
+
+<script>
+  function log(e) {
+    console.log(e.type + " on #" + e.currentTarget.id);
+  }
+
+  function log2() {
+    console.log("log2");
+  }
+
+  const inner = document.querySelector("#inner");
+  const outer = document.querySelector("#outer");
+
+  inner.addEventListener("click", function () {
+    inner.removeEventListener("click", log2);
+    inner.addEventListener("click", log);
+    outer.addEventListener("click", log);
+  });
+  inner.addEventListener("click", log2);
+
+  inner.dispatchEvent(new MouseEvent("click", {bubbles: true}));
+  dispatchEventSync(inner, (new MouseEvent("click", {bubbles: true})));
+  dispatchEventAsync(inner, (new MouseEvent("click", {bubbles: true})));
+</script>
+
+
