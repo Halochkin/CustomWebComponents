@@ -117,17 +117,16 @@ In the demo below a function InputController essentially recreates the logic of 
 
     one.addEventListener("my-beforeinput", e => console.warn("my-beforeinput"));
     one.addEventListener("my-input", e => console.warn("my-input"));
-
     two.addEventListener("beforeinput", e => console.log("beforeinput"));
     two.addEventListener("input", e => console.log("input"));
     two.addEventListener("my-beforeinput", e => e.preventDefault());
   })();
-</script>```
+</script>
+```
 
 * You can see both `my-beforeinput` and `input` events each time when you set new values to the input#one;
 * You cant senany new values to input#two because we prevent it using `my-beforeinput` event. 
 
 ### References
-
 1. [MDN: input event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event);
 2. [MDN: beforeinput event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/beforeinput_event);
