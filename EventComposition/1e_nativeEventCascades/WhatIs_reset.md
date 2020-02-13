@@ -1,6 +1,64 @@
+#What Is `reset` ?
+
+The `reset` event fires when a `<form>` is reset.
+It is possible to prevent the default action using `.preventDefault()`;
+
+There are 3 ways to fire `reset` event:
+1. `<input type="reset" value="Reset">`;
+2. `<button type="reset">Reset</button>`;
+3. Call `.reset()` on `<form>` element.
+
+ When a form element form is reset, the user agent must fire a simple event named reset, that *bubbles* and is *cancelable*, at form;
+
+In the example below, clicking on the "Clear" button will display a warning dialog box. Clicking on the OK button will clear the form;
+
+###Demo: reset
+
+```html
+ <form onreset="return confirm('Clear the form?')">
+   <input type="text" name="user" value="Input your name here"> 
+   <input type="reset" value="Clear"> 
+  </form>
+
+<script>
+    document.querySelector("form").addEventListener("reset", e => e.preventDefault());
+</script>
+```
+
+In the example below, clicking on the "Clear" button will not clear the form because the default action is prevented in the event listener.
+
+```html
+ <form>
+   <input type="text" name="user" value="Nothing in the world comes out of nowhere and goes nowhere... "> 
+   <input type="reset" value="Clear"> 
+  </form>
+
+<script>
+    document.querySelector("form").addEventListener("reset", e => e.preventDefault());
+</script>
+```
+
+> Reset event does not clear default text (which has been set to the value attribute of input element);
+
+###Demo: ResetController
+
+In the demo below a function `ResetController` essentially recreates the logic of the `reset` event cascade. The demo:
+
+1. Adds a function `toggleTick` that allows to delay event dispatching;
+2. Completely blocks all the native reset events;
+3. Then it adds a function `ResetController` that listens for `click` and `focusin` events;
+4. Once the `ResetController` receives an appropriate trigger event, it:
+    1. stores default value of element when it get a first focus;
+    2. queues a loop which restore all input elements inside the form to default values;
+    3. makes `my-reset` event;
+    3. queues event dispatching to dispatch it after initial event;
+    4. clears the queue from the recovery cycle if the event was prevented by e.preventDefault inside `my-reset` event listener callback function.
+5. Both forms use `my-reset event`. The first one allows you to clear the form to its default values when you click Reset. The second form prevents the form from being cleared.    
+
+```html
 <form id="one" oninput="c.value=parseInt(a.value)+parseInt(b.value);">
     <fieldset>
-        <legend>Preventable</legend>
+        <legend>Not prevented</legend>
         0<input type="range" id="a" value="50">50
         <label for="b">+</label>
         <input type="number" id="b" value="50">
@@ -27,7 +85,7 @@
 
 <form id="two" oninput="c1.value=parseInt(a1.value)+parseInt(b1.value);">
     <fieldset>
-        <legend>Not preventable</legend>
+        <legend>Prevented</legend>
         0<input type="range" id="a1" value="50">50
         <label for="b1">+</label>
         <input type="number" id="b1" value="50">
@@ -53,8 +111,6 @@
 </form>
 
 <script>
-
-
   (function () {
     function toggleTick(cb) {
       const details = document.createElement("details");
@@ -88,7 +144,7 @@
           return;
 
         // iterate all children and check if theit values are different from default values
-        let i = setTimeout(() => {
+       let i = setTimeout(() => {
           for (let element of e.target.parentElement.elements) {
             // we don`t focus on output element and  so this is a best way to clear it
             if (element.tagName === "OUTPUT")
@@ -99,16 +155,16 @@
             if (value && element.type !== "reset")
               element.value = value;
           }
-        }, 0);
+         }, 0);
+
         const resetEvent = new InputEvent("my-reset", {composed: true, bubbles: true, cancelable: true});
-
-
+        
         //Delay event to dispatch it AFTER click event.
         // toggleClick() fires *BEFORE* setTimeout 0
         toggleTick(() => {
           // dispatch reset event
           e.target.parentElement.dispatchEvent(resetEvent);
-          //fires faster than setTineout (i variable). If event has been prevent - clear timeout to avoid form resetting
+          //fires faster than setTimeout. If event has been prevent - clear timeout to avoid form resetting
           if (resetEvent.defaultPrevented)
             clearTimeout(i)
         });
@@ -127,3 +183,8 @@
   two.addEventListener("my-reset", e => console.log(e.type));
   two.addEventListener("my-reset", e => e.preventDefault());
 </script>
+```
+
+### References 
+1. [MDN: reset event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset_event);
+2. [Spec: Resetting a form](https://www.w3.org/TR/html51/sec-forms.html#resetting-a-form).

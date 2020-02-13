@@ -29,7 +29,7 @@ On the other hand, the event is not triggered by typing from the keyboard and ot
 
 The event occurs **after** the value changes.  So we cannot use `event.preventDefault()` there - it's just too late, there will be no effect. But you can use `beforeinput` for this.
 
-> The `input` event is similar to the [`change`](link to change event) , the difference is that the `input` event occurs immediately after the value of the element has changed, and the `change` occurs when the element loses focus after the content has been changed.
+> The `input` event is similar to the [`change`](./WhatIs_change.md) , the difference is that the `input` event occurs immediately after the value of the element has changed, and the `change` occurs when the element loses focus after the content has been changed.
 
 ### Demo: KeypressInputController
 In the demo below a function InputController essentially recreates the logic of the input event cascade.
@@ -37,7 +37,7 @@ In the demo below a function InputController essentially recreates the logic of 
 1. Block `beforeinput` event to avoid double character input;
 2. Then it adds a function `toggleTick` that allows to delay event dispatching;
 3. Then it adds a `InputController` that listens for keydown and keypress events.
-4. Taking into account the fact that 'keydown' event responds to ALL keys on the keyboard, and 'keypress' only to the actual input characters - InputController.keydown responds only to `Backspace` key which removes the last character.  We do not add any filters for the `keypress` event because, as mentioned earlier, this event is only activated with the actual input characters.
+4. Taking into account the fact that `keydown` event responds to ALL keys on the keyboard, and `keypress` only to the actual input characters - InputController.keydown responds only to `Backspace` key which removes the last character.  We do not add any filters for the `keypress` event because, as mentioned earlier, this event is only activated with the actual input characters.
 5. Once the `InputController` receives an appropriate trigger event, it
     * creates a new `my-beforeinput` event and dispatch it;
     * creates a new `my-input event`

@@ -24,18 +24,7 @@
     const ChangeController = {
 
       target: undefined,
-      value: undefined,  // || document.querySelector("input[type=text]").value;
-      beforeinput: function (e) {
-
-        if (e.inputType !== "insertLineBreak" || ChangeController.value === ChangeController.target.value)
-          return;
-        //delay event. Because beforeinput event fires erlier than focusout. It meant that event will fires in different order relatively to native change
-        toggleTick(() => {
-          const changeEvent = new InputEvent("my-change", {composed: true, bubbles: true});
-          e.target.dispatchEvent(changeEvent);
-          ChangeController.value = e.target.value;
-        });
-      },
+      value: undefined,
 
       focusin: function (e) {
         if (e.target.tagName === "INPUT" && !ChangeController.target) {
@@ -43,13 +32,24 @@
           if (!ChangeController.value)
             ChangeController.value = e.target.value;
         }
-
       },
+
+      beforeinput: function (e) {
+        if (e.inputType !== "insertLineBreak" || ChangeController.value === ChangeController.target.value)
+          return;
+        const changeEvent = new InputEvent("my-change", {composed: true, bubbles: true, cancelable: true});
+        //delay event. Because beforeinput event fires erlier than focusout. It meant that event will fires in different order relatively to native change
+        toggleTick(() => {
+          e.target.dispatchEvent(changeEvent);
+          ChangeController.value = e.target.value;
+        });
+      },
+
 
       focusout: function (e) {
         if (ChangeController.value === ChangeController.target.value)
           return;
-        const changeEvent = new InputEvent("my-change", {composed: true, bubbles: true});
+        const changeEvent = new InputEvent("my-change", {composed: true, bubbles: true, cancelable: true});
         e.target.dispatchEvent(changeEvent);
         ChangeController.value = e.target.value;
       }
@@ -64,7 +64,8 @@
 
     one.addEventListener("my-change", e => console.warn("my-change"));
     two.addEventListener("change", e => console.warn("change"));
-
-
   })();
 </script>
+
+
+
