@@ -29,7 +29,7 @@ On the other hand, the event is not triggered by typing from the keyboard and ot
 
 The event occurs **after** the value changes.  So we cannot use `event.preventDefault()` there - it's just too late, there will be no effect. But you can use `beforeinput` for this.
 
-> The `input` event is similar to the [`change`](./WhatIs_change.md) , the difference is that the `input` event occurs immediately after the value of the element has changed, and the `change` occurs when the element loses focus after the content has been changed.
+> The `input` event is similar to the [`change`](WhatIs_change.md) , the difference is that the `input` event occurs immediately after the value of the element has changed, and the `change` occurs when the element loses focus after the content has been changed.
 
 ### Demo: KeypressInputController
 In the demo below a function InputController essentially recreates the logic of the input event cascade.

@@ -1,13 +1,137 @@
+<!--<form id="one" oninput="c.value=parseInt(a.value)+parseInt(b.value);">-->
+<!--    <fieldset>-->
+<!--        <legend>Preventable</legend>-->
+<!--        0<input type="range" id="a" value="50">50 +-->
+<!--        <input type="number" id="b" value="50"> =-->
+<!--        <output id="c"></output>-->
+<!--        <hr>-->
+<!--        <input type="text" value="lala"/>-->
+<!--        <hr>-->
+<!--        <select name="pets">-->
+<!--            <option value="none">&#45;&#45;Please choose an option&#45;&#45;</option>-->
+<!--            <option value="dog">Dog</option>-->
+<!--            <option value="cat">Cat</option>-->
+<!--            <option value="hamster">Hamster</option>-->
+<!--            <option value="parrot">Parrot</option>-->
+<!--            <option value="spider">Spider</option>-->
+<!--            <option value="goldfish">Goldfish</option>-->
+<!--        </select>-->
+<!--        <hr>-->
+<!--        <textarea id="story" rows="5" cols="33">It was a dark and stormy night...</textarea>-->
+<!--        <hr>-->
+<!--        <input type="reset" value="Reset">-->
+<!--    </fieldset>-->
+<!--</form>-->
+
+<!--<form id="two" oninput="c1.value=parseInt(a1.value)+parseInt(b1.value);">-->
+<!--    <fieldset>-->
+<!--        <legend>Not preventable</legend>-->
+<!--        0<input type="range" id="a1" value="50">50 +-->
+<!--        <input type="number" id="b1" value="50"> =-->
+<!--        <output id="c1"></output>-->
+<!--        <hr>-->
+<!--        <input type="text" value="la la la"/>-->
+<!--        <hr>-->
+<!--        <select>-->
+<!--            <option value="none">&#45;&#45;Please choose an option&#45;&#45;</option>-->
+<!--            <option value="dog">Dog</option>-->
+<!--            <option value="cat">Cat</option>-->
+<!--            <option value="hamster">Hamster</option>-->
+<!--            <option value="parrot">Parrot</option>-->
+<!--            <option value="spider">Spider</option>-->
+<!--            <option value="goldfish">Goldfish</option>-->
+<!--        </select>-->
+<!--        <hr>-->
+<!--        <textarea id="story1" rows="5" cols="33">It was a sunny and pleasure day...</textarea>-->
+<!--        <hr>-->
+<!--        <input type="reset" value="Reset">-->
+<!--    </fieldset>-->
+<!--</form>-->
+
+<!--<script>-->
+
+
+<!--  (function () {-->
+<!--    function toggleTick(cb) {-->
+<!--      const details = document.createElement("details");-->
+<!--      details.style.display = "none";-->
+<!--      details.ontoggle = cb;-->
+<!--      document.body.appendChild(details);-->
+<!--      details.open = true;-->
+<!--      Promise.resolve().then(details.remove.bind(details));-->
+<!--      return {-->
+<!--        cancel: function () {-->
+<!--          details.ontoggle = undefined;-->
+<!--        },-->
+<!--        resume: function () {-->
+<!--          details.ontoggle = cb;-->
+<!--        }-->
+<!--      };-->
+<!--    }-->
+
+<!--    const ResetController = {-->
+<!--      state: new WeakMap(),-->
+<!--      focusin: function (e) {-->
+<!--        // grab default value, but only one time-->
+<!--        if (ResetController.state.has(e.target))-->
+<!--          return;-->
+<!--        ResetController.state.set(e.target, e.target.value);-->
+<!--      },-->
+
+<!--      click: function (e) {-->
+<!--        // check whether target was a reset button and a child of FORM element-->
+<!--        if (e.target.type !== "reset")-->
+<!--          return;-->
+
+<!--        // iterate all children and check if their values are different from default values-->
+<!--        let i = setTimeout(() => {-->
+<!--          for (let element of e.target.parentElement.elements) {-->
+<!--            // we don`t focus on output element and  so this is a best way to clear it-->
+<!--            if (element.tagName === "OUTPUT")-->
+<!--              element.innerText = "";-->
+<!--            // check if an element has been set to the state-->
+<!--            let value = ResetController.state.get(element);-->
+<!--            // Loop will iterate ALL children's include <Input type=reset>-->
+<!--            if (value && element.type !== "reset")-->
+<!--              element.value = value;-->
+<!--          }-->
+<!--        }, 0);-->
+<!--        const resetEvent = new InputEvent("my-reset", {composed: true, bubbles: true, cancelable: true});-->
+
+
+<!--        //Delay event to dispatch it AFTER click event.-->
+<!--        // toggleClick() fires *BEFORE* setTimeout 0-->
+<!--        toggleTick(() => {-->
+<!--          // dispatch reset event-->
+<!--          e.target.parentElement.dispatchEvent(resetEvent);-->
+<!--          //fires faster than setTineout (i variable). If event has been prevent - clear timeout to avoid form resetting-->
+<!--          if (resetEvent.defaultPrevented)-->
+<!--            clearTimeout(i)-->
+<!--        });-->
+<!--      },-->
+<!--    };-->
+
+<!--    window.addEventListener("click", ResetController.click);-->
+<!--    window.addEventListener("focusin", ResetController.focusin);-->
+<!--    window.addEventListener("reset", e => e.preventDefault());-->
+<!--  })();-->
+
+<!--  let one = document.querySelector("#one");-->
+<!--  let two = document.querySelector("#two");-->
+
+<!--  one.addEventListener("my-reset", e => console.log(e.type));-->
+<!--  two.addEventListener("my-reset", e => console.log(e.type));-->
+<!--  two.addEventListener("my-reset", e => e.preventDefault());-->
+<!--</script>-->
+
 <form id="one" oninput="c.value=parseInt(a.value)+parseInt(b.value);">
     <fieldset>
         <legend>Preventable</legend>
-        0<input type="range" id="a" value="50">50
-        <label for="b">+</label>
-        <input type="number" id="b" value="50">
-        <label for="c">=</label>
-        <output id="c" for="a b"></output>
+        0<input type="range" id="a" value="50">50 +
+        <input type="number" id="b" value="50"> =
+        <output id="c"></output>
         <hr>
-        <input type="text" value="lala" name="id"/>
+        <input type="text" value="lala"/>
         <hr>
         <select name="pets">
             <option value="none">--Please choose an option--</option>
@@ -22,19 +146,18 @@
         <textarea id="story" rows="5" cols="33">It was a dark and stormy night...</textarea>
         <hr>
         <input type="reset" value="Reset">
+        <div type="reset" id="test">Reset()</div>
     </fieldset>
 </form>
 
 <form id="two" oninput="c1.value=parseInt(a1.value)+parseInt(b1.value);">
     <fieldset>
         <legend>Not preventable</legend>
-        0<input type="range" id="a1" value="50">50
-        <label for="b1">+</label>
-        <input type="number" id="b1" value="50">
-        <label for="c1">=</label>
-        <output id="c1" for="a b"></output>
+        0<input type="range" id="a1" value="50">50 +
+        <input type="number" id="b1" value="50"> =
+        <output id="c1"></output>
         <hr>
-        <input type="text" value="lala" id="id" name="id"/>
+        <input type="text" value="la la la"/>
         <hr>
         <select>
             <option value="none">--Please choose an option--</option>
@@ -49,6 +172,7 @@
         <textarea id="story1" rows="5" cols="33">It was a sunny and pleasure day...</textarea>
         <hr>
         <input type="reset" value="Reset">
+        <div type="reset" id="test1">Reset()</div>
     </fieldset>
 </form>
 
@@ -73,55 +197,81 @@
       };
     }
 
+
+    function clearForm(formElement, event) {
+
+      // iterate all children and check if their values are different from default values
+      let i = setTimeout(() => {
+        for (let element of formElement.elements) {
+
+          if (element.type === "reset")
+            continue;
+          // we don`t focus on output element and  so this is a best way to clear it
+          else if (element.tagName === "OUTPUT")
+            element.innerText = "";
+          // to reset <select> value and keep inner text - just reset .selectedIndex property
+          else if (element.tagName === "SELECT")
+            element.selectedIndex = 0;
+
+          let value = element.getAttribute("value") || element.defaultValue;
+          if (value)
+            element.value = value;
+        }
+      }, 0);
+
+      //Delay event to dispatch it AFTER click event.
+      // toggleClick() fires *BEFORE* setTimeout 0
+      toggleTick(() => {
+        // dispatch reset event
+        formElement.dispatchEvent(event);
+        //fires faster than setTineout (i variable). If event has been prevent - clear timeout to avoid form resetting
+        if (event.defaultPrevented) {
+          clearTimeout(i);
+          console.log("defaultPrevented ");
+        }
+      });
+    }
+
+
     const ResetController = {
-      state: new WeakMap(),
-      focusin: function (e) {
-        // grab default value, but only one time
-        if (ResetController.state.has(e.target))
-          return;
-        ResetController.state.set(e.target, e.target.value);
-      },
+
 
       click: function (e) {
-        // check whether target was a reset button and a child of FORM element
-        if (e.target.type !== "reset")
+        // check whether target was a reset button and a child of FORM element and is an <input>. It is ok, because only <input>s has .type property
+        if (!e.target.type && e.target.type !== "reset")
           return;
-
-        // iterate all children and check if theit values are different from default values
-        let i = setTimeout(() => {
-          for (let element of e.target.parentElement.elements) {
-            // we don`t focus on output element and  so this is a best way to clear it
-            if (element.tagName === "OUTPUT")
-              element.innerText = "";
-            // check if an element has been set to the state
-            let value = ResetController.state.get(element);
-            // Loop will iterate ALL children's include <Input type=reset>
-            if (value && element.type !== "reset")
-              element.value = value;
-          }
-        }, 0);
-        const resetEvent = new InputEvent("my-reset", {composed: true, bubbles: true, cancelable: true});
-
-
-        //Delay event to dispatch it AFTER click event.
-        // toggleClick() fires *BEFORE* setTimeout 0
-        toggleTick(() => {
-          // dispatch reset event
-          e.target.parentElement.dispatchEvent(resetEvent);
-          //fires faster than setTineout (i variable). If event has been prevent - clear timeout to avoid form resetting
-          if (resetEvent.defaultPrevented)
-            clearTimeout(i)
-        });
+        clearForm(e.target.parentElement, new InputEvent("my-reset", {
+          composed: true,
+          bubbles: true,
+          cancelable: true
+        }));
       },
+
+      reset: function () {
+        if (this.tagName !== "FORM")
+          return;
+        clearForm(this, new InputEvent("my-reset", {composed: true, bubbles: true, cancelable: true}))
+      }
     };
 
     window.addEventListener("click", ResetController.click);
-    window.addEventListener("focusin", ResetController.focusin);
+    HTMLFormElement.prototype.reset = function (e) {
+      ResetController.reset.call(this);
+    };
+
     window.addEventListener("reset", e => e.preventDefault());
+
+
+    let one = document.querySelector("#one");
+    let two = document.querySelector("#two");
+
+
+    // call .reset() when someone click on <div>
+    document.querySelector("#test").addEventListener("click", () => one.reset());
+    document.querySelector("#test1").addEventListener("click", () => two.reset());
+
   })();
 
-  let one = document.querySelector("#one");
-  let two = document.querySelector("#two");
 
   one.addEventListener("my-reset", e => console.log(e.type));
   two.addEventListener("my-reset", e => console.log(e.type));

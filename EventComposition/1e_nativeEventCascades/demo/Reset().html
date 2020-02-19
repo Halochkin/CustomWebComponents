@@ -1,0 +1,26 @@
+<form>
+    <input type="text" size="50" value="It all started with the Word and ends with the Word..."/>
+    <hr>
+    <input type="reset" value="Reset">
+    <hr>
+    <button type="reset">Reset</button>
+    <hr>
+    <div id="test"> Reset()</div>
+</form>
+
+
+<script>
+  let resetElement = undefined;
+  document.querySelectorAll("*[type=reset], #test").forEach(element => element.addEventListener("click", e => {
+    resetElement = e.target;
+  }));
+
+  document.querySelector("#test").addEventListener("click", e => e.target.parentNode.reset());
+
+  window.addEventListener("reset", e => {
+    console.log(e.type, " has been initiated by: ", resetElement.tagName);
+    resetElement = undefined;
+  })
+
+
+</script>
