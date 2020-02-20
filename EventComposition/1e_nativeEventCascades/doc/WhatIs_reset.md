@@ -11,7 +11,7 @@ There are 3 ways to fire `reset` event:
 
 ###Demo: reset form
 
-In the example below, clicking on the "Clear" button will not clear the form because the default action is prevented in the event listener.
+In the example below, click "Clear" button will _not_ clear the form because the default action is prevented by event listener.
 
 ```html
  <form>
@@ -24,9 +24,9 @@ In the example below, clicking on the "Clear" button will not clear the form bec
 </script>
 ```
 
-> Reset event does not clear default text (which has been set to the _value_ attribute of input element);
+> Reset event does not clear default text (which has been set to the `value` attribute of input element);
 
-Accepting the `reset()` method will reset the form and call reset event listener function.
+Accepting the `reset()` method will reset the form and call `"reset"` event.
 
 ```html
 <form>
@@ -44,7 +44,7 @@ Accepting the `reset()` method will reset the form and call reset event listener
     resetElement = e.target;
   }));
 
-    //initiate reset event on FORM element when click on the <div>
+    //call reset() on <form> element when click on the <div>
   document.querySelector("#test").addEventListener("click", e => e.target.parentNode.reset());
 
   window.addEventListener("reset", e => {

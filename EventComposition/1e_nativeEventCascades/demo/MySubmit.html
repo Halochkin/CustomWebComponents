@@ -1,31 +1,26 @@
 <form name="one" id="one">
     <fieldset>
         <legend>Click "Submit" button or press Enter</legend>
-        <input type="text" value="Tell us your story" name="story">
-        <input type="text" value="Tell us your story" name="story">
-        <br>
+        <input type="text" value="Hello" name="story">
+        <input type="text" value="Sunshine" name="story">
         <input id="a" type="submit">
-        <!--        set custom attribute-->
-        <div type="submit" id="b"> requestSubmit(button)</div>
-        <div type="submit" id="c"> requestSubmit()</div>
+        <div id="b"> requestSubmit(button)</div>
+        <div id="c"> requestSubmit()</div>
     </fieldset>
 </form>
 
 <form id="two">
     <fieldset>
-        <legend>Click the "Submit" button, but it will not help).</legend>
-        <input type="text" value="Tell us your story" name="story">
-        <input type="text" value="Tell us your story" name="story">
-        <br>
+        <legend>Click the "Submit" button, but it will be prevent</legend>
+        <input type="text" value="Name" name="story">
+        <input type="text" value="Surname" name="story">
         <input id="a1" type="submit">
-        <!--        set custom attribute-->
-        <div type="submit" id="b1"> requestSubmit(button)</div>
-        <div type="submit" id="c1"> requestSubmit()</div>
+        <div id="b1"> requestSubmit(button)</div>
+        <div id="c1"> requestSubmit()</div>
     </fieldset>
 </form>
 
 <script>
-
 
   (function () {
     function toggleTick(cb) {
@@ -46,38 +41,35 @@
     }
 
     const SubmitController = {
-      state: new WeakMap(),
-      submitEvent: new InputEvent("my-submit", {composed: true, bubbles: true, cancelable: true}),
-
 
       beforeinput: function (e) {
-        // here we handle Enter key press submitting
         let formElement = e.target.form;
-
         // we can use only Enter key
         if (e.inputType !== "insertLineBreak" || !formElement)
           return;
-
-        // check how many allowed input elements (not type=reset/submit) are located in the form
+        // to prevent default click() after Enter key press
+        e.preventDefault();
+        // check how many input elements (not reset/submit type) are located in the form
         let inputs = formElement.querySelectorAll("input:not([type=reset]):not([type=submit])").length;
         // select first submit button (default button according to spec)
         let firstSubmitButton = formElement.querySelector("input[type=submit]");
+        let submitEvent = new InputEvent("my-submit", {composed: true, bubbles: true, cancelable: true});
 
         // According to spec(https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission)
-        // 1. if 1 or several inputs and one or several submit buttons - click() on first one (default button) and then submit
+        // 1. if one or several <input>s and one or several submit buttons are located on the <form> - .click() on default button to submit a form
         if (inputs >= 1 && firstSubmitButton)
-          firstSubmitButton.click(); //click: will handle it
-        //2. if only 1 input  - fire submit event on <form> (even without submit button)
+          firstSubmitButton.click();
+        //2. if there is only one <input> element  - fire 'submit' event on <form> (even if there is no any submit button)
         else if (inputs === 1) {
           // delay event to make it possible to prevent it
           toggleTick(() => {
-            formElement.dispatchEvent(SubmitController.submitEvent);
-            if (SubmitController.submitEvent.defaultPrevented) {
+            formElement.dispatchEvent(submitEvent);
+            if (submitEvent.defaultPrevented) {
               clearTimeout(i);
               console.log("defaultPrevented ");
             }
           });
-          //fires after toggleClick to provide default action preventation
+          //fires after toggleClick to provide default action prevention
           let i = setTimeout(() => {
             console.log("do default action here");
           }, 0);
@@ -86,13 +78,14 @@
 
       click: function (e) {
         let formElement = e.target.form;
-        let val = e.target.getAttribute("type");
-        if (e.target.type && e.target.type !== "submit" || val !== "submit" || !formElement)
+        if (e.target.type && e.target.type !== "submit" || !formElement)
           return;
 
+        let submitEvent = new InputEvent("my-submit", {composed: true, bubbles: true, cancelable: true});
+
         toggleTick(() => {
-          formElement.dispatchEvent(SubmitController.submitEvent);
-          if (SubmitController.submitEvent.defaultPrevented) {
+          formElement.dispatchEvent(submitEvent);
+          if (submitEvent.defaultPrevented) {
             clearTimeout(i);
             console.log("defaultPrevented ");
           }
@@ -104,11 +97,22 @@
       },
 
       requestSubmit: function (submitButton) {
+        let submitEvent = new InputEvent("my-submit", {composed: true, bubbles: true, cancelable: true});
+        //according to  https://html.spec.whatwg.org/multipage/forms.html#dom-form-requestsubmit
+        if (submitButton && submitButton.type !== "submit")
+          throw new Error("TypeError: " + submitButton.type + "type is not submit");
+        if (submitButton && submitButton.form !== this)
+          throw new Error("NotFoundError: " + this.tagName + " not a FORM");
+        // according to https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#the-submitevent-interface
+        // and
+        // https://www.chromestatus.com/feature/5187248926490624
+        // if there is submit button, we need to set submitter attribute to event
+        if (submitButton)
+          submitEvent.submitter = submitButton;
 
-        // some browsers can not support .requestSubmit()
         toggleTick(() => {
-          this.dispatchEvent(SubmitController.submitEvent);
-          if (SubmitController.submitEvent.defaultPrevented) {
+          this.dispatchEvent(submitEvent);
+          if (submitEvent.defaultPrevented) {
             clearTimeout(i);
             console.log("defaultPrevented ");
           }
@@ -120,26 +124,20 @@
       }
     };
 
-    // we can fire submit event using Enter key or click on the submit button , but we have several conditions defined in spec
+
     window.addEventListener("beforeinput", SubmitController.beforeinput.bind(this), true);
-    // window.addEventListener("focusin", SubmitController.focusin, true);
     window.addEventListener("click", SubmitController.click, true);
-    //no event, because it can be called programmatically and not based on event.
-    // not use arrow function here, because this keyword refers to window object
+
     HTMLFormElement.prototype.requestSubmit = function (submitter) {
-      SubmitController.requestSubmit.call(this)
+      SubmitController.requestSubmit.call(this, submitter)
     };
+
+    window.addEventListener("submit", e => e.preventDefault());
+    // window.addEventListener("beforeinput", e => e.preventDefault());
   })();
-
-
-  window.addEventListener("submit", e => e.preventDefault());
-  // we need to block "beforeinput" event because by default it provides .click on submit button by default. We already have such custom click and we dont need 2 clicks;
-  window.addEventListener("beforeinput", e => e.preventDefault());
-
 
   let one = document.querySelector("#one");
   let two = document.querySelector("#two");
-
   let button = document.querySelector("#a");
   let button1 = document.querySelector("#a1");
 
@@ -155,27 +153,6 @@
   two.addEventListener("my-submit", e => console.warn(e.type));
   two.addEventListener("my-submit", e => e.preventDefault());
 
-
   window.addEventListener("click", e => console.log(e.type, " on ", e.target.id))
 
 </script>
-
-
-<!--
-
-1. A form element's default button is the first submit button in tree order whose form owner is that form element.
-
-2. If the user agent supports letting the user submit a form implicitly (for example, on some platforms hitting the "enter" key while a text control is focused implicitly submits the form), then doing so for a form, whose default button has activation behavior and is not disabled, must cause the user agent to fire a click event at that default button.
-
-3. If the form has no submit button, then the implicit submission mechanism must do nothing if the form has more than one field that blocks implicit submission, and must submit the form element from the form element itself otherwise.
-
-
-1. When a form is submitted, the data in the form is converted into the structure specified by the enctype, and then sent to the destination specified by the action using the given method.
-2. If the user types in "cats" in the first field and "fur" in the second, and then hits the submit button, then the user agent will load /find.cgi?t=cats&q=fur
-
-
-// discussion
-
-https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/requestSubmit
-
--->
