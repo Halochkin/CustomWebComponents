@@ -12,7 +12,7 @@ The `keypress` event dispatched _after_ the `beforeinput` event and _before_ the
 
 To answer this question we need to figure out with `keypress` event.
 
-keypress` event are similar to `keydown` event but are bit different. The `keydown` event occurs when the key is pressed, followed immediately by the `keypress` event. Then the `keyup` event is generated when the key is released.
+`keypress` event are similar to `keydown` event but are bit different. The `keydown` event occurs when the key is pressed, followed immediately by the `keypress` event. Then the `keyup` event is generated when the key is released.
  To understand the difference between `keydown` and `keypress`, it is useful to distinguish between `characters` and `keys`. 
  
  A `key` is a physical button on the computer's keyboard. A `character` is a symbol typed by pressing a button. On a US keyboard, hitting the `4` key while holding down the `Shift` key typically produces a `$` character.
@@ -64,6 +64,22 @@ So the main practical importance of this is that `keypress` handlers should not 
      window.addEventListener("keydown", e => console.log(e.type, e.key, e.code, e.keyCode, e.charCode, e.which));  // keydown 2 Digit2 50 0 50
       window.addEventListener("keypress", e => console.log(e.type, e.key, e.code, e.keyCode, e.charCode, e.which)); // keypress 2 Digit2 50 50 50
 >```
+
+### 6. Why was it made obsolete? Why replace with `beforeinput`? What is the difference between `keypress` and `beforeinput`? Are `beforeinput` only associated with `<input>` elements? whereas `keypress` is a universal event? 
+
+The problem with `keypress` is that no keypress/editing action is universal. the keys and text being produced via key down combinations will vary from element to element. Enter for example means a character in `<textarea>` value property, while it is an action to submit in an `<input>` field. 
+
+### And what does tab mean in a textarea? is that the action to go to the next element, or is it a character? 
+
+it is not difficult to imagine two different textarea elements using different interpretations of the tab keydown and keyup in the different or event the same app.
+the idea behind keypress, is that the interpretation of key events (keydowns) are *universal* to all elements in the web page. and all web pages, in a sense. This it is not. keydown combinations vary not only between apps, but also between elements within an app. hence the need for beforeinput which is element specific, instead of the keypress which would apply the same to all element disregarding element type.
+the beforeinput first filters out key combinations that produce actions, or no input, in this particular element. and then only fire beforeinput when a keydown combination produce a character. 
+and example of this difference is the enter key in input vs textarea. another example is the tab key. this will be interpreted as an action to go to the next form element in normal textarea elements, but many more complex custom input elements such as wysiwyg or code editors, interpret tabs as the tab character. They would produce different beforeinput events, but the same keypress event. 
+
+
+
+
+
 
 ### References
 
