@@ -60,10 +60,12 @@ So the main practical importance of this is that `keypress` handlers should not 
 
 > keypress pseudo-ASCII keycodes (which are represented in `.key`, `.keyCode`, `.charCode` and `.which` event properties) are different from `keydown` event, but for non NumPad 0-9 and Enter keys they are the same.
 
+
 ```javascript
      window.addEventListener("keydown", e => console.log(e.type, e.key, e.code, e.keyCode, e.charCode, e.which));  // keydown 2 Digit2 50 0 50
       window.addEventListener("keypress", e => console.log(e.type, e.key, e.code, e.keyCode, e.charCode, e.which)); // keypress 2 Digit2 50 50 50
->```
+>
+```
 
 ### 6. Why was it made obsolete? Why replace with `beforeinput`? What is the difference between `keypress` and `beforeinput`? Are `beforeinput` only associated with `<input>` elements? whereas `keypress` is a universal event? 
 
