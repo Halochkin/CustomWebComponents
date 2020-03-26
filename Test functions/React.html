@@ -12,13 +12,15 @@
 <div id="root"></div>
 
 <script type="text/babel">
+
   class App extends React.Component {
     render() {
       const users = ["A", "B", "C"];
 
-      let items = users.map(item => <li>{item}</li>);
+      let items = users.map(item => <li key={item.toString()}>{item}</li>);
       return <ul>{items}</ul>
     }
+
 
   }
 

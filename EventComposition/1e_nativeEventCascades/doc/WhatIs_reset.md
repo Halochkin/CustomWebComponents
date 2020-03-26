@@ -151,7 +151,6 @@ The demo:
       // iterate all children and check if their values are different from default values
       let i = setTimeout(() => {
         for (let element of formElement.elements) {
-
           if (element.type === "reset")
             continue;
           // we don`t focus on output element and  so this is a best way to clear it

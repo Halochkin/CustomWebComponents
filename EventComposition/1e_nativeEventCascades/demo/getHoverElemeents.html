@@ -1,0 +1,64 @@
+<!--<style>-->
+<!--    div {-->
+<!--        height: 100px;-->
+<!--        width: 100px;-->
+<!--        border: 1px solid black;-->
+
+<!--    }-->
+
+<!--    div:hover {-->
+<!--        color: red;-->
+<!--    }-->
+<!--</style>-->
+
+<!--<div>he he he, motherfucker</div>-->
+
+<!--<script>-->
+
+<!--  function isHover(el) {-->
+<!--    console.log(document.querySelectorAll("div"));-->
+<!--    console.log(document.querySelectorAll(':hover'));-->
+<!--    return el instanceof HTMLElement &&-->
+<!--      el.parentNode &&-->
+<!--      el.parentNode.querySelector(':hover') === el;-->
+<!--  }-->
+
+<!--  document.querySelector("div").addEventListener("mousemove", (e) => {-->
+<!--    setTimeout(()=>{-->
+<!--      let lala = document.querySelectorAll('*:hover');-->
+<!--      debugger-->
+<!--      if (lala.length)-->
+<!--        console.log(lala);-->
+<!--    },100)-->
+
+<!--  })-->
+
+<!--</script>-->
+
+
+<style>
+    #div {
+        background: green;
+        height: 100px;
+    }
+</style>
+
+<div id="div"></div>
+
+<script>
+  window.onmousemove = function () {
+    // var div = document.querySelector('#div');
+    // let items = document.querySelectorAll('#div:hover');
+    // if(items.length)
+    //   console.log(items)
+  };
+
+
+  document.addEventListener("mousemove", (e) => {
+    let items = document.querySelectorAll('#div:hover');
+    if (items.length)
+      console.log(items)
+  })
+
+
+</script>

@@ -20,15 +20,12 @@ For example, if the user interface of a program reacts to user actions longer th
 #### Minimum setting values. How to find the 'Golden mean'?
 Let's look at a small example:
 ```javascript
-static get minSettings() {
+static; get; minSettings(); {
       return {
       minDistance: 50,
       minDuration: 150
       };
-    };
-
-
-
+    }
 ```
 Using the `minSettings()` allows you to switch between two gestures. It checks whether the base version will become advanced or not. If the conditions are met, the base version is `transformed` into extended version, if not - only the base version is activated.<br>
 The `minDistance` value is the distance between the end event (which meets the minimum duration requirements) and the extended event.<br>

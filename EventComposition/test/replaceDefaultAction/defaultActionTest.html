@@ -1,0 +1,200 @@
+<script src="./src/AddDefaultAction.js"></script>
+
+
+<style>
+    max-checkbox-with-border {
+        border: 3px solid #ffe43c;
+    }
+
+    details {
+        border: 2px solid red;
+    }
+
+    summary {
+        border: 2px solid plum;
+    }
+
+    a {
+        display: block;
+        border: 1px solid #7eff36;
+    }
+
+
+    *:visited {
+        color: cyan;
+    }
+
+
+</style>
+
+
+<a href="#lala">link1</a>
+
+<a href="#lala2">link2</a>
+
+
+<!--<details>-->
+<!--    <a href="#lala">link1-->
+<!--        <summary>1-->
+<!--            <max-checkbox id="b"></max-checkbox>-->
+<!--        </summary>-->
+<!--    </a>-->
+<!--</details>-->
+
+
+<script>
+
+
+  //   class MaxCheckboxWithABorder extends HTMLElement {
+  //     constructor() {
+  //       super();
+  //       this.attachShadow({mode: "open"});
+  //       this.shadowRoot.innerHTML = `<slot></slot>`;
+  //     }
+  //   }
+  //
+  //   class InnerLabel extends HTMLElement {
+  //     constructor() {
+  //       super();
+  //     }
+  //   }
+  //
+  //   class MaxCheckbox extends HTMLElement {
+  //     constructor() {
+  //       super();
+  //       this.attachShadow({mode: "open"});
+  //       this.shadowRoot.innerHTML = `
+  //       <style>
+  //     .switch {
+  //         position: relative;
+  //         display: inline-block;
+  //         width: 60px;
+  //         height: 34px;
+  //     }
+  //
+  //     #switch input {
+  //         opacity: 0;
+  //         width: 0;
+  //         height: 0;
+  //     }
+  //
+  //     .slider {
+  //         position: absolute;
+  //         cursor: pointer;
+  //         top: 0;
+  //         left: 0;
+  //         right: 0;
+  //         bottom: 0;
+  //         background-color: #f5ebe0;
+  //         transition: .4s;
+  //     }
+  //
+  //     .slider:before {
+  //         position: absolute;
+  //         content: "off";
+  //         height: 26px;
+  //         width: 26px;
+  //         left: 4px;
+  //         bottom: 4px;
+  //         background-color: lightgray;
+  //         transition: .4s;
+  //     }
+  //
+  //     input:checked + .slider:before {
+  //         transform: translateX(26px);
+  //         background-color: limegreen;
+  //         content: "on";
+  //     }
+  //
+  //
+  // </style>
+  //       <label class="switch">
+  //         <input type="checkbox">
+  //         <span class="slider"></span>
+  //      </label>`;
+  //     }
+  //   }
+  //
+  //   customElements.define("max-checkbox", MaxCheckbox);
+  //   customElements.define("inner-label", InnerLabel);
+  //   customElements.define("max-checkbox-with-border", MaxCheckboxWithABorder);
+
+
+  function addDivHrefAction(e) {
+    e.preventDefault();
+    for (let element of e.composedPath()) {
+      if (element instanceof HTMLElement && element.matches("max-checkbox, option")) {
+        e.addDefaultAction(function (e) {
+          console.log("action is triggered by: ", e);
+          let item = element.shadowRoot.children[1].children[0];
+          item.checked = !item.checked;
+        }.bind(element), {preventable: element});
+        return;
+      }
+    }
+  }
+
+
+  // Object.defineProperty(HTMLElement.prototype, "addEventListener", {
+  //   value: function (val, cb) {
+  //     console.log("SUka");
+  //     console.log(val);
+  //      console.log(cb);
+  //      this.val = "ass";
+  //       cb = function () {
+  //         alert("PIzda")
+  //       }
+  //      // debugger
+  //    },
+  //
+  //
+  //
+  // })
+
+
+  // document.body.addEventListener("click", e => alert(e))
+
+  // window.addEventListener("click", addDivHrefAction, true);
+
+
+</script>
+
+
+<form>
+    <label for="fname">First name:</label><br>
+    <input type="text" id="fname" name="fname"><br>
+    <label for="lname">Last name:</label><br>
+    <input type="text" id="lname" name="lname">
+    <input type="submit">
+    <input type="submit">
+    <input type="submit">
+    <input type="reset">
+    <input type="reset">
+    <input type="reset">
+</form>
+
+
+<script>
+
+
+  document.querySelector("input[type='text']").addEventListener("input", e => {
+
+    let identificator = e.id;
+
+    debugger
+
+  });
+
+
+  document.querySelector("form").addEventListener("submit", e => {
+    e.preventDefault();
+    console.log(document.activeElement);
+  });
+
+  document.querySelector("form").addEventListener("reset", e => {
+    e.preventDefault();
+    console.log(document.activeElement);
+  });
+
+
+</script>

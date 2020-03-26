@@ -1,0 +1,220 @@
+<script>
+  const EventRoadMap = {
+    UNPREVENTABLES: {
+      mousedown: ["contextmenu", "focusin", "focus", "focusout", "blur"],
+      mouseup: ["click", "auxclick", "dblclick"],
+      click: ["dblclick"],
+      keydown: ["keypress"]
+    }
+  };
+
+  function parseRaceEvents(raceEvents) {
+    if (raceEvents instanceof Array)
+      return raceEvents;
+    if (raceEvents === undefined)
+      return [];
+    if (raceEvents instanceof String || typeof (raceEvents) === "string")
+      return EventRoadMap.UNPREVENTABLES[raceEvents];
+    throw new Error(
+      "The raceEvent argument in toggleTick(cb, raceEvents) must be undefined, " +
+      "an array of event names, empty array, or a string with an event name " +
+      "for the trigger event in the event cascade.");
+  }
+
+  function toggleTick(cb, raceEvents) {
+    raceEvents = parseRaceEvents(raceEvents);
+    const details = document.createElement("details");
+    details.style.display = "none";
+    const internals = {
+      events: raceEvents,
+      cb: cb
+    };
+
+    function wrapper() {
+      task.cancel();
+      internals.cb();
+    }
+
+    const task = {
+      cancel: function () {
+        for (let raceEvent of internals.events)
+          window.removeEventListener(raceEvent, wrapper, true);
+        details.ontoggle = undefined;
+      },
+      reuse: function (newCb, raceEvents) {
+        raceEvents = parseRaceEvents(raceEvents);
+        internals.cb = newCb;
+        for (let raceEvent of internals.events)
+          window.removeEventListener(raceEvent, wrapper, true);
+        internals.events = raceEvents;
+        for (let raceEvent of internals.events)
+          window.addEventListener(raceEvent, wrapper, {capture: true});
+      },
+      isActive: function () {
+        return !!details.ontoggle;
+      }
+    };
+    details.ontoggle = wrapper;
+    document.body.appendChild(details);
+    details.open = true;
+    Promise.resolve().then(details.remove.bind(details));
+    for (let raceEvent of internals.events)
+      window.addEventListener(raceEvent, wrapper, {capture: true});
+    return task;
+  }
+
+  //requires the toggleTick function
+  Object.defineProperty(Event.prototype, "addDefaultAction", {
+    value: function (cb, options) {
+      let raceEvents = options ? options.raceEvents : undefined;
+      if (raceEvents === true)
+        raceEvents = this.type;
+      return toggleTick(() => cb(this), raceEvents);
+    },
+    writable: false
+  });
+</script>
+
+<!--<div id="one">click.addDefaultAction(trigger => console.log("action ONE triggered by ", trigger.type));</div>-->
+<!--<div id="two">click.addDefaultAction(trigger => console.log("action TWO triggered by ", trigger.type), {raceEvents: ["dblclick"]});</div>-->
+
+<script>
+  // window.addEventListener("click", e => console.log(e.type));
+  // window.addEventListener("dblclick", e => console.log(e.type));
+  // const one = document.querySelector("#one");
+  // const two = document.querySelector("#two");
+  // one.addEventListener("click", e => e.addDefaultAction(trigger => console.log("action ONE triggered by ", trigger.type)));
+  // two.addEventListener("click", e => e.addDefaultAction(trigger => console.log("action TWO triggered by ", trigger.type), {raceEvents: ["dblclick"]}));
+</script>
+
+<my-input id="one" type="text" value="something"></my-input>
+<my-input id="two" type="text" value="lala"></my-input>
+
+<input id="three" type="text" value="native">
+
+<!--// repeat of beforeinput, input, change events (change is composed: false, beforeinput, input are composed: true)-->
+<!--// repeat of value attributes, when does changing the-->
+<!--// this is it, no other attributes or events.-->
+
+<script>
+  (function () {
+
+    class MyInput extends HTMLElement {
+
+      static get observedAttributes() {
+        return ["value"];
+      }
+
+      constructor() {
+        super();
+        // const shadow = this.attachShadow({mode: "closed"});//todo make it closed
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.innerHTML = `<div tabindex="-1" style="border: 1px solid grey; border-radius: 2px; width: 100px; height: 1.2em;"></div>`;
+        // this._beingProcessed = true;
+        // Promise.resolve().then(()=>{
+        //   Promise.resolve().then(()=>{
+        //     //post constructor callback: here you have the element constructed WITH attribute values.
+        //     delete this._beingProcessed;
+        //   });
+        // });
+      }
+
+      get value() {
+        return this.shadowRoot.children[0].innerText;
+      }
+
+      set value(newValue) {
+        this.shadowRoot.children[0].innerText = newValue;
+        this._previousValue = this.value;
+        //todo should the event be dispatched from here??
+        // find out exactly if/when changing the value attribute causes the value property to change
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "value") {
+          // if (!this._beingProcessed)
+          //   return;
+          if (this.value !== newValue)
+            this.value = newValue;
+        }
+      }
+
+      reset() {
+        this.value = this.getAttribute("value");
+      }
+
+      //if the tabindex attribute is different from the .tabIndex property, and they are -1, would that mean that focusable is removed?
+
+      requestTextChange(txt) {
+        const beforeInputEvent = new InputEvent("my-beforeinput", {composed: true, bubbles: true, cancelable: true}); //composed should be false
+        beforeInputEvent.key = txt;          //todo this property should be immutable
+        this.dispatchEvent(beforeInputEvent);
+        if (!beforeInputEvent.defaultPrevented)
+          this.changeText(txt);
+      }
+
+      changeText(txt) {
+        if (txt === "Backspace")
+          this.shadowRoot.children[0].innerText = this.shadowRoot.children[0].innerText.substr(0, this.shadowRoot.children[0].innerText.length - 1);
+        else
+          this.shadowRoot.children[0].innerText += txt;
+        const inputEvent = new InputEvent("my-input", {composed: true, bubbles: true, cancelable: true});//composed should be false
+        inputEvent.key = txt;      //todo this property should be immutable
+        this.dispatchEvent(inputEvent);
+      }
+
+      checkForChange() {
+        if (this._previousValue === this.value)
+          return;
+        this._previousValue = this.value;
+        const myChangeEvent = new CustomEvent("my-change", {composed: false, bubbles: true, cancelable: false});
+        this.dispatchEvent(myChangeEvent);
+      }
+    }
+
+    customElements.define("my-input", MyInput);
+
+    function firstInPath(path, query) {
+      for (let element of path) {
+        if (element instanceof HTMLElement && element.matches(query))
+          return element;
+      }
+      return null;
+    }
+
+    window.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        const el = firstInPath(e.composedPath(), "my-input, my-textarea, my-select");
+        if (el)
+          e.addDefaultAction(el.checkForChange.bind(el), {raceEvents: [e.type]});
+        return;
+      }
+      const el = firstInPath(e.composedPath(), "my-input");
+      if (el)
+        e.addDefaultAction(el.requestTextChange.bind(el, e.key), {preventable: el});
+    }, true);
+
+
+    window.addEventListener("keydown", function (e) {
+      if (e.key !== "Backspace")
+        return;
+      const el = firstInPath(e.composedPath(), "my-input, my-textarea, my-select");
+      if (el)
+        e.addDefaultAction(el.requestTextChange.bind(el, e.key), {preventable: el});
+    }, true);
+
+    window.addEventListener("focusout", function (e) {
+      const el = firstInPath(e.composedPath(), "my-input, my-textarea, my-select");
+      if (el)
+        e.addDefaultAction(el.checkForChange.bind(el), {raceEvents: [e.type]});//todo how to make this event run sync. update the raceEvents for focusout
+    }, true);
+
+    window.addEventListener("my-beforeinput", e => console.warn(e.type, e.target, e.target.value));
+    window.addEventListener("my-input", e => console.warn(e.type, e.target, e.target.value));
+    window.addEventListener("my-change", e => console.warn(e.type, e.target, e.target.value));
+
+    document.querySelector("#three").addEventListener("beforeinput", e => console.log(e.type, e.target, e.target.value));
+    document.querySelector("#three").addEventListener("input", e => console.log(e.type, e.target, e.target.value));
+    document.querySelector("#three").addEventListener("change", e => console.log(e.type, e.target, e.target.value));
+  })();
+</script>
