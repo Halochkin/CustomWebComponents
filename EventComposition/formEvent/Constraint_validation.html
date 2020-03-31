@@ -1,0 +1,25 @@
+<form>
+    <input type="text" name="name" placeholder="name" id="name" pattern="[a-z]">
+    <input type="number" name="age" placeholder="age" id="age" min="5" max="110">
+    <input type="submit">
+</form>
+
+<script>
+  const inputs = document.querySelectorAll("input:not([type=submit])");
+
+
+  Array.from(inputs).map(input => input.addEventListener('invalid', (e) => {
+    let validity = e.target.checkValidity();
+    let validate = e.target.validity;
+    e.target.form.reportValidity("wrong value");
+
+    // if (!validity)
+    //   e.target.setCustomValidity("Incorrect value entered");
+  }));
+
+  window.addEventListener("submit", (e) => {
+    let validity = e.target.reportValidity();
+    debugger
+  })
+
+</script>

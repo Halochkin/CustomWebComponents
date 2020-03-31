@@ -1,26 +1,229 @@
-<form>
-    <input type="text" size="50" value="It all started with the Word and ends with the Word..."/>
-    <hr>
-    <input type="reset" value="Reset">
-    <hr>
-    <button type="reset">Reset</button>
-    <hr>
-    <div id="test"> Reset()</div>
+<form id="form1">
+    <input type="text" value="Click me!">
+
+    <button type="reset">
+        hello
+        <a href="#sunshine">sunshine</a>
+        and
+        <span tabindex="0">blue skies!</span>
+        <img tabindex="0" src="https://cdn.iconscout.com/icon/free/png-256/call-447-475007.png" style="height: 20px"
+             alt="icon">
+
+    </button>
+
+    <a href="#world">
+        <button type="reset">hello</button>
+        world
+    </a>
+
+    <a href="#world">
+        <input type="reset" value="Click me!">
+        world
+    </a>
 </form>
 
+<button type="reset" form="form1">Reset form outside</button>
+<input type="reset" form="form1" value="Reset form outside">
 
 <script>
-  let resetElement = undefined;
-  document.querySelectorAll("*[type=reset], #test").forEach(element => element.addEventListener("click", e => {
-    resetElement = e.target;
-  }));
-
-  document.querySelector("#test").addEventListener("click", e => e.target.parentNode.reset());
-
-  window.addEventListener("reset", e => {
-    console.log(e.type, " has been initiated by: ", resetElement.tagName);
-    resetElement = undefined;
-  })
+  // window.addEventListener("reset", e => e.preventDefault());
+  // window.addEventListener("keydown", e => console.log(e.type, e.target.tagName, e));
+  // window.addEventListener("keypress", e => console.log(e.type, e.target.tagName, e));
+  // window.addEventListener("click", e => console.log(e.type, e.target.tagName, e));
+  // window.addEventListener("reset", e => console.log(e.type, e.target.tagName, e));
+</script>
 
 
+<hr>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<script>
+  const EventRoadMap = {
+    UNPREVENTABLES: {
+      mousedown: ["contextmenu", "focusin", "focus", "focusout", "blur"],
+      mouseup: ["click", "auxclick", "dblclick"],
+      click: ["dblclick"],
+      keydown: ["keypress"]
+    }
+  };
+
+  function parseRaceEvents(raceEvents) {
+    if (raceEvents instanceof Array)
+      return raceEvents;
+    if (raceEvents === undefined)
+      return [];
+    if (raceEvents instanceof String || typeof (raceEvents) === "string")
+      return EventRoadMap.UNPREVENTABLES[raceEvents];
+    throw new Error(
+      "The raceEvent argument in toggleTick(cb, raceEvents) must be undefined, " +
+      "an array of event names, empty array, or a string with an event name " +
+      "for the trigger event in the event cascade.");
+  }
+
+  function toggleTick(cb, raceEvents) {
+    raceEvents = parseRaceEvents(raceEvents);
+    const details = document.createElement("details");
+    details.style.display = "none";
+    const internals = {
+      events: raceEvents,
+      cb: cb
+    };
+
+    function wrapper() {
+      task.cancel();
+      internals.cb();
+    }
+
+    const task = {
+      cancel: function () {
+        for (let raceEvent of internals.events)
+          window.removeEventListener(raceEvent, wrapper, true);
+        details.ontoggle = undefined;
+      },
+      reuse: function (newCb, raceEvents) {
+        raceEvents = parseRaceEvents(raceEvents);
+        internals.cb = newCb;
+        for (let raceEvent of internals.events)
+          window.removeEventListener(raceEvent, wrapper, true);
+        internals.events = raceEvents;
+        for (let raceEvent of internals.events)
+          window.addEventListener(raceEvent, wrapper, {capture: true});
+      },
+      isActive: function () {
+        return !!details.ontoggle;
+      }
+    };
+    details.ontoggle = wrapper;
+    document.body.appendChild(details);
+    details.open = true;
+    Promise.resolve().then(details.remove.bind(details));
+    for (let raceEvent of internals.events)
+      window.addEventListener(raceEvent, wrapper, {capture: true});
+    return task;
+  }
+
+  //requires the toggleTick function
+  Object.defineProperty(Event.prototype, "addDefaultAction", {
+    value: function (cb, options) {
+      let raceEvents = options ? options.raceEvents : undefined;
+      if (raceEvents === true)
+        raceEvents = this.type;
+      return toggleTick(() => cb(this), raceEvents);
+    },
+    writable: false
+  });
+</script>
+
+<script>
+  (function () {
+    class ResetButton extends HTMLElement {
+
+      static get observedAttributes() {
+        return ["value"];
+      }
+
+      constructor(newForm) {
+        super();
+        const shadow = this.attachShadow({mode: "closed"});
+        shadow.innerHTML = `<span tabindex="0" style="background-color: lightgrey; border: 1px solid grey; margin: 2px; width: 250px; height: 1.2em;"><slot></slot></span>`;
+        this._innerDiv = shadow.children[0];
+      }
+
+      get value() {
+        return this._innerDiv.innerText;
+      }
+
+      set value(newValue) {
+        this._innerDiv.innerText = newValue;
+      }
+
+      get form() {
+        for (let parent = this.parentNode; parent instanceof HTMLElement; parent = parent.parentNode) {
+          if (parent instanceof HTMLFormElement)
+            return parent;
+        }
+      }
+
+      set form(newForm) {
+        Object.defineProperty(this, "form", {
+          value: newForm,
+          writable: false
+        });
+      }
+
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "value") {
+          this.value = newValue;
+        }
+      }
+    }
+
+    customElements.define("submit-button", ResetButton);
+
+    //monkeyPatch into HTMLFormElement method .requestReset()
+
+    //default action on click on the submit-button or one of its descendants
+    window.addEventListener("click", function (e) {
+      if ((!e.isTrusted && !e.isTrustedSimulation) || e.defaultPrevented)
+        return;
+      for (let el of e.composedPath()) {
+        if (el instanceof HTMLElement && el.matches("submit-button")) {
+          if (!el.form && el.hasAttribute("form"))  // && or || here, what has higher priority, parent form or referenced form
+            el.form = document.querySelector("#" + el.getAttribute("form"));
+          if (!el.form)
+            throw new SyntaxError("#" + el.getAttribute("form") + " is not exist");
+          e.addDefaultAction(() => !e.defaultPrevented && el.form.reset(), {preventable: el});
+        }
+      }
+    }, true);
+
+    //default action on keypress on the submit-button or one of its descendants
+    window.addEventListener("keypress", function (e) {
+      if (!e.isTrusted || e.defaultPrevented)
+        return;
+      for (let el of e.composedPath()) {
+        if (el instanceof HTMLElement && el.matches("submit-button")) {
+          const clickSimulation = new MouseEvent("click", {composed: true, bubbles: true});
+          clickSimulation.isTrustedSimulation = true;
+          e.addDefaultAction(() => !e.defaultPrevented && el.dispatchEvent(clickSimulation), {preventable: el});
+        }
+      }
+    }, true);
+  })();
+</script>
+
+<form id="form3">
+    <input type="text" value="type something">
+    <submit-button>
+        hello
+        <a href="#sunshine">sunshine</a>
+        and
+        <span tabindex="0">blue skies!</span>
+    </submit-button>
+    <hr>
+    <a href="#world">
+        <submit-button>hello</submit-button>
+        world
+    </a>
+
+</form>
+
+<submit-button form="form3e">hello outside</submit-button>
+
+<script>
+  //todo test for preventDefault()
+  // window.addEventListener("reset", e => e.preventDefault());
+
+  window.addEventListener("keydown", e => console.log(e.type, e.target.tagName, e));
+  window.addEventListener("keypress", e => console.log(e.type, e.target.tagName, e));
+  window.addEventListener("click", e => console.log(e.type, e.target.tagName, e.isTrusted, e.isTrustedSimulation, e));
+  window.addEventListener("reset", e => console.log(e.type, e.target.tagName, e));
 </script>
