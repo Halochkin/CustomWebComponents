@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Responsive layout</title>
+</head>
+<style>
+
+    :root {
+        --column-width-parent: 8; /*%*/
+        --column-width-child: 10; /*relativey to the parent width*/
+        --column-count: 10;
+
+    }
+
+    parent-container {
+        display: block;
+        background-color: green;
+        margin: 10px;
+        font-size: 0;
+        height: 350px;
+        /*position: absolute; !*because child elements have position: absolute and can not be overflowed*!*/
+    }
+
+    body {
+        margin: 0;
+    }
+
+    child-element {
+        display: inline-grid;
+        margin: 0;
+        white-space: nowrap;
+        /*height: 100%;*/
+        font-size: 40px;
+    }
+
+    #one {
+        background-color: red;
+
+    }
+
+    #two {
+        background-color: orange;
+    }
+
+    #three {
+        background-color: #86dfff;
+    }
+
+    #four {
+        background-color: yellow;
+    }
+
+    #five {
+        background-color: indigo;
+    }
+
+</style>
+
+
+<body>
+
+<parent-container>
+    <child-element id="one">a</child-element>
+    <child-element id="two">b</child-element>
+    <child-element id="three">c</child-element>
+
+    <child-element id="four">d</child-element>
+    <child-element id="five">e</child-element>
+</parent-container>
+
+<script>
+
+
+  let frameWidth, frames = undefined;
+
+
+  var optimizedResize = (function () {
+
+    var callbacks = [],
+      running = false;
+
+    // fired on resize event
+    function resize(e) {
+      if (!running) {
+        running = true;
+        // if (window.requestAnimationFrame) {
+        window.requestAnimationFrame(runCallbacks);
+      } else {
+        // setTimeout(runCallbacks(e), 66);
+        // }
+      }
+    }
+
+    // run the actual callbacks
+    function runCallbacks(e) {
+      callbacks.forEach(function (callback) {
+        callback();
+      });
+
+      running = false;
+    }
+
+    // adds callback to loop
+    function addCallback(callback) {
+
+      if (callback) {
+        callbacks.push(callback);
+      }
+
+    }
+
+    return {
+      // public method to add additional callback
+      add: function (callback) {
+        if (!callbacks.length) {
+          window.addEventListener('resize', resize);
+        }
+        addCallback(callback);
+      }
+    }
+  }());
+
+
+  class ParentContainer extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+      <style>
+        :host{
+        display: block;
+        width: calc( var(--column-width-parent) * var(--column-count)*1%);
+        }
+
+      </style>
+      <slot></slot>`;
+
+    }
+
+    //
+    // static get observedAttributes() {
+    //   return ["framewidth", "frameheight", "column-count", "column-width"];
+    // }
+    //
+    //
+    // attributeChangedCallback(name, oldValue, newValue) {
+    //   // if (name === "framewidth") {
+    //   //   this.style.width = `${newValue}px`;
+    //   //   frameWidth = parseInt(newValue);  // define width to use it for scrollbar
+    //   // }
+    //   // else if (name === "frameheight")
+    //   //   this.style.height = `${newValue}px`;
+    //
+    //   if (name === "column-count" || name === "column-width")
+    //     document.documentElement.style.setProperty('--' + name, parseInt(newValue));
+    //
+    // }
+
+
+    connectedCallback() {
+      // window.addEventListener("resize", ()=>{
+      //   console.log("");}, true);
+      // optimizedResize.add(this.resizeCallback);
+    }
+
+    disconnectedCallback() {
+      this.shadowRoot.removeEventListener("resize", scrollHandler.bind(this), true);
+    }
+
+    resizeCallback(e) {
+      console.log("Callback");
+    }
+  }
+
+
+  class ChildElement extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+<style>
+    @media (min-width: 0px) and (max-width: 991px) {
+        :host-context(#one) {
+            --column-count-one: 3;
+            height: 100px;
+        }
+
+        :host-context(#two) {
+            --column-count-two: 3;
+            height: 50px;
+        }
+
+        :host-context(#three) {
+            --column-count-three: 8;
+            height: 25px;
+        }
+
+        :host-context(#four) {
+            --column-count-four: 8;
+        }
+
+        :host-context(#five) {
+            --column-count-five: 2;
+        }
+    }
+
+    @media
+    (min-width: 992px) and (max-width: 2200px) {
+        :host-context(#one) {
+            --column-count-one: 1;
+        }
+
+        :host-context(#two) {
+            --column-count-two: 8;
+        }
+
+        :host-context(#three) {
+            --column-count-three: 1;
+        }
+           :host-context(#four) {
+            --column-count-four: 5;
+        }
+
+        :host-context(#five) {
+            --column-count-five: 5;
+        }
+    }
+
+    :host-context(#one) {
+        width: calc(var(--column-width-child) * var(--column-count-one) * 1%);
+    }
+
+    :host-context(#two) {
+        width: calc(var(--column-width-child) * var(--column-count-two) * 1%);
+    }
+
+    :host-context(#three) {
+        width: calc(var(--column-width-child) * var(--column-count-three) * 1%);
+    }
+    :host-context(#four) {
+        width: calc(var(--column-width-child) * var(--column-count-four) * 1%);
+    }
+    :host-context(#five) {
+        width: calc(var(--column-width-child) * var(--column-count-five) * 1%);
+    }
+
+</style>
+<slot></slot>`;
+    }
+
+  }
+  customElements.define("parent-container", ParentContainer);
+  customElements.define("child-element", ChildElement);
+</script>
+</body>
+</html>

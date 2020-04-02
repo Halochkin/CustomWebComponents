@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deviceorientation zoom</title>
+    <style>
+        div {
+            height: 600px;
+            width: 600px;
+            background-color: skyblue;
+            margin-left: 200px;
+            margin-top: 200px;
+        }
+
+        body {
+            height: 200vh;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Put two fingers on the element and tilt the phone </h1>
+<div orientation-zoom></div>
+
+<script>
+  let supportsPassive = false;
+  try {
+    let opts = Object.defineProperty({}, 'passive', {
+      get: function () {
+        supportsPassive = true;
+      }
+    });
+    window.addEventListener("test", null, opts);
+    window.removeEventListener("test", null, opts);
+  } catch (e) {
+  }
+
+  let initialAngle = undefined;
+  let zoomTarget = undefined;
+  let initialUserSelect = undefined;
+  let minAngle = 5;
+  let previousInitial = undefined;
+  let thirdArg = supportsPassive ? {passive: false, capture: true} : true;
+
+  function dispatchZoomEvent(type) {
+    if (zoomTarget)
+      zoomTarget.dispatchEvent(new CustomEvent("orientation-" + type, {
+        bubbles: true,
+        composed: true
+      }));
+  }
+
+  function handleOrientation(e) {
+    if (!initialAngle)
+      initialAngle = e.beta;
+
+    if (Math.abs(initialAngle - e.beta) < minAngle) {
+      previousInitial = initialAngle;
+      return;
+    } else {
+      initialAngle = e.beta;
+      // minAngle = 0.3;
+    }
+    if (previousInitial < initialAngle) {
+      requestAnimationFrame(dispatchZoomEvent("zoom-in"));
+    }
+    if (previousInitial > initialAngle) {
+      requestAnimationFrame(dispatchZoomEvent("zoom-out"));
+    }
+  }
+
+  function setupActiveListeners() {
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation);
+    }
+    if ('ondeviceorientation' in window) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+    document.addEventListener("touchmove", move, thirdArg);
+    document.addEventListener("touchend", end);
+    initialUserSelect = document.children[0].style.userSelect;
+    document.children[0].style.userSelect = "none";
+  }
+
+  function setBackEventListeners() {
+    if ('ondeviceorientationabsolute' in window) {
+      window.removeEventListener('deviceorientationabsolute', handleOrientation);
+    }
+    if ('ondeviceorientation' in window) {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    }
+    document.removeEventListener("touchmove", move, thirdArg);
+    document.removeEventListener("touchend", end);
+    document.children[0].style.userSelect = initialUserSelect;
+    initialUserSelect = undefined;
+  }
+
+  function move(e) {
+    if (e.target.hasAttribute("orientation-zoom"))
+      e.preventDefault();
+  }
+
+  function start(e) {
+    if (e.touches.length !== 1 || !e.target.hasAttribute("orientation-zoom"))
+      return;
+    setupActiveListeners();
+    zoomTarget = e.target;
+  }
+
+  function end(e) {
+    setBackEventListeners();
+    minAngle = 5;
+    zoomTarget = undefined;
+    initialAngle = undefined;
+  }
+
+  document.addEventListener("touchstart", start);
+
+</script>
+
+<script>
+  let zoomCoef = 1;
+  window.addEventListener("orientation-zoom-in", function (e) {
+    if (zoomCoef > 1.5)
+      return;
+    e.target.style.transform = `scale(${zoomCoef += 0.01})`;
+  });
+  window.addEventListener("orientation-zoom-out", function (e) {
+    if (zoomCoef < 0.7)
+      return;
+    e.target.style.transform = `scale(${zoomCoef -= 0.01})`;
+  });
+</script>
+
+</body>
+</html>

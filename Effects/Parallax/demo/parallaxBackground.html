@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>parallaxDemo</title>
+    <style>
+        * {
+            transition-duration: 0.2s;
+            font-family: "Roboto Condensed", cursive;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        #backgroundImg {
+            width: 100vw;
+            margin-top: -200px;
+            background-attachment: fixed;
+        }
+
+        #title {
+            position: absolute;
+            z-index: 1;
+            color: white;
+            font-size: 3vw;
+            line-height: 15;
+            margin-left: 40vw;
+
+        }
+
+        h5 {
+            padding: 3vw;
+            font-weight: 100;
+            text-align: justify;
+            font-size: 3vw;
+        }
+
+        parent-parallax {
+            width: 100vw;
+            overflow: hidden;
+            display: block;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+
+
+<parent-parallax>
+    <child-parallax id="background" x="1" y="1" z="0.3">
+        <h1 id="title">Background parallax</h1>
+        <img id="backgroundImg"
+             src="https://images.unsplash.com/photo-1534237403689-59d169673edc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+             alt="mountains">
+    </child-parallax>
+</parent-parallax>
+<h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tellus nunc, consequat id ligula ut, bibendum
+    eleifend massa. Quisque placerat magna vel volutpat ullamcorper. Donec eu finibus urna, id auctor tortor.
+    Phasellus in convallis massa, non auctor enim. Pellentesque viverra tempor accumsan. Quisque malesuada
+    dapibus quam at suscipit. Mauris quis ornare tellus, ac rhoncus justo. Nam faucibus lectus eget convallis
+    dictum. Aliquam convallis risus id purus mattis, non volutpat turpis molestie. Sed et mi a diam lacinia
+    dignissim ac quis neque. Vivamus efficitur sapien ac velit sagittis rhoncus. Donec luctus nunc eget metus
+    lobortis blandit. Aliquam sit amet semper est, ac vulputate lacus. Nulla venenatis mattis orci, eu maximus
+    sapien pharetra at.
+    Phasellus est ipsum, congue id rutrum in, fermentum sed magna. In vulputate sapien ut magna accumsan ornare
+    sit amet vitae lorem. Mauris lobortis odio ac lacus condimentum elementum. Fusce sodales ligula congue justo
+    iaculis varius. In pharetra varius nibh, a molestie urna luctus in. Etiam blandit mi non sem aliquet
+    efficitur. Suspendisse ligula erat, bibendum non diam non, varius cursus magna. Aenean tellus est, pharetra
+    non justo eu, lobortis ultricies dui. Curabitur fringilla velit vel libero finibus semper. Phasellus
+    facilisis ipsum odio, nec aliquam leo placerat a. Aliquam erat volutpat.Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit. Donec tellus nunc, consequat id ligula ut, bibendum
+    eleifend massa. Quisque placerat magna vel volutpat ullamcorper. Donec eu finibus urna, id auctor tortor.
+    Phasellus in convallis massa, non auctor enim. Pellentesque viverra tempor accumsan. Quisque malesuada
+    dapibus quam at suscipit. Mauris quis ornare tellus, ac rhoncus justo. Nam faucibus lectus eget convallis
+    dictum. Aliquam convallis risus id purus mattis, non volutpat turpis molestie. Sed et mi a diam lacinia
+    dignissim ac quis neque. Vivamus efficitur sapien ac velit sagittis rhoncus. Donec luctus nunc eget metus
+    lobortis blandit. Aliquam sit amet semper est, ac vulputate lacus. Nulla venenatis mattis orci, eu maximus
+    sapien pharetra at.
+    Phasellus est ipsum, congue id rutrum in, fermentum sed magna. In vulputate sapien ut magna accumsan ornare
+    sit amet vitae lorem. Mauris lobortis odio ac lacus condimentum elementum. Fusce sodales ligula congue justo
+    iaculis varius. In pharetra varius nibh, a molestie urna luctus in. Etiam blandit mi non sem aliquet
+    efficitur. Suspendisse ligula erat, bibendum non diam non, varius cursus magna. Aenean tellus est, pharetra
+    non justo eu, lobortis ultricies dui. Curabitur fringilla velit vel libero finibus semper. Phasellus
+    facilisis ipsum odio, nec aliquam leo placerat a. Aliquam erat volutpat.</h5>
+<script>
+  let zFactor = 1;
+  let distY = 0;
+
+
+  function eventHandler(e) {
+    distY += e.deltaY;   // depend from wheel direction;
+    if (distY < 0)
+      distY = 0;
+    this.childrenHandler(distY);
+  }
+
+
+  class ParentParallax extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({
+        mode: "open"
+      });
+      this.shadowRoot.innerHTML = `
+        <style>
+         :host(){ display: block; }
+         </style>
+        <slot></slot>`;
+
+      // window.addEventListener("wheel", this.handleData.bind(this))
+    }
+
+
+    connectedCallback() {
+      window.addEventListener("wheel", eventHandler.bind(this))
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("wheel", eventHandler.bind(this))
+    }
+
+
+    childrenHandler(distY) {
+      for (let child of this.children) {
+        zFactor = parseFloat(child.getAttribute("z"));
+        child.changePosition(zFactor * distY);
+      }
+    }
+  }
+
+  class ChildParallax extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = `
+        <style>
+          :host{
+            display: block;
+          }
+        </style>
+        <slot></slot>`;
+    }
+
+    changePosition(yDistancePercent) {
+      requestAnimationFrame(() => {
+        this.style.transform = `translateY(${yDistancePercent}px)`;
+      });
+    }
+  }
+
+  customElements.define("parent-parallax", ParentParallax);
+  customElements.define("child-parallax", ChildParallax);
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<DOCTYPE html>
+<html lang="eng>
+<head>
+    <meta charset="UTF-8">
+    <title>Recursive-element-demo</title>
+    <script type="module" src="../src/recursive-element.js"></script>
+</head>
+<body>
+<tree-node id="boo">
+  <tree-node>book
+    <tree-node>
+      chapter 1
+      <tree-node>
+        chapter 1.1
+        <tree-node>chapter 1.1.1</tree-node>
+        <tree-node>chapter 1.1.2</tree-node>
+      </tree-node>
+      <tree-node>chapter 1.2</tree-node>
+    </tree-node>
+
+    <tree-node>
+      chapter 2
+      <tree-node>chapter 2.1</tree-node>
+      <tree-node>chapter 2.2</tree-node>
+    </tree-node>
+  </tree-node>
+</tree-node>
+</body>
+</html>

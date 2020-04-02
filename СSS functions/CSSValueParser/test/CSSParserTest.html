@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script type="module">
+
+  import {
+    parseByTypeValue,
+    parseCssValue
+  } from "../src/CSSValueParser.js";
+
+
+  var test1 = "123 456 red green blue 345 #FF0099FF";
+  var test2 = "#00ff00 #FFFFFF #FF0099FF #123456 #f09 #ff0099";
+  var test3 = "yellow blue transparent skyblue ghostwhite whitesmoke";
+  var test4 = "rgb(0, 0, -255, 0.5) rgb(100%, 0%, 0%) rgba(100%, 0%, 0%, 1) hsl(0, 100%, 50%) hsl(120, 100%, 50%) hsla(240, 100%, 50%, 0.5)";
+  var test5 = 'url("./abcd.png") url("http://mysite.example.com/mycursor.png") url("./abc/def.png") ';
+  var test6 = "rotate3d(1, -1, 1, 45deg) rotate(23deg)  calc(12vw * 20%) matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -50, -100, 0, 1.1) var(--custom-prop, red)";
+
+  var values = parseByTypeValue(test1, "number");
+  console.log(values);
+
+</script>
+
+</body>
+</html>
