@@ -44,7 +44,7 @@ Consider an example of a popular dating dating application based on a `swipe-end
   window.addEventListener("swipe-stop", e => {
     let element = document.querySelector("#elem"); 
     let viewport = document.getElementById("viewport");
-    if (Math.abs(startX - e.pageX;) < 50)                                                         //[2]
+    if (Math.abs(startX - e.pageX;) < 50;)                                                         //[2]
       return;
     element.style.transitionDuration = "0.8s";
     element.style.zIndex = "1";

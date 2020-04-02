@@ -36,7 +36,7 @@ the problem is with the execution of the gesture or the sensoring of the gesture
 be esoteric, but it can be.
 
  <p align="center">
-     <img src="./img/feedbackLoop.png">
+     <img src="../img/feedbackLoop.png">
    </p><br>
    
 When a user interacts with a web app, it is possible to use several input devices: mouse, keyboard, touch, camera, and
