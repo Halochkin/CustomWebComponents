@@ -109,9 +109,9 @@ inputElement.addEventListener("focusout", e => {
   
 ### References
 
-*[WHATWG: Client-side form validation](https://html.spec.whatwg.org/multipage/forms.html#client-side-form-validation)
-*[MDN: Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) 
-*[MDN: `invalid` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/invalid_event)     
+* [WHATWG: Client-side form validation](https://html.spec.whatwg.org/multipage/forms.html#client-side-form-validation)
+* [MDN: Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) 
+* [MDN: `invalid` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/invalid_event)     
      
 
  
