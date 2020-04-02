@@ -1,25 +1,34 @@
+<style>
+    input[type=text]:invalid {
+        border: 3px solid lightpink;
+    }
+
+    input[type=text]:valid {
+        border: 3px solid lightgreen;
+    }
+
+</style>
 <form>
-    <input type="text" name="name" placeholder="name" id="name" pattern="[a-z]">
-    <input type="number" name="age" placeholder="age" id="age" min="5" max="110">
+    <label for="name">Name (lowercase) </label>
+    <input required type="text" id="name" placeholder="use lowercase letters only" pattern="[a-z]+">
     <input type="submit">
 </form>
 
 <script>
-  const inputs = document.querySelectorAll("input:not([type=submit])");
+
+  let inputElement = document.querySelector("input[type=text]");
+
+  inputElement.addEventListener("focusout", e => {
+    e.target.form.requestSubmit();
+  }, true);
 
 
-  Array.from(inputs).map(input => input.addEventListener('invalid', (e) => {
-    let validity = e.target.checkValidity();
-    let validate = e.target.validity;
-    e.target.form.reportValidity("wrong value");
+  window.addEventListener("invalid", e => {
+    console.log("invalid input: ", e.target);
+  }, true);
 
-    // if (!validity)
-    //   e.target.setCustomValidity("Incorrect value entered");
-  }));
-
-  window.addEventListener("submit", (e) => {
-    let validity = e.target.reportValidity();
-    debugger
-  })
-
+  window.addEventListener("submit", e => {
+    e.preventDefault();
+    console.log("submitted");
+  });
 </script>
