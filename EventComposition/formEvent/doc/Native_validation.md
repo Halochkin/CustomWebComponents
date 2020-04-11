@@ -42,20 +42,7 @@ To avoid this, you can use both native and custom form validation.
  
  It checks if a value is entered and returns an error if it is not. 
  
- The HTML5 specification allows for easier verification due to the introduction possible types such as `email`, `url`, or `tel`, (You can check full list of possible values [here](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#%3Cinput%3E_types)) and they are automatically checked. `email` and `url` will only accept correctly formatted email addresses and URLs, respectively, while `number` and `range` can have maximum and minimum numeric values applied. If the entered value does not match the expected format, these types will generate an error, resulting in an error message, and this prevents substitution of incorrect data.
  
- However, it is impractical to expect full processing of all possible scenarios with the input field.  What if you have fields for a username, zip code or other specialized data types that do not belong to the specification types? Then how do you validate these fields?  This is where we can use the `pattern` attribute.
- 
- The `pattern` attribute is used for input elements only.  This allows us to define our own validation rules using Regular Expressions (RegEx). Once again, if the value does not match the specified pattern, the input will cause an error.
- 
- For example, let's say we have a form for entering a user name. There is no standardized type for the username field, so we will use the usual `text` type. Let's define a rule that will be used in the pattern attribute. In this case, we will specify that the username should consist of lowercase letters; no capital letters, no numbers or other characters. And besides, the username should not exceed 15 characters.  According to the rules of regular expressions, this can be written in the following way `[a-z]{1,15}`.
-
- ```html
-<form >
-    <input type="text" name="username" placeholder="lowercase only" pattern="[a-z]{1,15}">
-</form>
-```
- Now, since only lowercase letters are allowed, substitution of any other characters causes an error message.
  
  ### Stylization of verification results
  Although web developers cannot generate validation error messages, they can change the appearance of fields depending on their validation results. For example, it is possible to highlight `<input>`s with an incorrect value in the color background as soon as the browser detects the incorrect data. It is possible to use `:invalid` CSS pseudo class for this.
@@ -110,10 +97,11 @@ inputElement.addEventListener("focusout", e => {
 ### References
 
 * [WHATWG: Client-side form validation](https://html.spec.whatwg.org/multipage/forms.html#client-side-form-validation)
-* [MDN: Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) 
-* [MDN: `invalid` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/invalid_event)     
+    
      
 
  
  
- 
+ chapter 1 checkValidity() and the input element attributes
+ chapter 2 reportValidity() and the form submit procedure
+ chapter 3 invalid visualization, multiple checkValidity showing the last error message, reportValidity dispatching multiple invalid events, but showing the first error message only. 
