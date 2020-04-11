@@ -1,34 +1,18 @@
-<style>
-    input[type=text]:invalid {
-        border: 3px solid lightpink;
-    }
-
-    input[type=text]:valid {
-        border: 3px solid lightgreen;
-    }
-
-</style>
-<form>
-    <label for="name">Name (lowercase) </label>
-    <input required type="text" id="name" placeholder="use lowercase letters only" pattern="[a-z]+">
-    <input type="submit">
+<form id="form1">
+    <input id="input1" type="text" required/>
+</form>
+<form id="form2">
+    <input id="input2" type="text"/>
 </form>
 
-<script>
 
-  let inputElement = document.querySelector("input[type=text]");
+<style>
 
-  inputElement.addEventListener("focusout", e => {
-    e.target.form.requestSubmit();
-  }, true);
+    input:invalid:not(:focus) {
+        background-color: red;
+    }
 
-
-  window.addEventListener("invalid", e => {
-    console.log("invalid input: ", e.target);
-  }, true);
-
-  window.addEventListener("submit", e => {
-    e.preventDefault();
-    console.log("submitted");
-  });
-</script>
+    input:valid:not(:focus) {
+        background-color: green;
+    }
+</style>
