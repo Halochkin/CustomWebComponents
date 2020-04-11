@@ -47,7 +47,7 @@ As an example, consider a form with `required` attribute and empty `value` attri
 
 If you try to submit this form as is, browsers will prevent the submission it and show the following error:
 
-<img src="../img/required.png" alt="form validation error message" style="text-align: center;">
+<img src="../img/validation.jpg" alt="form validation error message" style="text-align: center;">
 
 According to the specification, the way errors are presented to the user is left to the discretion of the browser itself. However, the specification provides the full HTML DOM API, new HTML attributes and CSS pseudo-classes that developer can use to configure.
  
