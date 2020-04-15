@@ -1,18 +1,45 @@
-<form id="form1">
-    <input id="input1" type="text" required/>
+<form>
+    <label for="login">Nickname (4 to 10 characters):</label>
+    <input id="login" type="text" minlength="3" maxlength="10" required>
+    <label for="password">Password:</label>
+    <input id="password" type="password" required>
+
+
+    <input type="submit">
 </form>
-<form id="form2">
-    <input id="input2" type="text"/>
-</form>
 
+<script>
+  let login = document.querySelector("#login");
+  let password = document.querySelector("#password");
 
-<style>
-
-    input:invalid:not(:focus) {
-        background-color: red;
+  login.addEventListener("invalid", e => {
+    const validity = e.target.validity;
+    for (let key in validity) {
+      if (validity[key]) {
+        Object.defineProperty(e.target, "validationMessage", {
+          value: "Error: " + key,
+          writable: true
+        });
+      }
     }
+    console.log(e.target.validationMessage); // Error: valueMissing
 
-    input:valid:not(:focus) {
-        background-color: green;
+  }, true);
+
+
+  password.addEventListener("invalid", e => {
+
+    const validity = e.target.validity;
+
+    for (let key in validity) {
+      if (validity[key]) {
+        e.target.setCustomValidity("Error: " + key);
+        return
+      }
     }
-</style>
+    console.log(e.target.validationMessage); // Error: valueMissing
+
+  }, true)
+
+
+</script>
