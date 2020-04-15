@@ -22,7 +22,12 @@ The form entry validation is something to be taken seriously. If you are lucky, 
 It is possible to implemented form validation on:
 
 1. **Server side** - is performed by the web server _after_ receiving the entered data.
+  
+     When a user enters data in a form, the input data is sent to the server for verification. If the validation script on the server side detects any errors, the error status is sent to the client. The input data is sent to the next process if no error is detected.
+     
 2. **Client side**  - is performed by the browser _before_ sending the entered data to the server.
+    
+    When the user enters data in a form, the date of entry is confirmed by a script which is sent to the client along with the web page. If the script detects any error, the error status is displayed to the client. If no error is detected, the input data is sent to the server.
 
 Here we describe client validation that is performed using a built-in HTML verification concept called _constraint validation_.
 

@@ -6,7 +6,8 @@ When `false` is returned, cancelable `"invalid"` event fired for each invalid ch
 
 > `.reportValidity()` differs from `.checkValidity()` in that it causes an automatic pop-up error message.
 
-
+ 
+ 
 ```html
 
  
@@ -44,14 +45,28 @@ A typical validation algorithm looks like this:
 When the user submits a form (e.g., by clicking on submit button), the user agent processes it as follows.
 
 1. Identify the successful controls 
-2. Build a form data set 
-A form data set is a sequence of control-name/current-value pairs constructed from successful controls
-
-Step three: Encode the form data set 
+2. Build a form data set a form data set is a sequence of control-name/current-value pairs constructed from successful controls
+3. Encode the form data set 
 The form data set is then encoded according to the content type specified by the enctype attribute of the FORM element.
+4. Submit the encoded form data set 
+5. The encoded data is sent to the processing agent designated by the action attribute using the protocol specified by the method attribute.
 
-Step four: Submit the encoded form data set 
-Finally, the encoded data is sent to the processing agent designated by the action attribute using the protocol specified by the method attribute.
+
+
+
+
+### `novalidate` and `formonvalidate` attributes
+
+Validation checking in HTML5 form could be turned off using `novalidate` and `formonvalidate` attributes. These Boolean properties are used to disable validation when a form submitted. `novalidate` could be only used with the form element, while `formnovalidate` could be used with a form field (submit or image input types).
+
+In dynamic applications, there may be situations where certain elements do not require validation at all. For example, this can happen with buttons, hidden input elements or an `<output>` element. This condition can be recognized by the willValidate attribute using the element syntax. willValidate.
+
+### element validation properties
+
+In dynamic applications, there may be situations where certain elements do not require validation at all. For example, this can happen with buttons, hidden input elements or a `<output>` element. This condition can be recognized by the `willValidate` attribute.
+`willValidate` is a property that says whether or not an input can be validated, not if it is valid or not. The only time that willValidate is false is if the input element is disabled.
+
+`willValidate` returns true or false if the item it refers to is verified - not if its value is true, but if the verification process is applied. By default, all form elements return `true` unless they are explicitly set to not true, for example using the `disabled` attribute. You can use `willValidate` to perform actions only with those form elements that will be checked.
 
 
 

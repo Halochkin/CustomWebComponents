@@ -120,10 +120,9 @@ input:invalid:not(:focus){
 
 ## `.setCustomValidity()`
 
-On the `invalid` event there is a special method for setting the user feedback message on the native user feedback element: `.setCustomValidity()`.
+Browsers that have native validation alerts create their own messages that appear on screen; for example, submitting an empty input that has the required attribute applied displays the message “Please fill in this field” in Firefox or “Please fill out this field” in Chrome. The `validationMessage` property holds this message when the field is in an `invalid` state (which fires "invalid: event).If the value of the field is valid, the `validationMessage` property is an empty string. 
 
-If an `invalid` event activated, the browser will display an error message stored in the `validationMessage` property of the target. The _only way_ to change its value is to call `setCustomValidity()` with the message text as an argument value. 
-To make sure that it is impossible use other methods to determine the new value of error message, consider a demo. In the first case we try to use `.defineProperty()` method to change the `validationMessage` value, but the browser will ignore it and display the default message. The second method uses `setCustomValidity()` and changes the text of the message causing the browser to display the new value correctly.
+It is _only way_ to change its value. To make sure that it is impossible use other methods to determine the new value of error message, consider a demo. In the first case we try to use `.defineProperty()` method to change the `validationMessage` value, but the browser will ignore it and display the default message. The second method uses `setCustomValidity()` and changes the text of the message causing the browser to display the new value correctly.
 
 ```html 
 <form>

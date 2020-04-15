@@ -2,7 +2,7 @@
     <label for="login">Nickname (4 to 10 characters):</label>
     <input id="login" type="text" minlength="3" maxlength="10" required>
     <label for="password">Password:</label>
-    <input id="password" type="password" required>
+    <input id="password" type="password">
 
 
     <input type="submit">
@@ -31,6 +31,12 @@
 
     const validity = e.target.validity;
 
+
+    let willValidate = e.target.willValidate;
+
+    e.target.willValidate = false;
+
+
     for (let key in validity) {
       if (validity[key]) {
         e.target.setCustomValidity("Error: " + key);
@@ -43,3 +49,14 @@
 
 
 </script>
+
+
+<hr>
+
+
+<input type="text" list="options">
+<datalist id="options">
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+</datalist>

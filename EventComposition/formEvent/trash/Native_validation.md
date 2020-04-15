@@ -28,9 +28,7 @@ To avoid this, you can use both native and custom form validation.
  </script>
   ```
  
- What happens if several validation rules are violated, for example if several require fields are not filled in? 
  
- Nothing will happen until the user clicks the button to submit the form. Only then will the browser start checking the fields from top to bottom. When it meets the first incorrect value, it stops further checking, cancels the submission of the form and displays an error message next to the field that caused the error. (In addition, if the area with the error field is out of screen when filling out the form, the browser scrolls the screen to make sure that the field is at the top of the page.) Once the user has corrected this error and pressed the button again to submit the form, the browser will stop at the next input error and the process will repeat.
  
 ### How to implement native validation
 
