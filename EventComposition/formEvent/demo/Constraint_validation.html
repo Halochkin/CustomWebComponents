@@ -1,62 +1,73 @@
-<form>
-    <label for="login">Nickname (4 to 10 characters):</label>
-    <input id="login" type="text" minlength="3" maxlength="10" required>
-    <label for="password">Password:</label>
-    <input id="password" type="password">
-
-
-    <input type="submit">
-</form>
+<h1>
+    <span>Click me twice!</span>
+</h1>
 
 <script>
-  let login = document.querySelector("#login");
-  let password = document.querySelector("#password");
+  function log1(e) {
+    console.log(e.type + " one");
+  }
 
-  login.addEventListener("invalid", e => {
-    const validity = e.target.validity;
-    for (let key in validity) {
-      if (validity[key]) {
-        Object.defineProperty(e.target, "validationMessage", {
-          value: "Error: " + key,
-          writable: true
-        });
-      }
-    }
-    console.log(e.target.validationMessage); // Error: valueMissing
+  function log2(e) {
+    console.log(e.type + " two");
+  }
 
-  }, true);
+  function log3(e) {
+    console.log(e.type + " three");
+  }
 
+  function log4(e) {
+    console.log(e.type + " four");
+  }
 
-  password.addEventListener("invalid", e => {
+  function log5(e) {
+    console.log(e.type + " five");
+  }
 
-    const validity = e.target.validity;
+  const h1 = document.querySelector("h1");
+  const span = document.querySelector("span");
 
+  h1.addEventListener("mousemove", log1);
+  h1.onmousemove = log1;
+  span.dispatchEvent(new MouseEvent("mousemove", {bubbles: false}));
+  //prints nothing
+  console.log("----------");
 
-    let willValidate = e.target.willValidate;
+  h1.addEventListener("click", log1);
+  h1.onclick = log1;
+  span.dispatchEvent(new MouseEvent("click", {bubbles: true}));
+  //click one
+  //click one
+  console.log("----------");
 
-    e.target.willValidate = false;
+  h1.addEventListener("dblclick", log1);
+  h1.ondblclick = log2;
+  h1.addEventListener("dblclick", log3);
+  span.dispatchEvent(new MouseEvent("dblclick", {bubbles: true}));
+  //click one
+  //click two
+  //click three
+  console.log("----------");
 
+  h1.addEventListener("mouseup", log1);
+  h1.onmouseup = log2;
+  h1.addEventListener("mouseup", log3);
+  h1.onmouseup = log4;
+  span.dispatchEvent(new MouseEvent("mouseup", {bubbles: true}));
+  //click one
+  //click four
+  //click three
+  console.log("----------");
 
-    for (let key in validity) {
-      if (validity[key]) {
-        e.target.setCustomValidity("Error: " + key);
-        return
-      }
-    }
-    console.log(e.target.validationMessage); // Error: valueMissing
-
-  }, true)
-
-
+  h1.addEventListener("auxclick", log1);
+  h1.onauxclick = log2;
+  h1.addEventListener("auxclick", log3);
+  h1.onauxclick = undefined;
+  h1.addEventListener("auxclick", log4);
+  h1.onauxclick = log5;
+  span.dispatchEvent(new MouseEvent("auxclick", {bubbles: true}));
+  //click one
+  //click two
+  //click four
+  //click five
+  console.log("----------");
 </script>
-
-
-<hr>
-
-
-<input type="text" list="options">
-<datalist id="options">
-    <option>A</option>
-    <option>B</option>
-    <option>C</option>
-</datalist>
