@@ -1,117 +1,81 @@
 <script src="../../1b_EventLoop/demo/toggleTick.js"></script>
-<!--<input type="text" tabindex="1">-->
-<!--test 1-->
+<script>
+  const og = HTMLElement.prototype.attachShadow;
+  Object.defineProperty(HTMLElement.prototype, "attachShadow", {
+    value: function (options) {
+      const shadow = og.call(this, options);
+      if (options === undefined || options.mode === "closed")
+        this._closedShadowRoot = shadow;
+      return shadow;
+    }
+  });
 
-<body tabindex="-1">
-<web-comp></web-comp>
-<HR>
-<web-comp></web-comp>
-</body>
+</script>
+<style>
+    div {
+        border: 10px solid red;
+    }
+</style>
+
+<div id="one" tabindex="1">one</div>
+<web-comp><a href="#lala">Hello sunshine</a></web-comp>
+<div id="two" tabindex="2">two</div>
+
+<!--<HR>-->
+<!--<web-comp id="two" tabindex="3"></web-comp>-->
 
 <script>
   //bouncing dblclick
   (function () {
 
-    let lastLightTarget;
-    let lastShadowTarget;
+      let activeTarget = null;
 
+      let activeElements = []; //set last active element root nodes, (  let root = e.target.getRootNode();)
 
-    let targets = [];
+      function bouncingKeydownController(e) {
 
+        if (e.key !== "Tab") {
+          return;
+        }
 
-    function bounceDispatchEvent(evt, details) {
-      for (let target of targets)
-        target.dispatchEvent(new CustomEvent(evt, {composed: false, bubbles: details}));
-    }
+        //find all active roots of the active target which is old, that is different from active root in the new active target (iterator, host node) check if are the same
 
-    function bouncingKeydownController(e) {
+        let root = e.target.getRootNode();
 
-      // 1 - click to the body to set a focus start point. We can not use Tab for focus without it.
-      // 2 - start point has been set (body) so press Tab button will fire on <body> element and only then switch to the <web-comp> and inner <div>. So this means that it is necessary to find another way to set initial focus without click.
+        // let allRoots = // get all roots and pass into the root as an argument (github)
 
-
-      if (e.target instanceof HTMLBodyElement)
-        return;
-
-      if (!lastLightTarget)
-        lastLightTarget = e.target;
-
-      if (!(lastLightTarget.hasAttribute("my-focus")))
-        lastLightTarget.setAttribute("my-focus", "");
-
-
-      targets.unshift(e.target)
-
-
-    }
-
-    function bouncingClickController(e) {
-      //shadowDOM handler
-      if (!lastShadowTarget && !(e.target instanceof HTMLBodyElement)) {
-        lastShadowTarget = e.target;
-        if (!(lastShadowTarget.hasAttribute("my-focus")))
-          lastShadowTarget.setAttribute("my-focus", "");
-        toggleTick(bounceDispatchEvent.bind(null, "my-focus", false));
-        toggleTick(bounceDispatchEvent.bind(null, "my-focusin", true));
-        toggleTick(function () {
-          targets = [];
-        })
-        return targets.unshift(e.target);
-      }
-
-      //lightDOM handler
-      if (lastShadowTarget !== lastLightTarget && !lastLightTarget && !(e.target instanceof HTMLBodyElement)) {
-
-        lastLightTarget = e.target;
-        // ctx, evt, bubbles
-        toggleTick(bounceDispatchEvent.bind(null, "my-focus", false));
-        toggleTick(bounceDispatchEvent.bind(null, "my-focusin", true));
-        return targets.unshift(e.target);
-      }
-
-      if (lastLightTarget && lastShadowTarget && lastShadowTarget !== e.target && lastLightTarget !== e.target) {
-        toggleTick(bounceDispatchEvent.bind(null, "my-focusout", true));
-        targets.unshift(lastLightTarget, lastShadowTarget);
-        lastShadowTarget.removeAttribute("my-focus");
-        lastLightTarget = lastShadowTarget = undefined;
-        toggleTick(function () {
-          targets = [];
-        })
+        // find all existing elements which are not a part of the root, and then use it as a target to dispatch blur and focusout / remove pseudo-classes etc.
+        if (activeElements.indexOf(root) !== -1) {
+          //remove
+          //dispatch blur event
+        }
       }
     }
 
-    window.addBouncingMousedownController = function (domContextRoot) {
-      // domContextRoot.addEventListener("mousedown", bouncingClickController);
-    };
 
-    window.addBouncingKeydownController = function (domContextRoot) {
-      document.body.focus();
-      domContextRoot.addEventListener("keydown", bouncingKeydownController, true);
-    };
-  })();
+  )();
 
-  addBouncingMousedownController(window);
+  // addBouncingMousedownController(window);
 
-  addBouncingKeydownController(document.body);
+  addBouncingKeydownController(window);
 
 
-  window.addEventListener("my-focus", e => console.warn(e.type, e.target), true);
-  window.addEventListener("my-focusin", e => console.warn(e.type, e.target), true);
-  window.addEventListener("my-focusout", e => console.warn(e.type, e.target), true);
-
+  // window.addEventListener("my-focus", e => console.warn(e.type, e.target), true);
+  // window.addEventListener("my-focusin", e => console.warn(e.type, e.target), true);
+  // window.addEventListener("my-blur", e => console.warn(e.type, e.target), true);
+  // window.addEventListener("my-focusout", e => console.warn(e.type, e.target), true);
+  //
   // window.addEventListener("focus", e => console.log(e.type, e.target), true);
-  window.addEventListener("focusin", e => console.log(e.type, e.target), true);
-  window.addEventListener("focusout", e => console.log(e.type, e.target), true);
+  // window.addEventListener("focusin", e => console.log(e.type, e.target), true);
+  // window.addEventListener("focusout", e => console.log(e.type, e.target), true);
   // window.addEventListener("blur", e => console.log(e.type, e.target), true);
-
-  // window.addEventListener("click", e => console.log(e.type, e.target), true);
 
 
   class WebComp extends HTMLElement {
     constructor() {
       super();
       const shadow = this.attachShadow({mode: "closed"});
-      addBouncingMousedownController(shadow);
+      // addBouncingMousedownController(shadow);
       addBouncingKeydownController(shadow);
       shadow.innerHTML = `
         <style>
@@ -121,26 +85,26 @@
             border: 1px solid gray;
          }
          div[my-focus]{
-           box-shadow: 0 0 0 3px rgba(239,159,28,0.97);
+           background-color: khaki;
          }
         </style>
-        <div tabindex="1"></div>
-
+        <div tabindex="3">three
+          <slot></slot>
+        </div>
+        <div tabindex="4">four</div>
 
 `;
 
-      shadow.addEventListener("my-focus", e => console.warn("shadow|   ", e.type, e.target), true);
-      shadow.addEventListener("my-focusin", e => console.warn("shadow|   ", e.type, e.target), true);
-      shadow.addEventListener("my-focusout", e => console.warn("shadow|   ", e.type, e.target), true);
-
-      shadow.addEventListener("focusin", e => console.log("shadow|   ", e.type, e.target), true);
+      // shadow.addEventListener("my-focus", e => console.warn("shadow|   ", e.type, e.target), true);
+      // shadow.addEventListener("my-focusin", e => console.warn("shadow|   ", e.type, e.target), true);
+      // shadow.addEventListener("my-blur", e => console.warn("shadow|   ", e.type, e.target), true);
+      // shadow.addEventListener("my-focusout", e => console.warn("shadow|   ", e.type, e.target), true);
+      //
+      // shadow.addEventListener("focusin", e => console.log("shadow|   ", e.type, e.target), true);
       // shadow.addEventListener("focus", e => console.log("shadow|   ", e.type, e.target), true);
-      shadow.addEventListener("focusout", e => console.log("shadow|   ", e.type, e.target), true);
-      // shadow.addEventListener("blur", e => console.warn("shadow|   ", e.type, e.target), true);
-      // shadow.addEventListener("click", e => console.warn("shadow|   ", e.type, e.target), true);
+      // shadow.addEventListener("focusout", e => console.log("shadow|   ", e.type, e.target), true);
+      // shadow.addEventListener("blur", e => console.log("shadow|   ", e.type, e.target), true);
     }
-
-
   }
 
   customElements.define("web-comp", WebComp);
@@ -148,12 +112,3 @@
 </script>
 
 
-<!--focus does *NOT* bubble when focusin does-->
-
-<!--blur does *NOT* bubble when focusout does-->
-
-
-<!--focusin-->
-<!--focus-->
-<!--blur-->
-<!--focusout-->

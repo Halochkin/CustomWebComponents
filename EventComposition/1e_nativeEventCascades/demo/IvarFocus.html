@@ -1,0 +1,47 @@
+<script src="../../1b_EventLoop/demo/toggleTick.js"></script>
+
+<style>
+    div {
+        border: 10px solid red;
+    }
+</style>
+
+<div id="one" tabindex="1">one</div>
+<web-comp><a href="#lala">Hello sunshine</a></web-comp>
+<div id="two" tabindex="2">two</div>
+
+
+<script>class WebComp extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({mode: "closed"});
+    shadow.innerHTML = `
+        <style>div{border: 5px solid gray;}</style>
+
+        <div tabindex="3">three
+          <slot></slot>
+        </div>
+        <div tabindex="4">four</div>`;
+    shadow.addEventListener("mousedown", e => {
+      console.log("inside", shadow.activeElement);
+      toggleTick(() => {
+        console.log("inside toggle", shadow.activeElement);
+      })
+    })
+  }
+}
+
+customElements.define("web-comp", WebComp);
+
+document.addEventListener("mousedown", e => {
+  console.log("outside", document.activeElement);
+  toggleTick(() => {
+    console.log("outside toggle", document.activeElement);
+  })
+})
+
+</script>
+
+
+
+
