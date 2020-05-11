@@ -1,0 +1,59 @@
+<script type="module" src="OriginalButton.js"></script>
+
+<h1>All three are active buttons</h1>
+
+<form>
+    <fieldset>
+        <legend>All four buttons are active buttons</legend>
+        <label>Type something...
+            <input type="text">
+        </label>
+        <original-button id="one" type="reset">remove reset</original-button>
+        <original-button id="two" type="submit">change submit to reset</original-button>
+        <original-button id="three" type="reset">change reset to submit</original-button>
+        <original-button id="four">set reset</original-button>
+    </fieldset>
+</form>
+
+<script>
+
+  const one = document.querySelector("#one");
+  const two = document.querySelector("#two");
+  const three = document.querySelector("#three");
+  const four = document.querySelector("#four");
+
+
+  one.addEventListener("click", function (e) {
+    e.target.removeAttribute("reset");
+    // browser detect type of the button and grab it as default action, we can`t cancel it
+  }, true);
+
+  two.addEventListener("click", function (e) {
+    // toggleTick(() => {
+    e.target.setAttribute("type", "reset");  // to call attributeChangedCallback AFTER click event listener
+    // })
+    // submit becomes reset
+  }, true);
+
+  three.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "submit");
+    // reset becomes submit
+  }, true);
+
+  four.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "reset");
+  });
+
+
+  window.addEventListener("submit", function (e) {
+    e.preventDefault();
+    e.target.style.backgroundColor = "green";
+  });
+
+  window.addEventListener("reset", function (e) {
+    e.preventDefault();
+    e.target.style.backgroundColor = "red";
+  });
+
+
+</script>

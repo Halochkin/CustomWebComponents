@@ -1,0 +1,56 @@
+<script src="PatchButton.js"></script>
+
+<form>
+    <fieldset>
+        <legend>All four buttons are active buttons</legend>
+        <label>Type something...
+            <input type="text">
+        </label>
+        <button id="one" type="reset">remove reset</button>
+        <button id="two" type="submit">change submit to reset</button>
+        <button id="three" type="reset">change reset to submit</button>
+        <button id="four">set reset</button>
+    </fieldset>
+</form>
+
+
+<form>
+    <fieldset>
+        <legend>All four inputs are active buttons</legend>
+        <label>Type something...
+            <input type="text">
+        </label>
+        <input id="five" type="reset" value="remove reset">
+        <input id="six" type="submit" value="change submit to reset">
+        <input id="seven" type="reset" value="change reset to submit">
+        <input id="eight" type="" value="set reset">
+    </fieldset>
+</form>
+
+
+<script>
+  const one = document.querySelector("#one");
+  const two = document.querySelector("#two");
+  const three = document.querySelector("#three");
+  one.addEventListener("click", function (e) {
+    e.target.removeAttribute("href");
+    e.preventDefault();
+    const nativeAction = one.joiGetNativeAction(e);
+    nativeAction();
+  }, true);
+  two.addEventListener("click", function (e) {
+    e.target.setAttribute("href", "#world");
+    e.preventDefault();
+    const nativeAction = two.joiGetNativeAction(e);
+    nativeAction();
+  }, true);
+  three.addEventListener("click", function (e) {
+    e.target.setAttribute("href", "#sunshine");
+    e.preventDefault();
+    const nativeAction = three.joiGetNativeAction(e);
+    nativeAction();
+  }, true);
+  window.addEventListener("click", e => {
+    debugger;
+  });
+</script>

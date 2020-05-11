@@ -1,0 +1,92 @@
+<!--<h1>All three are active button see especially the third link for strange behavior.</h1>-->
+<!--<a id="one" href="#sunshine">hello</a>-->
+<!--<a id="two" href="#sunshine">hello</a>-->
+<!--<a id="three">hello</a>-->
+
+<!--<h1>All three are active button see especially the third link for strange behavior.</h1>-->
+<form>
+    <fieldset>
+        <legend>All four buttons are active buttons</legend>
+        <label>Type something...
+            <input type="text">
+        </label>
+        <button id="one" type="reset">remove reset</button>
+        <button id="two" type="submit">change submit to reset</button>
+        <button id="three" type="reset">change reset to submit</button>
+        <button id="four">set reset</button>
+    </fieldset>
+</form>
+
+
+<form>
+    <fieldset>
+        <legend>All four inputs are active buttons</legend>
+        <label>Type something...
+            <input type="text">
+        </label>
+        <input id="five" type="reset" value="remove reset">
+        <input id="six" type="submit" value="change submit to reset">
+        <input id="seven" type="reset" value="change reset to submit">
+        <input id="eight" type="" value="set reset">
+    </fieldset>
+</form>
+<script>
+  const one = document.querySelector("#one");
+  const two = document.querySelector("#two");
+  const three = document.querySelector("#three");
+  const four = document.querySelector("#four");
+  const five = document.querySelector("#five");
+  const six = document.querySelector("#six");
+  const seven = document.querySelector("#seven");
+  const eight = document.querySelector("#eight");
+
+  one.addEventListener("click", function (e) {
+    e.target.removeAttribute("reset");
+    // browser detect type of the button and grab it as default action, we can`t cancel it
+  }, true);
+
+  two.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "reset");
+    // submit becomes reset
+  }, true);
+
+  three.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "submit");
+    // reset becomes submit
+  }, true);
+
+  four.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "reset");
+  });
+
+  five.addEventListener("click", function (e) {
+    e.target.removeAttribute("reset");
+    // browser detect type of the button and grab it as default action, we can`t cancel it
+  }, true);
+
+  six.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "reset");
+    // submit becomes reset
+  }, true);
+
+  seven.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "submit");
+    // reset becomes submit
+  }, true);
+
+  eight.addEventListener("click", function (e) {
+    e.target.setAttribute("type", "reset");
+  });
+
+  window.addEventListener("submit", function (e) {
+    e.preventDefault();
+    e.target.style.backgroundColor = "green";
+  });
+
+  window.addEventListener("reset", function (e) {
+    e.preventDefault();
+    e.target.style.backgroundColor = "red";
+  });
+
+
+</script>
