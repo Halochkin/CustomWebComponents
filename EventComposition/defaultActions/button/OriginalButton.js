@@ -37,7 +37,14 @@ class OriginalButton extends HTMLElement {
   </span>
  </div>`;//the span added here is to allow the shadowDOM to contain a tabindex value itself.
 
+
     this._formElement = this.getForm(this);
+
+    // this.addEventListener("click", e => e.setDefault(this._defaultAction || this._submitAction.bind(this)));
+
+    // this._defaultAction = this._submitAction.bind(this);  //submit by default
+
+
   }
 
   static get observedAttributes() {
@@ -48,18 +55,16 @@ class OriginalButton extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (!name || name !== "type")
       return;
-    if (newValue === "reset") {
-      (oldValue) ?
-        toggleTick(() =>
-          this._formElement.reset()) :
-        this.addEventListener("click", e => e.setDefault(e => this._resetAction()));
-    }
-    if (newValue === "submit") {
-      (oldValue) ?
-        toggleTick(() => this._formElement.requestSubmit()) :
 
-        this.addEventListener("click", e => e.setDefault(e => this._submitAction()));
-    }
+    if (newValue === "reset" && oldValue)
+      this._resetAction();
+    // this._defaultAction = this._resetAction();
+
+    if ((newValue === "submit" || newValue === null) && oldValue)
+      this._submitAction();
+    // this._defaultAction = this._submitAction();
+
+
   }
 
   getForm(element) {

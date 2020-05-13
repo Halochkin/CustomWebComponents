@@ -10,7 +10,9 @@
         <label>Type something...
             <input type="text">
         </label>
-        <button id="one" type="reset">remove reset</button>
+        <button>Just a button</button>
+        <button id="one" type="submit">remove submit</button>
+        <button id="oneA" type="reset">remove reset</button>
         <button id="two" type="submit">change submit to reset</button>
         <button id="three" type="reset">change reset to submit</button>
         <button id="four">set reset</button>
@@ -24,14 +26,17 @@
         <label>Type something...
             <input type="text">
         </label>
-        <input id="five" type="reset" value="remove reset">
+        <input type="button" value="Just a button">
+        <input id="five" type="submit" value="remove submit">
+        <input id="fiveA" type="reset" value="remove reset">
         <input id="six" type="submit" value="change submit to reset">
         <input id="seven" type="reset" value="change reset to submit">
-        <input id="eight" type="" value="set reset">
+        <input id="eight" type="button" value="set reset">
     </fieldset>
 </form>
 <script>
   const one = document.querySelector("#one");
+  const oneA = document.querySelector("#oneA");
   const two = document.querySelector("#two");
   const three = document.querySelector("#three");
   const four = document.querySelector("#four");
@@ -40,8 +45,18 @@
   const seven = document.querySelector("#seven");
   const eight = document.querySelector("#eight");
 
-  one.addEventListener("click", function (e) {
-    e.target.removeAttribute("reset");
+  // one.addEventListener("click", function (e) {
+  //   e.target.removeAttribute("type");
+  //   // browser detect type of the button and grab it as default action, we can`t cancel it
+  // }, true);
+
+  one.addEventListener("mouseup", function (e) {
+    e.target.removeAttribute("type");
+    // browser detect type of the button and grab it as default action, we can`t cancel it
+  }, true);
+
+  oneA.addEventListener("mouseup", function (e) {
+    e.target.removeAttribute("type");
     // browser detect type of the button and grab it as default action, we can`t cancel it
   }, true);
 
@@ -58,9 +73,25 @@
   four.addEventListener("click", function (e) {
     e.target.setAttribute("type", "reset");
   });
+  four.addEventListener("mouseup", function (e) {
+    e.target.setAttribute("type", "submit");
+  });
 
-  five.addEventListener("click", function (e) {
-    e.target.removeAttribute("reset");
+
+  // input handlers
+
+  // five.addEventListener("click", function (e) {
+  //   e.target.removeAttribute("type");
+  //   // browser detect type of the button and grab it as default action, we can`t cancel it
+  // }, true);
+
+  five.addEventListener("mouseup", function (e) {
+    e.target.removeAttribute("type");
+    // browser detect type of the button and grab it as default action, we can`t cancel it
+  }, true);
+
+  fiveA.addEventListener("mouseup", function (e) {
+    e.target.removeAttribute("type");
     // browser detect type of the button and grab it as default action, we can`t cancel it
   }, true);
 
@@ -77,6 +108,12 @@
   eight.addEventListener("click", function (e) {
     e.target.setAttribute("type", "reset");
   });
+
+  eight.addEventListener("mouseup", function (e) {
+    e.target.setAttribute("type", "reset");
+  });
+
+  // reset / submit
 
   window.addEventListener("submit", function (e) {
     e.preventDefault();

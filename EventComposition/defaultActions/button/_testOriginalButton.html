@@ -8,23 +8,32 @@
         <label>Type something...
             <input type="text">
         </label>
-        <original-button id="one" type="reset">remove reset</original-button>
+        <original-button>Just a button</original-button>
+        <original-button id="one" type="submit">remove submit</original-button>
+        <original-button id="oneA" type="reset">remove reset</original-button>
         <original-button id="two" type="submit">change submit to reset</original-button>
         <original-button id="three" type="reset">change reset to submit</original-button>
         <original-button id="four">set reset</original-button>
     </fieldset>
 </form>
 
+
 <script>
 
   const one = document.querySelector("#one");
+  const oneA = document.querySelector("#oneA");
   const two = document.querySelector("#two");
   const three = document.querySelector("#three");
   const four = document.querySelector("#four");
 
 
-  one.addEventListener("click", function (e) {
-    e.target.removeAttribute("reset");
+  one.addEventListener("mouseup", function (e) {
+    e.target.removeAttribute("type");
+    // browser detect type of the button and grab it as default action, we can`t cancel it
+  }, true);
+
+  oneA.addEventListener("mouseup", function (e) {
+    e.target.removeAttribute("type");
     // browser detect type of the button and grab it as default action, we can`t cancel it
   }, true);
 
