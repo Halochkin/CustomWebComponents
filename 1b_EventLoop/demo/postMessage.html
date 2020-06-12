@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<script>
+  (function () {
+    var idCb = {};
+
+    window.setZeroTimeout = function (task) {
+      const mid = "pm." + Math.random();
+      idCb[mid] = task;
+      window.postMessage(mid, "*");
+      return mid;
+    }
+    window.clearZeroTimeout = function (mid) {
+      delete idCb[mid];
+    }
+
+    function onMessage(evt) {
+      if (evt.source !== window)
+        return;
+      const mid = evt.data;
+      if (!idCb[mid])
+        return;
+      evt.stopImmediatePropagation();
+      const cb = idCb[mid];
+      delete idCb[mid];
+      cb();
+    }
+
+    window.addEventListener("message", onMessage);
+  })();
+</script>
+<script>
+  var result = [];
+
+  function log(txt) {
+    result.push(txt);
+  }
+
+  //setTimeout(function () {
+  log(document.readyState);
+  setTimeout(function () {
+    log("setTimeout 1")
+  });
+  setZeroTimeout(function () {
+    log("setZeroTimeout 1")
+  });
+  var mid1 = setTimeout(function () {
+    log("setTimeout x")
+  });
+  var mid2 = setZeroTimeout(function () {
+    log("setTimeout x")
+  });
+  clearTimeout(mid1);
+  clearZeroTimeout(mid2);
+  setTimeout(function () {
+    log("setTimeout 2")
+  });
+  setZeroTimeout(function () {
+    log("setZeroTimeout 2")
+  });
+  setTimeout(function () {
+    for (var i = 0; i < result.length; i++) {
+      document.body.innerHTML += result[i] + "<br>";
+    }
+  });
+  //}, 0);
+</script>

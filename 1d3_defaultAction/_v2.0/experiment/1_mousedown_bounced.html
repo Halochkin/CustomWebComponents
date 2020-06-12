@@ -1,0 +1,46 @@
+<script type="module">
+
+  import {} from "../src/joi2.js";
+
+  class BouncedMousedown {
+
+    constructor(root) {
+      this.root = root;
+      this._onMousedown = this.onMousedown.bind(this);
+    }
+
+    //todo should this be static?
+    //todo should this be xxxCallback()??
+    connect() {
+      this.root.addEventListener("mousedown", this._onMousedown, {captureToBubble: true, unstoppable: true});
+    }
+
+    //todo should this be static?
+    disconnect() {
+      this.root.removeEventListener("mousedown", this._onMousedown); //todo this is not implemented in the captureToBubble options
+    }
+
+    onMousedown(e) {
+      e.target.dispatchEvent(new MouseEvent("bounced-mousedown", {bubbles: true}), {bounce: true, async: true});
+      //todo the problem of the mutating event.target property. Remember that the .target is a mutable property.
+    }
+  }
+
+  class WebComp extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: "open"});
+      this.shadowRoot.innerHTML = "<h1>hello sunshine</h1>";
+      this.shadowRoot.addEventListener("bounced-mousedown", e => console.log(e.target));
+    }
+  }
+
+  //define event controller
+  window.defineEvent("bounced-mousedown", BouncedMousedown);
+  //define custom element
+  customElements.define("web-comp", WebComp);
+
+  window.addEventListener("bounced-mousedown", e => console.log(e.target));
+</script>
+
+<web-comp></web-comp>

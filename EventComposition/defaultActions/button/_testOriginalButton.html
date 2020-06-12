@@ -8,7 +8,7 @@
         <label>Type something...
             <input type="text">
         </label>
-        <original-button>Just a button</original-button>
+        <original-button id="zero">Just a button</original-button>
         <original-button id="one" type="submit">remove submit</original-button>
         <original-button id="oneA" type="reset">remove reset</original-button>
         <original-button id="two" type="submit">change submit to reset</original-button>
@@ -20,12 +20,18 @@
 
 <script>
 
+  const zero = document.querySelector("#zero");
   const one = document.querySelector("#one");
   const oneA = document.querySelector("#oneA");
   const two = document.querySelector("#two");
   const three = document.querySelector("#three");
   const four = document.querySelector("#four");
 
+
+  zero.addEventListener("mouseup", function (e) {
+    e.target._formElement.reset();
+    // browser detect type of the button and grab it as default action, we can`t cancel it
+  }, true);
 
   one.addEventListener("mouseup", function (e) {
     e.target.removeAttribute("type");

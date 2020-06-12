@@ -1,0 +1,206 @@
+<script>
+
+  //target => "eventName"/"eventName capture" => {cb, options}
+  const targetTypeLast = new WeakMap();
+
+  function getLast(target, type, cb, options) {
+    const capture = options instanceof Object ? options.capture : !!options;
+    const lookupName = capture ? type + " capture" : type;
+    return targetTypeLast.get(target)?.get(lookupName);
+  }
+
+  function setLast(target, type, cb, options) {
+    const capture = options instanceof Object ? options.capture : !!options;
+    const lookupName = capture ? type + " capture" : type;
+    let targetsMap = targetTypeLast.get(target);
+    if (!targetsMap)
+      targetTypeLast.set(target, targetsMap = new Map());
+    if (options.once) {
+      const og = cb;
+      cb = function (e) {
+        targetsMap.delete(lookupName);
+        og.call(this, e);
+      };
+    }
+    targetsMap.set(lookupName, {cb, options});
+    return cb;
+  }
+
+  function addLastEventListenerOption(proto) {
+    const ogAdd = proto.addEventListener;
+    const ogRemove = proto.removeEventListener;
+    Object.defineProperties(proto, {
+      addEventListener: {
+        value: function (type, cb, options) {
+          const oldLast = getLast(this, type, cb, options);
+          if (options?.last && oldLast)
+            throw new Error("only one last event listener can be added to a target for an event type at a time.");
+          if (options?.last) {
+            cb = setLast(this, type, cb, options);
+            return ogAdd.call(this, type, cb, options);
+          }
+          if (oldLast) {
+            this.removeEventListener(type, oldLast.cb, oldLast.options);
+            const res = ogAdd.call(this, type, cb, options);
+            ogAdd.call(this, type, oldLast.cb, oldLast.options);
+            return res;
+          }
+          return ogAdd.call(this, type, cb, options);
+        }
+      },
+      removeEventListener: {
+        value: function (type, cb, options) {
+          cb = getLast(this, type, cb, options)?.cb || cb;
+          ogRemove.call(this, type, cb, options);
+        }
+      }
+    });
+  }
+
+  addLastEventListenerOption(EventTarget.prototype);
+
+</script>
+
+
+<h1>Hello Sunshine!</h1>
+
+<script>
+
+  const funkyBoy = e => console.log("outer function");
+
+  function log(msg) {
+    console.log("Test", msg, ": done");
+  }
+
+  const h1 = document.querySelector("h1");
+
+  // test 1: no options
+  h1.addEventListener("click", function (e) {
+    console.log(e.currentTarget, "Test 1 : no options")
+  });
+  // test 2: empty object option
+  h1.addEventListener("click", function (e) {
+    console.log(e.currentTarget, "Test 2 : empty object options")
+  }, {});
+  // test 3: normal capture: true
+  h1.addEventListener("click", function (e) {
+    console.log(e.currentTarget, "Test 3 : normal capture: true")
+  }, false);
+  // test 4: {last: true}
+  h1.addEventListener("click", function (e) {
+    console.log(e.currentTarget, "Test 4 : {last: true} must be last one if there is not other event listeners with {last: true}")
+  }, {last: true});
+  // test 5: {last: 0}
+  h1.addEventListener("click", function (e) {
+    console.log(e.currentTarget, "Test 5 : {last: 0}")
+  }, {last: 0});
+  // test6: {last: 1}
+  try {
+    h1.addEventListener("click", function (e) {
+      console.error(e.currentTarget, "Test 6 : Error")
+    }, {last: 1});
+  } catch (e) {
+    console.log("Test 6 : {last: 1}")
+  }
+  // test 7: {last: "hello"} string value overwrite boolean
+  try {
+    h1.addEventListener("click", function (e) {
+      console.log("Test 7 : {last: 'hello'}")
+    }, {last: "hello"});
+  } catch (e) {
+    console.log("Test 7 : {last: 'hello'} string overwrite boolean")
+  }
+  // test 8: {capture: true, last: true}
+  h1.addEventListener("click", function (e) {
+    console.log(e.currentTarget, "Test 8 : {capture: true, last: true}")
+  }, {capture: false, last: false});
+  //test 9: {last: false}, normal capture: false
+  h1.addEventListener("click", function (e) {
+    console.log(e.currentTarget, "Test 9 : {last: false}, normal capture: true")
+  }, {last: false}, false);
+  // test 10: nested eventListeners
+  h1.addEventListener("click", function () {
+    h1.addEventListener("keypress", function (e) {
+      console.log(e.currentTarget, "Test 10 : nested eventListener")
+    }, {last: false});
+    h1.dispatchEvent(new KeyboardEvent("keypress"));
+  }, {last: false});
+  // test 11: redefine last event listener
+  try {
+    h1.addEventListener("click", function (e) {
+      console.error(e.currentTarget, "Test 11 : this must be an error")
+    }, {last: true});
+  } catch (e) {
+    console.log("Test 11 : Can not redefine last event listener.")
+  }
+  // test 12: arrow function
+  h1.addEventListener("click", e => {
+    console.log(e.currentTarget, "Test 12 : arrow function")
+  });
+  // test 13: outer callback function
+  h1.addEventListener("click", () => {
+    funkyBoy()
+  });
+  // test 14: removeEventListener() {last: true}  and then define new one
+  h1.addEventListener("click", () => {
+    h1.removeEventListener("keydown", e => {
+      console.log(e.currentTarget, "Test 14 : removeEventListener()")
+    }, {last: true});
+    try {
+      h1.addEventListener("keydown", e => {
+        console.log(e.currentTarget, "Test 14 : removeEventListener()")
+      }, {last: true});
+    } catch (e) {
+      console.log("Test 14: Bug: it is impossible to redefine last event listener ");
+    }
+
+    h1.dispatchEvent(new KeyboardEvent("keydown"));
+  });
+  // test 15: removeEventListener() {last: 1}  and then define new one
+  h1.addEventListener("click", () => {
+    h1.removeEventListener("keydown", e => {
+      console.log(e.currentTarget, "Test 15 : removeEventListener()")
+    }, {last: 1});
+    try {
+      h1.addEventListener("keydown", e => {
+        console.log(e.currentTarget, "Test 15 : removeEventListener()")
+      }, {last: 1});
+    } catch (e) {
+      console.log("Test 15: Bug: it is impossible to redefine last event listener with {last: 1}  ");
+    }
+
+    h1.dispatchEvent(new KeyboardEvent("keydown"));
+  });
+
+  // test 16: last event listener react to the same event several times
+  h1.addEventListener("click", function (e) {
+    h1.addEventListener("keyup", (e) => {
+      e.target, console.log("Test 16: must log twice")
+    }, {last: true});
+    h1.dispatchEvent(new KeyboardEvent("keyup"));
+    h1.dispatchEvent(new KeyboardEvent("keyup"));
+  });
+
+  // test 17: It is possible to add several different event listeners with a {last: true} option
+  h1.addEventListener("auxclick", function (e) {
+    console.log("Test 17: Other event listener with {last: option}, must be last one");
+  }, {last: true});
+
+  // test 18: We can not define last event listener one more time for the same event if we try to pass other function inside
+  try {
+    h1.addEventListener("auxclick", function (e) {
+      log(17)
+    }, {last: true});
+  } catch (e) {
+    console.log("Test 18: We can not define last event listener one more time for the same event if we try to pass other function inside");
+  }
+
+
+  h1.dispatchEvent(new MouseEvent("click"));
+  h1.dispatchEvent(new MouseEvent("auxclick"));
+
+
+</script>
+
+
+

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>hello-</h1>
+<script>
+
+  (function () {
+    //this regex is safe for polyfill definitions, as no js code can contain [native code] outside of comments.
+    var nate = /^\s*function\s+\w*\s*\([^\)]*\)\s*{\s*\[native code\]/;
+
+    function isNative(funkyBoy) {
+      return funkyBoy && nate.test(Function.prototype.toString.call(funkyBoy));
+    }
+
+    //we do not test for versions here..
+    //especially firefox has updated its core, and i assume there might be some differences in
+    //perforamance and queue priority
+    function browserEngine() {
+      if (!isNative(document.evaluate))
+        return "ie";                          //trident
+      if (!isNative(TextEncoder))       //(this test also includes safari <= 10.0)
+        return "edge";                        //EdgeHTML
+      var auxclick = Object.getOwnPropertyDescriptor(window, "onauxclick");
+      if (!isNative(auxclick && auxclick.set))
+        return "safari";                      //webkit
+      if (isNative(window["MIDIAccess"]))
+        return "chrome";                      //blink
+      return "firefox";                       //gecko
+    }
+
+    document.body.children[0].innerText += browserEngine();
+  })();
+  //https://en.wikipedia.org/wiki/Comparison_of_browser_engines
+  //https://stackoverflow.com/questions/6598945/detect-if-function-is-native-to-browser
+  //https://caniuse.com/#compare=ie+11,edge+12,edge+18&compare_cats=JS%20API
+</script>
+</body>
+</html>

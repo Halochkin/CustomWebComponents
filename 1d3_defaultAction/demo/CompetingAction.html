@@ -1,0 +1,97 @@
+<script src="../../1b_EventLoop/demo/toggleTick.js"></script>
+<script>
+  //return true if b is the same as a, a doesn`t exists, or b is inside a.
+  function isNested(a, b) {
+    return !a || a === b || a.contains(b);
+    //todo contains is too simple if b is within a shadowDOM. Must replace .contains with a more complex check
+  }
+
+  // //requires the toggleTick function
+  Object.defineProperty(Event.prototype, "addDefaultAction", {
+    value: function (cb, elementInPath) {
+      //todo this would not work with closed shadowDOM elements...
+      //todo Nothing like this would work with closed shadowDOM elements. because we wouldn't get the complete path.
+      //todo and, we would need to ensure that we are not going down into slotted composed events.
+      //todo is there a way to see if an element is in the propagation path if we have access to it?
+      //todo, yes, we could see it the closed shadowRoot host node is in the element. and then try to make some assumptions..
+      //todo, the problem is the stopPropagation torpedoes..
+      //todo, maybe we should just try to control the stopPropagation() calls instead?
+      //todo, maybe we could ensure that some event listeners are run regardless?
+      //todo, i don't want this...
+      //todo https://github.com/w3c/webcomponents/issues/378#issuecomment-179596975
+      //todo, this means that defaultActions must be added via an EarlyBird event listener on the shadowRoot of the closed shadowDOM.
+      //todo, such an event listener can be captureTorpedoed.
+      //todo, this again points to the need for a workaround to fix the stopPropagation() and stopImmediatePropagation()
+      //todo, I need to test how much time that would take.
+      //todo, we can assume that there will be at most 5 event listeners for any event. How much time is lost when stopPropagation is ignored as a platform issue
+      //todo, to enable a
+      if (this.composedPath().indexOf(elementInPath) === -1)
+        throw new Error("addDefaultAction(..., elementInPath) must be given an element in this event's propagation path.");
+      // the preventable element is above the  previously added default action happened below in the DOM
+      // and therefore essentially calls preventDefault() on the one attempted to be added here.
+      if (!isNested(this._defaultActionElement, elementInPath))
+        return false;
+      this._defaultActionElement = elementInPath;
+      if (this._defaultAction) {
+        this._defaultAction.reuse(cb.bind(elementInPath, this), this.type);
+        return true;
+      }
+      this._defaultAction = toggleTick(cb.bind(elementInPath, this), this.type);
+      return true;
+    },
+    writable: false
+  });
+</script>
+
+<style>
+    div {
+        border: 2px dotted grey;
+    }
+</style>
+
+<div action-one id="one">
+    default action one
+    <div action-two id="two">
+        default action two
+        <div action-three id="three">
+            default action three
+        </div>
+    </div>
+</div>
+
+<script>
+  function defaultActionOne(e) {
+    console.log("action one:", e.target.id, e.target === this);
+  }
+
+  function defaultActionTwo(e) {
+    console.log("action two:", e.target.id, e.target === this);
+  }
+
+  function defaultActionThree(e) {
+    console.log("action three:", e.target.id, e.target === this);
+  }
+
+  window.addEventListener("click", function (e) {
+    for (let el of e.composedPath()) {
+      if (el instanceof HTMLDivElement && el.hasAttribute("action-one"))
+        return e.addDefaultAction(defaultActionOne, el);
+    }
+  }, true);
+
+  window.addEventListener("click", function (e) {
+    for (let el of e.composedPath()) {
+      if (el instanceof HTMLDivElement && el.hasAttribute("action-two"))
+        return e.addDefaultAction(defaultActionTwo, el);
+    }
+  }, true);
+
+  window.addEventListener("click", function (e) {
+    for (let el of e.composedPath()) {
+      if (el instanceof HTMLDivElement && el.hasAttribute("action-three"))
+        return e.addDefaultAction(defaultActionThree, el);
+    }
+  }, true);
+
+  window.addEventListener("click", e => console.log(e.type));
+</script>

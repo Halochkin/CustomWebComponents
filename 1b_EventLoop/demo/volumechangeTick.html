@@ -1,0 +1,84 @@
+<!doctype html>
+<h1>hello sunshine</h1>
+<script>
+
+  console.log("--------");
+  const details = document.createElement("details");
+  details.ontoggle = function (e) {
+    console.log("toggle1")
+  };
+  document.body.appendChild(details);
+  details.open = true;
+  // Promise.resolve().then(details.remove.bind(details));
+
+  const audio = new Audio();
+
+  audio.onplaying = function (e) {
+    console.log(e.type)
+  };
+  audio.onratechange = function (e) {
+    console.log(e.type)
+  };
+  audio.onplay = function (e) {
+    console.log(e.type)
+  };
+  audio.onabort = function (e) {
+    console.log(e.type)
+  };
+  audio.onpause = function (e) {
+    console.log(e.type)
+  };
+  audio.onseeked = function (e) {
+    console.log(e.type)
+  };
+  audio.onseeking = function (e) {
+    console.log(e.type)
+  };
+  audio.onsuspend = function (e) {
+    console.log(e.type)
+  };
+
+
+  audio.src = "https://www.kozco.com/tech/piano2.wav";
+  audio.playbackRate = 0.5;
+  audio.controls = true;
+  audio.pause();
+  // audio.currentTime = 0.4;
+  document.body.appendChild(audio);
+
+
+  // Promise.resolve().then(audio.remove.bind(audio));  //this works in Chrome, but not in ff
+
+  // const details2 = document.createElement("details");
+  // details2.ontoggle = () => console.log("toggle2");
+  // document.body.appendChild(details2);
+  // details2.open = true;
+  // Promise.resolve().then(details.remove.bind(details2));
+
+  // const audio2 = document.createElement("audio");
+  // audio2.onplaying = () => console.log("onplaying2");
+  // audio2.setAttribute("src", "https://www.kozco.com/tech/piano2.wav");
+  // audio2.setAttribute("muted", "");
+  // document.head.appendChild(audio2);
+  // audio2.volume = 0.1;
+  // Promise.resolve().then(audio.remove.bind(audio2));//this doesn't work in ff
+
+
+  // Promise.resolve().then(function(e){ console.log("bruce wayne")});
+</script>
+
+
+<!--<!DOCTYPE html>-->
+
+<!--<script>-->
+<!--    window.addEventListener("click", function () {-->
+<!--      let timeStamp = performance.now();-->
+<!--      setTimeout(function() {console.log("boo1 array", performance.now() - timeStamp, "ms")},["boo"] );-->
+<!--      setTimeout(function() {console.log("boo2 string", performance.now() - timeStamp, "ms")},"lalala" );-->
+<!--      setTimeout(function() {console.log("boo3 true", performance.now() - timeStamp, "ms")},true);-->
+<!--      setTimeout(function() {console.log("boo4 false", performance.now() - timeStamp, "ms")},false);-->
+<!--      setTimeout(function() {console.log("boo5 0ms", performance.now() - timeStamp, "ms")},0);-->
+<!--      setTimeout(function() {console.log("boo6 100ms", performa
+ nce.now() - timeStamp, "ms")},100);-->
+<!--    })-->
+<!--</script>-->

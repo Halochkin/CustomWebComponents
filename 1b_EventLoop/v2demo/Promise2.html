@@ -1,0 +1,79 @@
+<h1>hello sunshine</h1>
+
+<script>
+
+  (async function () {
+
+    function parseNextTickArg(cbs) {
+      if (!cbs)
+        return [];
+      if (cbs instanceof Function)
+        return [cbs];
+      if (cbs instanceof Array)
+        return cbs.slice();    //avoids external mutations
+      throw new Error("only a Function, an array of functions, or falsy can be added to nextTick");
+    }
+
+    function addMesoLevelTasks(cbs, levels) {
+      var resolveCb;
+      var promise = new Promise(function (resolve) { //todo implement reject here
+        resolveCb = function mesoStepComplete() {
+          resolve(true);
+        };
+      });
+      cbs.push(resolveCb);
+      var level = levels.shift();
+      for (let i = 0; i < cbs.length; i++)
+        level.addEventListener("ratechange", cbs[i], true);
+      promise.nextMesoTick = function (cbs2) {
+        if (levels.length === 0)
+          throw new Error("cannot add any more mesotasks to this macrotask");
+        return addMesoLevelTasks(cbs2, levels);
+      };
+      return promise;
+    }
+
+    //levels: [ el ]
+    function ratechangeTickStart(cbs, mesoLevels) {
+      var levels = [];
+      for (let i = 0; i < mesoLevels; i++)
+        levels.push(document.createElement("span"));
+      var audio = document.createElement("audio");
+      audio.playbackRate = 2;
+      levels.push(audio);
+      for (let i = 1; i < levels.length; i++)
+        levels[i - 1].appendChild(levels[i]);
+      return levels;
+    }
+
+    window.nextTick = function (cbs, mesoLevels) {
+      mesoLevels = Math.max(parseInt(mesoLevels), 0);
+      cbs = parseNextTickArg(cbs);
+      var levels = ratechangeTickStart(cbs, mesoLevels);
+      return addMesoLevelTasks(cbs, levels);
+      //todo when nextMesoTick is called, the finish should be replace with a new function that replaces the true with a promise.
+    }
+  })();
+</script>
+
+<script>
+  (async function () {
+    function one() {
+      console.log("one");
+    }
+
+    function two() {
+      console.log("two");
+    }
+
+    const task = nextTick([one, two], 2);
+    console.log("a")
+    const res1 = await task;                        //the result here is just true, it would be better to have the result from the methods.
+    console.log("a")
+    const res2 = await task.nextMesoTick([two]);    //the result here is just true, it would be better to have the result from the methods.
+    console.log("a")
+    const res3 = await task.nextMesoTick([two]);    //the result here is just true, it would be better to have the result from the methods.
+    console.log("a")
+  })();
+
+</script>
