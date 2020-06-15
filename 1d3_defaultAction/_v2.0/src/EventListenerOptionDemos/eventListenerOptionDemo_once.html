@@ -90,18 +90,15 @@
 
   const h1 = document.querySelector("h1");
 
-
   // test 1: empty object option
   h1.addEventListener("click", function (e) {
     console.log("Test 1 : empty object options, expect twice")
   }, {});
 
-
   // test 2: normal capture: true
   h1.addEventListener("click", function (e) {
     console.log("Test 2 : normal capture: true, expect twice")
   }, false);
-
 
   h1.addEventListener("click", function (e) {
     console.log("Test 3: {once: true}, expect once")
@@ -111,17 +108,14 @@
     console.log("Test 3a: {once: undefined}, expect twice")
   }, {once: undefined});
 
-
   h1.addEventListener("click", function (e) {
     console.log("Test 4: {once: 1}, expect once")
   }, {once: 1});
-
 
   // Test 5, {capture: true, once: true}
   h1.addEventListener("click", function (e) {
     console.log("Test 5: {capture: true, once: true}, expect once")
   }, {capture: true, once: true});
-
 
   //test 6: {once: false}, normal capture: false
 
@@ -183,20 +177,12 @@
   h1.removeEventListener("click", listener, {once: false});
   h1.addEventListener("click", listener, {once: true});
 
-  test
-  13
-  :
-
-
   // debugger
 
   h1.addEventListener("click", () => playBoy("Test 14: add the same event listener twice, expected once"), {once: true});
   h1.addEventListener("click", () => playBoy("Test 14: add the same event listener twice, expected once"), {once: true});
 
-
   h1.dispatchEvent(new MouseEvent("click"));
   h1.dispatchEvent(new MouseEvent("click"));
 
-
-  //todo tests here
 </script>
