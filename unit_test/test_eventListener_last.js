@@ -345,7 +345,5 @@ export const addEventListenerLastNested = [
       return res === "abc"
     }
   },
-
-
 ]
 
