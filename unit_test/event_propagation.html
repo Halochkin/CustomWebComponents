@@ -1,0 +1,97 @@
+<script>
+  function runTests(tests, eventSystems) {
+    const results = {};
+    for (let {sysname, upgrade, downgrade} of eventSystems) {
+      results[sysname] = {};
+      setTimeout(upgrade);
+      for (let {name, fun, expect} of tests) {
+        setTimeout(fun);
+        setTimeout(function () {
+          results[sysname][name] = expect() ? '+' : "-";
+        });
+      }
+      setTimeout(downgrade);
+    }
+    setTimeout(function () {
+      console.table(results);
+    });
+  }
+</script>
+
+
+<script type="module">
+  import {testBasic} from "./testBasic.js";
+  import {testRegistry} from "./testRegistry.js";
+  import {tests} from "./test1.js";//todo this is a test for now
+  import {
+    addEventListenerLastBasic,
+    addEventListenerLastErrors,
+    addEventListenerLastNested
+  } from "./test_eventListener_last.js"
+
+  import {addEventTargetRegistry, getEventListeners} from "./getEventListeners.js";
+
+  const addEventListenerOG = EventTarget.prototype.addEventListener;
+  const removeEventListenerOG = EventTarget.prototype.removeEventListener;
+  const dispatchEventOG = EventTarget.prototype.dispatchEvent;
+  window.getEventListeners = function () {
+  };
+
+  function downgrade() {
+    EventTarget.prototype.addEventListener = addEventListenerOG;
+    EventTarget.prototype.removeEventListener = removeEventListenerOG;
+    EventTarget.prototype.dispatchEvent = dispatchEventOG;
+    window.getEventListeners = function () {
+    };
+  }
+
+  const eventSystems = [{
+    sysname: "NATIVE event system",
+    upgrade: function () {
+    },
+    downgrade: function () {
+    },
+  }, {
+    sysname: "REGISTER system",
+    upgrade: function () {
+      addEventTargetRegistry(EventTarget.prototype);
+      window.getEventListeners = getEventListeners;
+    },
+    downgrade: downgrade,
+  }]
+
+  const lastEventListenerBasic = [{
+    sysname: "Last listener basic",
+    upgrade: function () {
+      // const h1 = document.createElement("h1");
+    },
+    downgrade: function () {
+
+    }
+  }]
+
+  const lastEventListenerError = [{
+    sysname: "Last listener error",
+    upgrade: function () {
+      // const h1 = document.createElement("h1");
+    },
+    downgrade: function () {
+    }
+  }]
+
+  const lastEventListenerNestedListeners = [{
+    sysname: "Last listener nested last listeners",
+    upgrade: function () {
+      // const h1 = document.createElement("h1");
+    },
+    downgrade: function () {
+    }
+  }]
+
+  const alltests = testBasic.concat(testRegistry);
+  runTests(alltests, eventSystems);
+
+  runTests(addEventListenerLastBasic, lastEventListenerBasic);
+  runTests(addEventListenerLastErrors, lastEventListenerError);
+  runTests(addEventListenerLastNested, lastEventListenerNestedListeners);
+</script>
