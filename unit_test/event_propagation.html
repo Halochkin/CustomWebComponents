@@ -1,13 +1,14 @@
 <script>
   function runTests(tests, eventSystems) {
     const results = {};
+    for (let test of tests)
+      results[test.name] = {};
     for (let {sysname, upgrade, downgrade} of eventSystems) {
-      results[sysname] = {};
       setTimeout(upgrade);
       for (let {name, fun, expect} of tests) {
         setTimeout(fun);
         setTimeout(function () {
-          results[sysname][name] = expect() ? '+' : "-";
+          results[name][sysname] = expect() + 0;
         });
       }
       setTimeout(downgrade);
@@ -18,80 +19,132 @@
   }
 </script>
 
-
 <script type="module">
   import {testBasic} from "./testBasic.js";
+  import {dynamicTest} from "./testDynamic.js";
+  // let allTests = testBasic.concat(dynamicTest);
   import {testRegistry} from "./testRegistry.js";
+  // allTests = allTests.concat(testRegistry);
+  import {testOnce} from "./testOnce.js";
+  // allTests = allTests.concat(testOnce);
+  let allTests = testOnce;
+  import {testUnstoppable} from "./testUnstoppable.js";
+  // allTests = allTests.concat(testUnstoppable);
+  import {lastTest, lastErrorsTest} from "./testLast.js";
+  // allTests = allTests.concat(lastTest);
+  // allTests = allTests.concat(lastErrorsTest);
+  import {firstTest, firstErrorsTest} from "./testFirst.js";
+  // allTests = allTests.concat(firstTest);
+  // allTests = allTests.concat(firstErrorsTest);
   import {tests} from "./test1.js";//todo this is a test for now
-  import {
-    addEventListenerLastBasic,
-    addEventListenerLastErrors,
-    addEventListenerLastNested
-  } from "./test_eventListener_last.js"
+  // allTests = allTests.concat(tests);
 
   import {addEventTargetRegistry, getEventListeners} from "./getEventListeners.js";
+  import {patchEventListenerOptionOnce} from "./EventListenerOptionOnce.js";
+  import {addEventListenerOptionLast} from "./EventListenerOptionLast.js";
+  import {addEventListenerOptionFirst} from "./EventListenerOptionFirst.js";
+  import {addEventListenerOptionUnstoppable} from "./EventListenerOptionUnstoppable.js";
 
   const addEventListenerOG = EventTarget.prototype.addEventListener;
   const removeEventListenerOG = EventTarget.prototype.removeEventListener;
   const dispatchEventOG = EventTarget.prototype.dispatchEvent;
-  window.getEventListeners = function () {
-  };
+  const stopPropOG = Event.prototype.stopPropagation;
+  const stopImmediateOG = Event.prototype.stopImmediatePropagation;
 
   function downgrade() {
     EventTarget.prototype.addEventListener = addEventListenerOG;
     EventTarget.prototype.removeEventListener = removeEventListenerOG;
     EventTarget.prototype.dispatchEvent = dispatchEventOG;
+    Event.prototype.stopPropagation = stopPropOG;
+    Event.prototype.stopImmediatePropagation = stopImmediateOG;
     window.getEventListeners = function () {
+      return [];
     };
   }
 
-  const eventSystems = [{
-    sysname: "NATIVE event system",
-    upgrade: function () {
-    },
-    downgrade: function () {
-    },
-  }, {
-    sysname: "REGISTER system",
-    upgrade: function () {
-      addEventTargetRegistry(EventTarget.prototype);
-      window.getEventListeners = getEventListeners;
-    },
-    downgrade: downgrade,
-  }]
+  downgrade();
 
-  const lastEventListenerBasic = [{
-    sysname: "Last listener basic",
-    upgrade: function () {
-      // const h1 = document.createElement("h1");
-    },
-    downgrade: function () {
+  const eventSystems = [
+    //{
+    //   sysname: "NATIVE",
+    //   upgrade: function () {
+    //   },
+    //   downgrade: function () {
+    //   },
+    // }, {
+    //   sysname: "REGISTER",
+    //   upgrade: function () {
+    //     addEventTargetRegistry(EventTarget.prototype);
+    //     window.getEventListeners = getEventListeners;
+    //   },
+    //   downgrade: downgrade,
+    // }, {
+    //   sysname: "ONCE",
+    //   upgrade: function () {
+    //     patchEventListenerOptionOnce(EventTarget.prototype);
+    //   },
+    //   downgrade: downgrade,
+    // }, {
+    //   sysname: "LAST",
+    //   upgrade: function () {
+    //     addEventListenerOptionLast(EventTarget.prototype);
+    //   },
+    //   downgrade: downgrade,
+    // }, {
+    //   sysname: "UNSTOPPABLE",
+    //   upgrade: function () {
+    //     addEventListenerOptionUnstoppable(EventTarget.prototype, Event.prototype);
+    //   },
+    //   downgrade: downgrade,
+    // }, {
+    //   sysname: "FIRST+REGISTER",
+    //   upgrade: function () {
+    //     addEventListenerOptionFirst(EventTarget.prototype);
+    //     addEventTargetRegistry(EventTarget.prototype);
+    //     window.getEventListeners = getEventListeners;
+    //   },
+    //   downgrade: downgrade,
+    // },
+    //   {
+    //   sysname: "LAST+ONCE",
+    //   upgrade: function () {
+    //     patchEventListenerOptionOnce(EventTarget.prototype);
+    //     addEventListenerOptionLast(EventTarget.prototype);
+    //   },
+    //   downgrade: downgrade,
+    // }, {
+    //   sysname: "ONCE+LAST+REGISTER",
+    //   upgrade: function () {
+    //     patchEventListenerOptionOnce(EventTarget.prototype);
+    //     addEventListenerOptionLast(EventTarget.prototype);
+    //     addEventTargetRegistry(EventTarget.prototype);
+    //     window.getEventListeners = getEventListeners;
+    //   },
+    //   downgrade: downgrade,
+    // },
+    //   {
+    //   sysname: "ONCE+LAST+FIRST+REGISTER",
+    //   upgrade: function () {
+    //     patchEventListenerOptionOnce(EventTarget.prototype);
+    //     addEventListenerOptionLast(EventTarget.prototype);
+    //     addEventListenerOptionFirst(EventTarget.prototype);
+    //     addEventTargetRegistry(EventTarget.prototype);
+    //     window.getEventListeners = getEventListeners;
+    //   },
+    //   downgrade: downgrade,
+    // },
+    {
+      sysname: "ONCE+UNSTOPPABLE+LAST+FIRST+REGISTER",
+      upgrade: function () {
+        patchEventListenerOptionOnce(EventTarget.prototype);
+        addEventListenerOptionUnstoppable(EventTarget.prototype, Event.prototype);
+        // addEventListenerOptionLast(EventTarget.prototype);
+        // addEventListenerOptionFirst(EventTarget.prototype);
+        // addEventTargetRegistry(EventTarget.prototype);
+        window.getEventListeners = getEventListeners;
+      },
+      downgrade: downgrade,
+    }];
 
-    }
-  }]
-
-  const lastEventListenerError = [{
-    sysname: "Last listener error",
-    upgrade: function () {
-      // const h1 = document.createElement("h1");
-    },
-    downgrade: function () {
-    }
-  }]
-
-  const lastEventListenerNestedListeners = [{
-    sysname: "Last listener nested last listeners",
-    upgrade: function () {
-      // const h1 = document.createElement("h1");
-    },
-    downgrade: function () {
-    }
-  }]
-
-  const alltests = testBasic.concat(testRegistry);
-  runTests(alltests, eventSystems);
-
-  runTests(addEventListenerLastBasic, lastEventListenerBasic);
-  runTests(addEventListenerLastErrors, lastEventListenerError);
-  runTests(addEventListenerLastNested, lastEventListenerNestedListeners);
+  runTests(allTests, eventSystems);
 </script>

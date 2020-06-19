@@ -1,0 +1,148 @@
+<script>
+  function compareResults(expect, res, nativeRes, notFirst) {
+    res = (res === expect ? 1 : res + " != " + expect);
+    if (notFirst && res === nativeRes)
+      res = res === 1 ? null : undefined;
+    return res;
+  }
+
+  function runTests(eventSystems, tests) {
+    const results = {};
+    let nativeSysName = eventSystems[0].sysname;
+    for (let test of tests)
+      results[test.name] = {};
+    for (let {sysname, upgrade, downgrade} of eventSystems) {
+      setTimeout(upgrade);
+      for (const {name, fun, expect, result} of tests) {
+        setTimeout(fun);
+        setTimeout(function () {
+          const res = result();
+          const expected = expect instanceof Function ? expect() : expect;
+          const nativeRes = results[name][nativeSysName];
+          results[name][sysname] = compareResults(expected, res, nativeRes, sysname !== nativeSysName);
+        });
+      }
+      setTimeout(downgrade);
+    }
+    setTimeout(function () {
+      console.table(results);
+    });
+  }
+</script>
+
+<script type="module">
+  import {
+    addEventTargetRegistry as addEventTargetRegistry1,
+    getEventListeners as getEventListeners1
+  } from "./getEventListeners.js";
+  import {
+    addEventTargetRegistry as addEventTargetRegistry2,
+    getEventListeners as getEventListeners2
+  } from "./getEventListeners_once.js";
+  import {
+    addEventTargetRegistry as addEventTargetRegistry3,
+    getEventListeners as getEventListeners3
+  } from "./getEventListeners_once_last.js";
+  import {addEventTargetRegistry, getEventListeners} from "./getEventListeners_once_last_first.js";
+  import {addEventListenerOptionUnstoppable} from "./EventListenerOptionUnstoppable.js";
+
+  const addEventListenerOG = EventTarget.prototype.addEventListener;
+  const removeEventListenerOG = EventTarget.prototype.removeEventListener;
+  const dispatchEventOG = EventTarget.prototype.dispatchEvent;
+  const stopPropOG = Event.prototype.stopPropagation;
+  const stopImmediateOG = Event.prototype.stopImmediatePropagation;
+  const cancelBubbleOG = Object.getOwnPropertyDescriptor(Event.prototype, "cancelBubble");
+
+  function downgrade() {
+    EventTarget.prototype.addEventListener = addEventListenerOG;
+    EventTarget.prototype.removeEventListener = removeEventListenerOG;
+    EventTarget.prototype.dispatchEvent = dispatchEventOG;
+    Event.prototype.stopPropagation = stopPropOG;
+    Event.prototype.stopImmediatePropagation = stopImmediateOG;
+    Object.defineProperty(Event.prototype, "cancelBubble", cancelBubbleOG);
+    window.getEventListeners = function () {
+      return [];
+    };
+  }
+
+  downgrade();
+
+  const eventSystems = [{
+    sysname: "NATIVE",
+    upgrade: function () {
+    },
+    downgrade: function () {
+    },
+  }, {
+    sysname: "UNSTOPPABLE",
+    upgrade: function () {
+      addEventListenerOptionUnstoppable(EventTarget.prototype, Event.prototype);
+    },
+    downgrade: downgrade,
+  }, {
+    sysname: "REGISTER",
+    upgrade: function () {
+      addEventTargetRegistry1(EventTarget.prototype);
+      window.getEventListeners = getEventListeners1;
+    },
+    downgrade: downgrade,
+  }, {
+    sysname: "REGISTER_once",
+    upgrade: function () {
+      addEventTargetRegistry2(EventTarget.prototype);
+      window.getEventListeners = getEventListeners2;
+    },
+    downgrade: downgrade,
+  }, {
+    sysname: "REGISTER_once_last",
+    upgrade: function () {
+      addEventTargetRegistry3(EventTarget.prototype);
+      window.getEventListeners = getEventListeners3;
+    },
+    downgrade: downgrade,
+  }, {
+    sysname: "REGISTER_once_last_first",
+    upgrade: function () {
+      addEventTargetRegistry(EventTarget.prototype);
+      window.getEventListeners = getEventListeners;
+    },
+    downgrade: downgrade,
+  }, {
+    sysname: "UNSTOPPABLE+REGISTER_once_last_first",
+    upgrade: function () {
+      addEventListenerOptionUnstoppable(EventTarget.prototype, Event.prototype);
+      addEventTargetRegistry(EventTarget.prototype);
+      window.getEventListeners = getEventListeners;
+    },
+    downgrade: downgrade,
+  }];
+
+  import {testBasic} from "./unitTests/testBasic.js";
+  import {dynamicTest} from "./unitTests/testDynamic.js";
+  import {testRegistry} from "./unitTests/testRegistry.js";
+  import {testOnce} from "./unitTests/testOnce.js";
+  import {testUnstoppable} from "./unitTests/testUnstoppable.js";
+  import {lastTest, lastErrorsTest} from "./unitTests/testLast.js";
+  import {firstTest, firstErrorsTest} from "./unitTests/testFirst.js";
+  import {testProp} from "./unitTests/testPropagation.js";     //todo this is a test for now
+
+  import {shadowTorpedo} from "./unitTests/shadowTorpedo.js";     //todo this is a test for now
+
+
+  runTests(eventSystems, testBasic);
+  runTests(eventSystems, dynamicTest);
+  runTests(eventSystems, testRegistry);
+  runTests(eventSystems, testOnce);
+  runTests(eventSystems, testUnstoppable);
+  runTests(eventSystems, lastTest);
+  runTests(eventSystems, lastErrorsTest);
+  runTests(eventSystems, firstTest);
+  runTests(eventSystems, firstErrorsTest);
+  runTests(eventSystems, testProp);
+  runTests(eventSystems, shadowTorpedo);
+
+  //todo
+  // 1. cancelBubble
+  // 2. cancelBubbleImmediately
+  // 3. test these
+</script>
