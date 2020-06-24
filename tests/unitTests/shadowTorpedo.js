@@ -5,13 +5,6 @@ let shadow;
 
 template.innerHTML = `<closed-comp></closed-comp>`;
 
-// template.innerHTML =
-//   `<div id="root">
-//   <slot-comp>
-//     <shadow-comp></shadow-comp>
-//   </slot-comp>
-// </div>`;
-
 class ClosedComp extends HTMLElement {
   constructor() {
     super();
@@ -27,13 +20,6 @@ class ClosedComp extends HTMLElement {
 
 customElements.define("closed-comp", ClosedComp);
 
-
-// wc.addEventListener("click", e => console.log(e.type, "lightDOM click capture"), true);
-// wc.addEventListener("dblclick", e => console.log(e.type, "lightDOM dblclick"), true);
-// wc.addEventListener("click", e => console.log(e.type, "lightDOM click target"));         //now you see me,
-// wc.addEventListener("dblclick", e => console.log(e.type, "lightDOM dblclick target"));   //now you don't.
-
-
 // //method that produce a new version of this DOM each time.
 function cleanDom() {
   const root = document.querySelector("#root");
@@ -43,7 +29,6 @@ function cleanDom() {
   const dom = {
     wc: document.querySelector("closed-comp"),
     shadow: shadow,
-
   }
 
   addListenersToDOM(dom);
@@ -76,8 +61,6 @@ function addListenersToDOM(dom) {
       res2 += "+";
       res3 += e.eventPhase;
     });
-
-
   }
 }
 
