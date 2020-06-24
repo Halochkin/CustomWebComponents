@@ -1,11 +1,22 @@
 //template with slotted web comp with shadowDOM
 const template = document.createElement("template");
-template.innerHTML =
-  `<div id="root">
+template.innerHTML = `
+<div id="root">
   <slot-comp>
     <shadow-comp></shadow-comp>
   </slot-comp>
 </div>`;
+
+// Flattened DOM                   | DOM context
+//----------------------------------------------------------------
+//  div                            | main
+//    slot-comp                    | main
+//      slot-comp#root             | slot-comp#root
+//        span                     | slot-comp#root
+//          slot                   | slot-comp#root
+//            shadow-comp          | main
+//              shadow-comp#root   | shadow-comp#root
+//                h1               | shadow-comp#root
 
 class SlotComp extends HTMLElement {
   constructor() {
@@ -46,6 +57,10 @@ function cleanDom() {
   return dom;
 }
 
+let res1 = "";
+let res2 = "";
+let res3 = "";
+
 function addListenersToDOM(dom) {
   for (let elName in dom) {
     dom[elName].addEventListener("click", function (e) {
@@ -61,9 +76,6 @@ function addListenersToDOM(dom) {
   }
 }
 
-let res1 = "";
-let res2 = "";
-let res3 = "";
 export const testProp = [{
   name: "propagation: composed: NO bubbles: NO",
   fun: function () {

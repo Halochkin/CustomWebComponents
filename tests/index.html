@@ -44,7 +44,7 @@
     getEventListeners as getEventListeners3
   } from "./getEventListeners_once_last.js";
   import {addEventTargetRegistry, getEventListeners} from "./getEventListeners_once_last_first.js";
-  import {addEventListenerOptionUnstoppable} from "./EventListenerOptionUnstoppable.js";
+  import {addEventIsStoppedScoped, addEventListenerOptionScopedUnstoppable, isStopped} from "./ScopedEventListeners.js";
 
   const addEventListenerOG = EventTarget.prototype.addEventListener;
   const removeEventListenerOG = EventTarget.prototype.removeEventListener;
@@ -63,23 +63,45 @@
     window.getEventListeners = function () {
       return [];
     };
+    window.isStopped = function (event, scoped) {
+      return event.cancelBubble;
+    };
   }
 
   downgrade();
 
-  const eventSystems = [{
-    sysname: "NATIVE",
-    upgrade: function () {
+  const eventSystems = [
+    {
+      sysname: "NATIVE",
+      upgrade: function () {
+      },
+      downgrade: function () {
+      },
     },
-    downgrade: function () {
-    },
-  }, {
-    sysname: "UNSTOPPABLE",
-    upgrade: function () {
-      addEventListenerOptionUnstoppable(EventTarget.prototype, Event.prototype);
-    },
-    downgrade: downgrade,
-  }, {
+    {
+      sysname: "SCOPED_STOP",
+      upgrade: function () {
+        //define own monkeypatch ( stopPropagation / stopImmediatePropagation / cancelBubble )
+        addEventIsStoppedScoped(Event.prototype);
+        //define addEventListener() / removeEventListener()
+        addEventListenerOptionScopedUnstoppable(EventTarget.prototype)
+        // export isStopped() and define global property
+        window.isStopped = isStopped;
+      },
+      downgrade: downgrade,
+      // }, { //todo
+      //   sysname: "SCOPED_STOP_BY_DEFAULT",
+      //   upgrade: function () {
+      //     addEventIsStoppedScoped(Event.prototype);
+      //     addEventListenerOptionScopedUnstoppable(EventTarget.prototype)
+      //     window.isStopped = isStopped;
+      //     Object.defineProperty(Event.prototype, "isScoped", {value: true});
+      //   },
+      //   downgrade: function(){
+      //     downgrade();
+      //     Object.defineProperty(Event.prototype, "isScoped", {value: undefined});
+      //   }
+    }, {
     sysname: "REGISTER",
     upgrade: function () {
       addEventTargetRegistry1(EventTarget.prototype);
@@ -108,41 +130,47 @@
     },
     downgrade: downgrade,
   }, {
-    sysname: "UNSTOPPABLE+REGISTER_once_last_first",
-    upgrade: function () {
-      addEventListenerOptionUnstoppable(EventTarget.prototype, Event.prototype);
-      addEventTargetRegistry(EventTarget.prototype);
-      window.getEventListeners = getEventListeners;
-    },
-    downgrade: downgrade,
-  }];
+      sysname: "SCOPED_STOP+REGISTER_once_last_first",
+      upgrade: function () {
+        addEventIsStoppedScoped(Event.prototype);
+        addEventListenerOptionScopedUnstoppable(EventTarget.prototype)
+        window.isStopped = isStopped;
+        // addEventListenerOptionUnstoppable(EventTarget.prototype, Event.prototype);
+        addEventTargetRegistry(EventTarget.prototype);
+        window.getEventListeners = getEventListeners;
+      },
+      downgrade: downgrade,
+    }];
 
-  import {testBasic} from "./unitTests/testBasic.js";
-  import {dynamicTest} from "./unitTests/testDynamic.js";
-  import {testRegistry} from "./unitTests/testRegistry.js";
-  import {testOnce} from "./unitTests/testOnce.js";
-  import {testUnstoppable} from "./unitTests/testUnstoppable.js";
-  import {lastTest, lastErrorsTest} from "./unitTests/testLast.js";
-  import {firstTest, firstErrorsTest} from "./unitTests/testFirst.js";
-  import {testProp} from "./unitTests/testPropagation.js";     //todo this is a test for now
+  // import {testBasic} from "./unitTests/testBasic.js";
+  // import {dynamicTest} from "./unitTests/testDynamic.js";
+  // import {testRegistry} from "./unitTests/testRegistry.js";
+  // import {testOnce} from "./unitTests/testOnce.js";
+  // import {testUnstoppable, cancelBubbleTests} from "./unitTests/testUnstoppable.js";
+  // import {lastTest, lastErrorsTest} from "./unitTests/testLast.js";
+  // import {firstTest, firstErrorsTest} from "./unitTests/testFirst.js";
+  // import {testProp} from "./unitTests/testPropagation.js";
+  import {testStopProp, testStopProp2, testStopProp3} from "./unitTests/testStopPropagation.js";
+  import {testIsStopped} from "./unitTests/testIsStopped.js";
 
-  import {shadowTorpedo} from "./unitTests/shadowTorpedo.js";     //todo this is a test for now
-
-
-  runTests(eventSystems, testBasic);
-  runTests(eventSystems, dynamicTest);
-  runTests(eventSystems, testRegistry);
-  runTests(eventSystems, testOnce);
-  runTests(eventSystems, testUnstoppable);
-  runTests(eventSystems, lastTest);
-  runTests(eventSystems, lastErrorsTest);
-  runTests(eventSystems, firstTest);
-  runTests(eventSystems, firstErrorsTest);
-  runTests(eventSystems, testProp);
-  runTests(eventSystems, shadowTorpedo);
+  // runTests(eventSystems, testBasic);
+  // runTests(eventSystems, dynamicTest);
+  // runTests(eventSystems, testRegistry);
+  // runTests(eventSystems, testOnce);
+  // runTests(eventSystems, testUnstoppable);
+  // runTests(eventSystems, cancelBubbleTests);
+  // runTests(eventSystems, lastTest);
+  // runTests(eventSystems, lastErrorsTest);
+  // runTests(eventSystems, firstTest);
+  // runTests(eventSystems, firstErrorsTest);
+  // runTests(eventSystems, testProp);
+  runTests(eventSystems, testStopProp);
+  runTests(eventSystems, testStopProp2);
+  runTests(eventSystems, testStopProp3);
+  // runTests(eventSystems, testIsStopped);
 
   //todo
-  // 1. cancelBubble
-  // 2. cancelBubbleImmediately
-  // 3. test these
+  // 1. test stopPropagation thoroughly
+  // 2. perform the same check outside in the dispatchEvent loop as is done inside in the scopedStop wrappers.
+  //this is redundant.. we could have a wrapper method for that one..
 </script>

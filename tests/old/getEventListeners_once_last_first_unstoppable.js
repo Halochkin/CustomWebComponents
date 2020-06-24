@@ -94,7 +94,6 @@ function isCurrentlyStopped(event) {
     return false;
   return true;
 }
-
 //target* => cb* => type+" "+capture => cbOnce
 const stoppableWrappers = new WeakMap();
 
@@ -124,7 +123,6 @@ function getWrapper(target, type, options, cb) {
     return null;
   return typeDict[makeKey(type, options)] || null;
 }
-
 //unstoppable
 
 
