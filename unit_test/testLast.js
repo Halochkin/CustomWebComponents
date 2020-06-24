@@ -142,17 +142,18 @@ export const lastTest = [{
   expect: function () {
     return res === "b";
   }
-}, {
-  name: "Last: removeEventListener() {last: true} when there is no event listener to remove",
-  fun: function () {
-    res = "";
-    const h1 = document.createElement("h1");
-    h1.removeEventListener("click", function (e) {
-      res += "a";
-    });
-  },
-  expect: function () {
-    return res === "";//todo we should somehow here check the last register.
+},
+  {
+    name: "Last: removeEventListener() {last: true} when there is no event listener to remove",
+    fun: function () {
+      res = "";
+      const h1 = document.createElement("h1");
+      h1.removeEventListener("click", function (e) {
+        res += "a";
+      });
+    },
+    expect: function () {
+      return res === "";//todo we should somehow here check the last register.
   }
 }];
 

@@ -261,7 +261,7 @@ export const testStopProp3 = [
 
       // #document
       dom.shadowH1.addEventListener("click", function (e) {
-        e.stopPropagation();
+        e.stopImmediatePropagation();
       }, true);
 
       dom.div.addEventListener("click", function (e) {
