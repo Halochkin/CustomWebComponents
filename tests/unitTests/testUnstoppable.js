@@ -208,7 +208,6 @@ export const cancelBubbleTests = [{
     function a(e) {
       res += "a";
     }
-
     h1.addEventListener("click", a);
     const click = new Event("click");
     click.stopPropagation();
