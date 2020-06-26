@@ -18,39 +18,31 @@ function makeListenerOptionsTest(usecase, values, options) {
 
     const usecaseFlat = usecase.flat(Infinity);
 
+    for (let target of usecaseFlat) {
 
-    // for (let target of usecaseFlat) {
+      for (let option of options) {
 
-    for (let option of options) {
+        for (let value of values) {
+          console.warn("---- value");
+          let opts = {};
+          opts[option] = value;
+          usecaseFlat[0].addEventListener("click", function () {
+            if (option === "once")
+              return res += "1";
+            else if (option === "first")
+              return res += "0";
+            // something like this
+            return res += "+";
 
-      console.warn("---- opts", option);
-
-      for (let value of values) {
-        console.warn("---- value");
-
-        let opts = {};
-        opts[option] = value;
-
-        usecaseFlat[0].addEventListener("click", function () {
+          }, opts);
+          target.dispatchEvent(new Event("click"));
           if (option === "once")
-            return res += "1";
-          else if (option === "first")
-            return res += "0";
-          // something like this
-
-          return res += "+";
-
-        }, opts);
-
-
-        usecaseFlat[0].dispatchEvent(new Event("click"));
-        if (option === "once")
-          usecaseFlat[0].dispatchEvent(new Event("click"));
+            target.dispatchEvent(new Event("click"));
+        }
       }
     }
-  }
 
-  // }
+  }
 }
 
 
