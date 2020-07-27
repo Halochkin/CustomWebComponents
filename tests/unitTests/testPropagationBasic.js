@@ -1,28 +1,27 @@
-import {eventTargetName, popTargets, useCases} from "./useCase1.js";
-import {filterComposedTargets} from "../dispatchEventOptionAsync.js";
+import {eventTargetName} from "./useCase1.js";
+import {filterComposedTargets, lastPropagationTarget} from "../computePaths.js";
 
-let res;
 
-function result() {
-  return res;
-}
-
-function addEventListeners(targets) {
+function addEventListeners(targets, res) {//todo push this into the usecase file?
   for (let el of targets) {
     let name = eventTargetName(el);
-    const capture = name.toUpperCase() + " ";
-    const bubble = name.toLowerCase() + " ";
     el.addEventListener("click", function (e) {
-      res += capture;
+      res.push(name.toUpperCase() + " ");
     }, true);
     el.addEventListener("click", function (e) {
-      res += bubble;
+      res.push(name.toLowerCase() + " ");
     });
   }
 }
 
-function makeExpectationBubblesComposed(scopedPath, bubbles) {
-  const bubbleOrTargetTrailNodes = bubbles ?
+
+function makeExpectationBubblesComposed(usecase, options) {
+  let scopedPath = usecase();
+  if (!options.composed) {
+    while (scopedPath[0] instanceof Array)
+      scopedPath = scopedPath[0];
+  }
+  const bubbleOrTargetTrailNodes = options.bubbles ?
     scopedPath.flat(Infinity) :
     filterComposedTargets(scopedPath);
   const captureTrailNodes = scopedPath.flat(Infinity).reverse();
@@ -33,6 +32,9 @@ function makeExpectationBubblesComposed(scopedPath, bubbles) {
   return captureTrail.join(" ") + " " + bubbleOrTargetTrail.join(" ") + " ";
 }
 
+export const basicPropTest = [];
+
+
 const propAlternatives = [
   {composed: true, bubbles: true},
   {composed: true, bubbles: false},
@@ -40,37 +42,19 @@ const propAlternatives = [
   {composed: false, bubbles: false}
 ];
 
-export const basicPropTest = [];
-//composed and bubbles
-
 for (let options of propAlternatives) {
-  for (let usecase of useCases) {
-
-    //att!! reusing usecase elements and listeners between tests
-    const scopedPath = usecase.makeDomBranch();
-    const targets = scopedPath.flat(Infinity);
-    addEventListeners(targets);
-
-    for (let i = 0; i < targets.length; i++) {
-
-      let scopedPathSlice = popTargets(scopedPath, i);
-      if (!options.composed) {
-        while (scopedPathSlice[0] instanceof Array)
-          scopedPathSlice = scopedPathSlice[0];
-      }
-
-      let target = targets[i];
-
-      let expect = makeExpectationBubblesComposed(scopedPathSlice, options.bubbles);
-      basicPropTest.push({
-        name: `propagation: ${JSON.stringify(options)}: ${usecase.name} ${i}`,
-        fun: function () {
-          res = "";
-          target.dispatchEvent(new Event("click", options));
-        },
-        expect,
-        result
-      });
+  basicPropTest.push({
+    name: `propagation: ${JSON.stringify(options)}`,
+    fun: function (res, usecase) {
+      const targets = usecase().flat(Infinity);
+      addEventListeners(targets, res);
+      targets[0].dispatchEvent(new Event("click", options));
+    },
+    expect: function (usecase) {
+      return makeExpectationBubblesComposed(usecase, options);
     }
-  }
+  });
 }
+
+
+

@@ -18,6 +18,45 @@ class ShadowComp extends HTMLElement {
 
 customElements.define("shadow-comp", ShadowComp);
 
+class ClosedShadow extends HTMLElement {
+  constructor() {
+    super();
+    let shadow = this.attachShadow({mode: "open"});
+    shadow.innerHTML = "<slot name='one'><h1>hi!</h1></slot>";
+  }
+}
+
+customElements.define("closed-shadow", ClosedShadow);
+
+
+class ShadowButton extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({mode: "open"});
+  }
+}
+
+customElements.define("shadow-btn", ShadowButton);
+
+class PassePartoutBtn extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({mode: "open"});
+  }
+}
+
+customElements.define("passepartout-btn", PassePartoutBtn);
+
+class GreenframeBtn extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({mode: "open"});
+    this.shadowRoot.innerHTML = `<div></div>`;
+  }
+}
+
+customElements.define("greenframe-btn", GreenframeBtn);
+
 class NestedShadow extends HTMLElement {
   constructor() {
     super();
@@ -38,6 +77,120 @@ class MatroschkaComp extends HTMLElement {
 
 customElements.define("matroschka-comp", MatroschkaComp);
 
+
+class OuterComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({mode: "open"});
+    this.shadowRoot.innerHTML = `<div></div>`;
+  }
+}
+
+customElements.define("outer-comp", OuterComponent);
+
+class InnerComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({mode: "open"});
+    this.shadowRoot.innerHTML = `<div></div>`;
+  }
+}
+
+customElements.define("inner-comp", InnerComponent);
+
+
+//useCase1
+// Flattened DOM                   | DOM context
+//----------------------------------------------------------------
+//  div                            | 1. main
+//    closed-shadow                | 1. main
+//      closed-shadow#root         | A. closed-shadow#root
+//        slot                     | A. closed-shadow#root
+//          h1                     | A. closed-shadow#root
+//          p                      | A. closed-shadow#root
+//          span                   | A. closed-shadow#root
+//----------------------------------------------------------------
+//
+//<div>
+//  <closed-shadow>
+//    <closed-shadow#shadowRoot>
+//     <slot name="one">
+//       <h1></h1>
+//       <p></p>
+//       <span></span>
+//     </slot>
+//    </closed-shadow#shadowRoot>
+//  </closed-shadow>
+//</div>
+
+
+function slottedShadow() {
+  let div = document.createElement("div");
+  let closedShadow = document.createElement("closed-shadow");
+  let slotted1 = document.createElement("p");
+  let slotted2 = document.createElement("span");
+  slotted1.setAttribute("slot", "one");
+  slotted2.setAttribute("slot", "one");
+
+  let closedShadowRoot = closedShadow.shadowRoot;
+  let closedShadowRootChild = closedShadow.shadowRoot.children[0];
+  let closedShadowRootChildChild = closedShadowRootChild.children[0];
+
+  div.appendChild(closedShadow);
+  closedShadow.appendChild(slotted1);
+  closedShadow.appendChild(slotted2);
+
+  const usecase = [
+    slotted1,
+    slotted2, [
+      closedShadowRootChildChild, [
+        closedShadowRootChild, [
+          closedShadowRoot, [
+            closedShadow, [
+              div
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+
+  Object.freeze(usecase)
+  return usecase;
+}
+
+
+function innerShadow() {
+  let divOuter = document.createElement("div");
+  let outerComponent = document.createElement("outer-comp");
+  let outerComponentShadow = outerComponent.shadowRoot;
+  let outerComponentShadowChild = outerComponentShadow.firstChild;
+  let innerComponent = document.createElement("inner-comp");
+  let innerComponentShadow = innerComponent.shadowRoot;
+  let innerComponentShadowChild = innerComponentShadow.firstChild;
+  let h1 = document.createElement("h1");
+
+
+  divOuter.appendChild(outerComponent);
+  outerComponentShadowChild.appendChild(innerComponent);
+  innerComponentShadowChild.appendChild(h1);
+
+  const usecase = [
+    h1,
+    innerComponentShadowChild,
+    innerComponentShadow, [
+      innerComponent,
+      outerComponentShadowChild,
+      outerComponentShadow, [
+        outerComponent, divOuter
+      ]
+    ]
+  ]
+
+  Object.freeze(usecase, true);
+  return usecase;
+}
+
 //useCase1
 // Flattened DOM                   | DOM context
 //----------------------------------------------------------------
@@ -49,7 +202,6 @@ customElements.define("matroschka-comp", MatroschkaComp);
 //            shadow-comp          | 1. main
 //              shadow-comp#root   | B. shadow-comp#root
 //                h1               | B. shadow-comp#root
-
 //<div id="root">
 //  <slot-comp>
 //    <shadow-comp></shadow-comp>
@@ -62,12 +214,11 @@ function shadowSlotted() {
   const shadowComp = document.createElement("shadow-comp");
   div.appendChild(slotComp);
   slotComp.appendChild(shadowComp);
-
   const slotRoot = div.querySelector("slot-comp").shadowRoot;
-  const slotSpan = div.querySelector("slot-comp").shadowRoot.children[0];
-  const slotSlot = div.querySelector("slot-comp").shadowRoot.children[0].children[0];
+  const slotSpan = slotRoot.children[0];
+  const slotSlot = slotSpan.children[0];
   const shadowRoot = div.querySelector("shadow-comp").shadowRoot;
-  const shadowH1 = div.querySelector("shadow-comp").shadowRoot.children[0];
+  const shadowH1 = shadowRoot.children[0];
 
   const usecase = [
     [
@@ -91,14 +242,12 @@ function shadowSlotted() {
 //
 //a lightDOM child hidden in view by the shadowDom of its parent node, is still a viable target for an event, and
 // it will propagate in the lightDOM.
-
 // Flattened DOM                   | DOM context
 //----------------------------------------------------------------
 //   shadow-comp                   | 1. main
 //     shadow-comp#root            | B. shadow-comp#root
 //       h1                        | B. shadow-comp#root
 //  ?!?!  div                      | 1. main in JS, BUT excluded!! in the rendered DOM
-
 //<shadow-comp>
 //  <div></div>
 //</shadow-comp>
@@ -115,23 +264,24 @@ function shadowCompWithExcludedLightDomDiv() {
   return usecase;
 }
 
-function simpleShadowWithExcludedDivNotInScopedPath() {
-  const shadowComp = document.createElement("shadow-comp");
-  const div = document.createElement("div");
-  shadowComp.appendChild(div);
+// function simpleShadowWithExcludedDivNotInScopedPath() {
+//   const shadowComp = document.createElement("shadow-comp");
+//   const div = document.createElement("div");
+//   shadowComp.appendChild(div);
+//
+//   const shadowRoot = shadowComp.shadowRoot;
+//   const shadowH1 = shadowComp.shadowRoot.children[0];
+//   const usecase = [
+//     [
+//       shadowH1,
+//       shadowRoot
+//     ],
+//     shadowComp
+//   ];
+//   Object.freeze(usecase, true);
+//   return shadowH1div;
+// }
 
-  const shadowRoot = shadowComp.shadowRoot;
-  const shadowH1 = shadowComp.shadowRoot.children[0];
-  const usecase = [
-    [
-      shadowH1,
-      shadowRoot
-    ],
-    shadowComp
-  ];
-  Object.freeze(usecase, true);
-  return usecase;
-}
 
 //useCase3 simple slot Matroschka
 // Flattened DOM                   | DOM context
@@ -161,12 +311,14 @@ function simpleMatroschka() {
   const matroshcka = document.createElement("matroschka-comp");
   const div = document.createElement("div");
   matroshcka.appendChild(div);
+
   const matroshckaRoot = matroshcka.shadowRoot;
   const slotComp = matroshcka.shadowRoot.children[0];
   const matroshckaSlot = matroshcka.shadowRoot.children[0].children[0];
   const slotCompRoot = matroshcka.shadowRoot.children[0].shadowRoot;
   const slotCompSpan = matroshcka.shadowRoot.children[0].shadowRoot.children[0];
   const slotCompSlot = matroshcka.shadowRoot.children[0].shadowRoot.children[0].children[0];
+
 
   const usecase = [
     div,
@@ -182,12 +334,13 @@ function simpleMatroschka() {
     ],
     matroshcka
   ];
+
+
   Object.freeze(usecase, true);
   return usecase;
 }
 
 //useCase4 nestedShadow
-
 // Flattened DOM                   | DOM context
 //----------------------------------------------------------------
 //   nested-shadow                 | 1. main
@@ -196,7 +349,6 @@ function simpleMatroschka() {
 //         shadow-comp             | A. nested-comp#root
 //           shadow-comp#root      | B. shadow-comp#root
 //             h1                  | B. shadow-comp#root
-
 // 1. main          | A. nested-comp   | B. shadow-comp
 //------------------------------------------------------------------
 //<nested-shadow>   |                  |
@@ -230,9 +382,10 @@ function nestedShadow() {
 }
 
 function h1() {
+  const h1 = document.createElement("h1")
   const usecase = [
-    document.createElement("h1")
-  ];
+    h1
+  ]
   Object.freeze(usecase, true);
   return usecase;
 }
@@ -241,14 +394,26 @@ function webcomp() {
   const webcomp = document.createElement("shadow-comp");
   const usecase = [
     [
-      webcomp.shadowRoot.children[0],
-      webcomp.shadowRoot
+      webcomp.shadowRoot,
+      webcomp.shadowRoot.children[0]
     ],
     webcomp
+
   ];
   Object.freeze(usecase, true);
-  return usecase;
+  return usecase
 }
+
+function nestedButton() {
+  let shadowBtn = document.createElement("shadow-btn");
+  let passepartoutBtn = document.createElement("passepartout-btn");
+  let greenframeBtn = document.createElement("greenframe-btn");
+  shadowBtn.appendChild(passepartoutBtn);
+  passepartoutBtn.appendChild(greenframeBtn);
+
+  return shadowBtn;
+}
+
 
 export function eventTargetName(eventTarget) {
   if (eventTarget.tagName)
@@ -285,30 +450,33 @@ function popTargets2(scopedPath, pops) {
   return [pops, res];
 }
 
-export const useCases = {
+export const useCasesOptions = {
   h1,
   webcomp,
+  // nestedButton,  //todo: fix it
+  innerShadow,
   shadowSlotted,
   simpleMatroschka,
+  slottedShadow,
   shadowCompWithExcludedLightDomDiv,
   nestedShadow
 };
-Object.freeze(useCases, true);
+Object.freeze(useCasesOptions, true);
 
-// export function cleanDom() {//todo replace this one with the useCases
-//   const div = document.createElement("div");
-//   const slotComp = document.createElement("slot-comp");
-//   const shadowComp = document.createElement("shadow-comp");
-//   div.appendChild(slotComp);
-//   slotComp.appendChild(shadowComp);
-//   return {
-//     div: div,
-//     slot: div.querySelector("slot-comp"),
-//     slotRoot: div.querySelector("slot-comp").shadowRoot,
-//     slotSpan: div.querySelector("slot-comp").shadowRoot.children[0],
-//     slotSlot: div.querySelector("slot-comp").shadowRoot.children[0].children[0],
-//     shadowComp: div.querySelector("shadow-comp"),
-//     shadowRoot: div.querySelector("shadow-comp").shadowRoot,
-//     shadowH1: div.querySelector("shadow-comp").shadowRoot.children[0]
-//   };
-// }
+export function cleanDom() {//todo replace this one with the useCases
+  const div = document.createElement("div");
+  const slotComp = document.createElement("slot-comp");
+  const shadowComp = document.createElement("shadow-comp");
+  div.appendChild(slotComp);
+  slotComp.appendChild(shadowComp);
+  return {
+    div: div,
+    slot: div.querySelector("slot-comp"),
+    slotRoot: div.querySelector("slot-comp").shadowRoot,
+    slotSpan: div.querySelector("slot-comp").shadowRoot.children[0],
+    slotSlot: div.querySelector("slot-comp").shadowRoot.children[0].children[0],
+    shadowComp: div.querySelector("shadow-comp"),
+    shadowRoot: div.querySelector("shadow-comp").shadowRoot,
+    shadowH1: div.querySelector("shadow-comp").shadowRoot.children[0]
+  };
+}
