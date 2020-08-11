@@ -6,6 +6,8 @@
   const stopPropOG = Event.prototype.stopPropagation;
   const stopImmediateOG = Event.prototype.stopImmediatePropagation;
   const cancelBubbleOG = Object.getOwnPropertyDescriptor(Event.prototype, "cancelBubble");
+  const preventDefaultOG = Object.getOwnPropertyDescriptor(Event.prototype, "preventDefault");
+  const defaultPreventedOG = Object.getOwnPropertyDescriptor(Event.prototype, "defaultPrevented");
 
   function resetSystem() {
     EventTarget.prototype.addEventListener = addEventListenerOG;
@@ -13,16 +15,14 @@
     EventTarget.prototype.dispatchEvent = dispatchEventOG;
     Event.prototype.stopPropagation = stopPropOG;
     Event.prototype.stopImmediatePropagation = stopImmediateOG;
+    Event.prototype.setDefault = undefined;
+    Object.defineProperty(Event.prototype, "preventDefault", preventDefaultOG);
+    Object.defineProperty(Event.prototype, "defaultPrevented", defaultPreventedOG);
     Object.defineProperty(Event.prototype, "cancelBubble", cancelBubbleOG);
-    window.getEventListeners = function () {
-      return [];
-    };
-    window.isStopped = function (event, scoped) {
-      return event.cancelBubble;
-    };
-    window.scopedPaths = function (element, composed) {
-      return [];
-    };
+    window.getEventListeners = undefined;
+    window.isStopped = undefined;
+    window.scopedPaths = undefined;
+    window.lowestExclusiveNativeDefaultActions = undefined;
   }
 
   function nextTick2(cb) {
@@ -74,21 +74,21 @@
     usecases = usecases || [{name: undefined}];
     const results = {};
     for (let system of eventSystems) {
-      await nextTick2(system);                //todo do we need async here?? i think not??
+      system();
       for (const {name: testName, fun, expect} of tests) {
         for (let usecase of usecases) {
+
           const expected = expect instanceof Function ? expect(usecase) : expect;
           setValue(results, testName + ":" + usecase.name, "expected", expected);
+
           let result = [];
-          await nextTick2(function () {
-            fun(result, usecase);
-          });
-          await nextTick2(function () {
-            setValue(results, testName + ":" + usecase.name, system.name, result.join(""));
-          });
+          fun(result, usecase);
+          await nextTick2(() => 1);  //just wait a t1ck, for any queued propagation to complete
+          setValue(results, testName + ":" + usecase.name, system.name, result.join(""));
+          await nextTick2(() => 1);  //just wait a t0ck, for any queued tasks of the propagation to complete
         }
       }
-      await nextTick2(resetSystem);           //todo do we need async here?? i think not?? must check with the async dispatch
+      resetSystem();
     }
     return nextTick2(function () {
       printResults(results);
@@ -106,21 +106,29 @@
   import {addEventIsStoppedScoped, addEventListenerOptionScopedUnstoppable} from "./ScopedEventListeners.js";
   import {addDispatchEventOptionAsync} from "./dispatchEventOptionAsync.js";
   import {scopedPaths} from "./computePaths.js";
-  import {addDefault} from "../1d3_defaultAction/_v2.0/src/setDefault2.js"
+  import {addAddDefaultAction} from "./defaultActions.js";
+  import {lowestExclusiveNativeDefaultActions} from "./nativeDefaultActions.js";
 
   function SCOPED_PATHS() {
     window.scopedPaths = scopedPaths;
   }
 
-  function SCOPED_STOP() {
-    //todo this adding isStopped to window is not super good. We could instead add this to a test resource module passed into the test..
-    window.isStopped = addEventIsStoppedScoped(Event.prototype);
-    addEventListenerOptionScopedUnstoppable(EventTarget.prototype)
-    //     Object.defineProperty(Event.prototype, "isScoped", {value: true}); todo test making isScoped=true by default/globally too..
+  function SCOPED_STOP(byDefault) {
+    const isStopped = addEventIsStoppedScoped(Event.prototype);
+    addEventListenerOptionScopedUnstoppable(EventTarget.prototype, isStopped);
+    byDefault && Object.defineProperty(Event.prototype, "isScoped", {value: true});
   }
 
   function REGISTER() {//once, last, first
     window.getEventListeners = addEventTargetRegistry(EventTarget.prototype);
+  }
+
+  function SET_DEFAULT() {
+    addAddDefaultAction(Event.prototype);
+  }
+
+  function NATIVE_DEFAULT_ACTION() {
+    window.lowestExclusiveNativeDefaultActions = lowestExclusiveNativeDefaultActions;
   }
 
   const registers = [
@@ -144,16 +152,13 @@
       SCOPED_STOP();
       REGISTER();
     },
-    //
-    // function DISPATCH_REGISTER() {
-    //   const isStopped = addEventIsStoppedScoped(Event.prototype);
-    //   addEventListenerOptionScopedUnstoppable(EventTarget.prototype);
-    //   const getEventListeners = addEventTargetRegistry(EventTarget.prototype);
-    //
-    //   window.getEventListeners = addDispatchEventOptionAsync(EventTarget.prototype, true, isStopped, getEventListeners);
-    // }
-    //
-  ];
+    function DISPATCH_REGISTER() {
+      const isStopped = addEventIsStoppedScoped(Event.prototype);
+      addEventListenerOptionScopedUnstoppable(EventTarget.prototype, isStopped);
+      //patches the native events, doesn't do anything for the custom dispatchEvent
+      const getEventListeners = addEventTargetRegistry(EventTarget.prototype);
+      addDispatchEventOptionAsync(EventTarget.prototype, true, isStopped, getEventListeners);
+    }];
 
   // import {testBasic} from "./unitTests/testBasic.js";
   // import {dynamicTest} from "./unitTests/testDynamic.js";
@@ -167,14 +172,29 @@
   // import {testIsStopped} from "./unitTests/testIsStopped.js";
   // import {testScopedPaths, testComposedPath} from "./unitTests/testPaths.js";
   // import {basicPropTest} from "./unitTests/testPropagationBasic.js";
+  import {asyncPropTest} from "./unitTests/testPropagationAsync.js";
+  import {
+    mousedownNativeDefaultActions,
+    mousedownNativeDefaultActionsNotWorking,
+    formNativeDefaultActions
+  } from "./unitTests/testLowestNativeDefaultAction.js";
+  import {testDefaultActionBasic, testDefaultActionNative} from "./unitTests/testDefaultActionBasic.js";
+
+  //todo : Max tests
   // import {lastTarget} from "./unitTests/testLastPropagationTarget.js";
   // import {useCases} from "./unitTests/useCase1.js";
   // import {useCasesOptions} from "./unitTests/useCaseLastPropagationTaget.js";
-  import {useCasesSetDefault} from "./unitTests/useCasesSetDefault.js";
-
-
+  // import {useCasesSetDefault} from "./unitTests/useCasesSetDefault.js";
   // import {testOnce, testFirst, testLast, testOnceFirstLast} from "./unitTests/newTests/testAddEventListenerOptions.js";
   import {_setDefault} from "./unitTests/newTests/testSetDefault.js";
+
+
+  import {useCases} from "./unitTests/useCase1.js";
+  import {selectUseCases, selectUseCasesError} from "./unitTests/useCaseSelectNativeDefaultActions.js";
+  import {formUseCases} from "./unitTests/useCaseFormDefaultActions.js";
+
+  import {useCasesDefaultActions, useCasesDefaultActions2} from "./unitTests/useCaseDefaultAction.js";
+
 
   (async function () {
     // await runTests(eventSystems, testBasic);
@@ -202,7 +222,15 @@
     // await runTests(eventSystems, testFirst, Object.values(useCasesOptions));
     // await runTests(eventSystems, testLast, Object.values(useCasesOptions));
     // await runTests(eventSystems, testOnceFirstLast, Object.values(useCasesOptions));
-    await runTests(eventSystems, _setDefault, Object.values(useCasesSetDefault));
+    // await runTests(eventSystems, _setDefault, Object.values(useCasesSetDefault));
+
+    await runTests([NATIVE_DEFAULT_ACTION], mousedownNativeDefaultActions, Object.values(selectUseCases));
+    await runTests([NATIVE_DEFAULT_ACTION], mousedownNativeDefaultActionsNotWorking, Object.values(selectUseCasesError));
+    await runTests([NATIVE_DEFAULT_ACTION], formNativeDefaultActions, Object.values(formUseCases));
+
+    await runTests([SET_DEFAULT], testDefaultActionBasic, Object.values(useCasesDefaultActions));
+    await runTests([SET_DEFAULT], testDefaultActionNative, Object.values(useCasesDefaultActions2));
+
 
   })();
   //todo

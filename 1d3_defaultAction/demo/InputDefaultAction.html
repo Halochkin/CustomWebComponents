@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        input[type=checkbox]:focus {
+            border: 45px solid red;
+        }
+    </style>
+</head>
+<body>
+
+
+<script>
+  const select = document.createElement("select");
+  const option = document.createElement("option");
+  const a = document.createElement("a");
+  const checkboxInput = document.createElement("input");
+
+
+  select.appendChild(option);
+  option.innerText = "1";
+  checkboxInput.type = "checkbox";
+  a.href = "#ahref";
+
+
+  document.body.appendChild(select);
+  option.appendChild(checkboxInput);
+  checkboxInput.appendChild(a);
+
+  checkboxInput.addEventListener("change", e => console.log(e.currentTarget, "checked"));
+  checkboxInput.addEventListener("click", e => console.log(e.currentTarget, "click"));
+
+
+  const event = new MouseEvent("click", {bubbles: true, composed: true});
+
+  a.addEventListener("click", e => console.log(e.currentTarget, "click"));
+
+  a.dispatchEvent(event);
+
+  // document.body.appendChild(checkboxLabel);
+
+
+</script>
+</body>
+</html>
