@@ -5,20 +5,37 @@
     <title>Web Audio api Audio element</title>
 </head>
 <body>
-<audio src="../audio/firestarter.mp3"></audio>
+<audio muted autoplay controls src="../audio/firestarter.mp3">
+    <!--    <source src="../audio/firestarter.mp3" type="audio/ogg">-->
+</audio>
 <button onclick="playAudio()">PLAY</button>
 <script>
+
+
   const audioFile = document.querySelector("audio");
   let audioContext;
   if (window.AudioContext)
     audioContext = new AudioContext();
 
-  const source = audioContext.createMediaElementSource(audioFile);
+  const source = audioContext.createMediaElementSource(audioFile);    //[1]
   source.connect(audioContext.destination);
 
   function playAudio() {
-    audioContext.resume();
-    audioFile.play();
+    audioContext.resume();                                            //[2]
+    audioFile.play();                                                 //[3]
+  }
+
+  // if (window.AudioContext)
+  //   audioContext = new AudioContext();
+  //
+  // const source = audioContext.createMediaElementSource(audioFile);
+  // source.connect(audioContext.destination);
+  //
+  //
+  // audioContext.resume();
+
+  function playAudio() {
+
   }
 </script>
 </body>

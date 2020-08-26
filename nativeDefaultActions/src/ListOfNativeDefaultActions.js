@@ -1,7 +1,16 @@
+/**
+ * This pure data structure declare the native default actions in HTML.
+ *
+ * Two hybrid query formats are used to describe the structure:
+ * 1. eventQuery resembles "the query string format" used in urls.
+ * 2. elementQuery resembles "query selectors" used in CSS and JS to located elements in the DOM.
+ */
+
 import {event_dblclick} from "./polyfills/Event_dblclick.js";
 import {requestNavigation} from "./polyfills/HTMLAnchorElement_requestNavigation.js";
 import {requestCheckboxToggle} from "./polyfills/HTMLInputElement_requestCheckboxToggle.js";
 import {requestSelect} from "./polyfills/HTMLSelectElement_requestSelect.js";
+import {toggle} from "./polyfills/HTMLDetailsElement_toggle.js";
 
 const focusableQuerySelector = "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]";//option is not considered focusable, bad legacy design.
 
@@ -12,7 +21,8 @@ export const listOfDefaultActions = [{
   eventQuery: "click?isTrusted=true",     //isTrusted is not necessary for submit
   elementQuery: "*",
   method: (target, notInUse, event) => event_dblclick.bind(null, target, null, event),
-  additive: true
+  additive: true,
+  irreversible: true
 }, {
   eventQuery: "click?isTrusted=true",
   elementQuery: "a[href]",
@@ -27,8 +37,8 @@ export const listOfDefaultActions = [{
   method: input => requestCheckboxToggle.bind(input)
 }, {
   eventQuery: "click",
-  elementQuery: "details > summary:first-of-type",//todo check the :first-of-type CSS selector
-  method: details => HTMLDetailsElement.prototype.toggle.bind(details)
+  elementQuery: "details > summary:first-of-type",
+  method: details => toggle.bind(details)
 }, {
   eventQuery: "mousedown?button=0&isTrusted=true",
   elementQuery: "select > option, select > optgroup > option",
@@ -58,3 +68,19 @@ export const listOfDefaultActions = [{
 }];
 //tab?? does this produce a default action?? I think yes
 //other characters for input and textarea..
+
+//generic default actions
+//1. contextmenu, "*".
+//2. drag'n'drop, "[draggable]". add more to the queryselector here, not everything marked [draggable] can be dragged?? We also need a queryselector format that queries for css properties..
+//3. keydown enter produces click. I think this should be "a[href], input, button, textarea, select"?? is it the same as focusable?? no there are special rules here..
+//4. the deadcaps controller. this is a mess.. produces composition events and beforeinput (except in old firefox).
+//   deadcaps are currently actually handled by input and textarea..
+
+//todo
+// 1. we are lacking the support for regex in the event property query.
+//    This is important when we work with keydown default actions.
+// 2. we need to complete the full list of default actions.
+//    a. write up the default actions, and be careful not to add event controller default actions, such as contextmenu.
+//       examples of event controller default actions are contextmenu and keypress-to-click
+//       write a list of both the default actions that come from event controllers and elements here.
+// 3. add more and check the list of all exposed getDefaultAction methods.. we use modern chrome behavior as guide.

@@ -1,20 +1,42 @@
-function defaultActionToString(da) {
-  return da.index + da.element.tagName + ":" + da.task.name + (da.additive ? "+" : "-");
+function replacer(key, value) {
+  if (value instanceof Function)
+    return value.name;
+  if (value instanceof HTMLElement)
+    return value.tagName;
+  if (value instanceof DocumentFragment)
+    return "#shadow"
+  if (value === document)
+    return "document"
+  if (value === window)
+    return "window"
+  return value;
 }
 
+let OG;
+
 function spoofIsTrusted(e) {
+  OG = WeakMap.prototype.get;
+  WeakMap.prototype.get = function (obj) {
+    return OG.call(this, obj?.spoofyDoo || obj);
+  }
   return new Proxy(e, {
     get(obj, key) {
       if (key === "isTrusted")
         return true;
+      if (key === "spoofyDoo")
+        return e;
       const val = Reflect.get(obj, key);   //if we use obj[key], we get an infinite loop
       return val instanceof Function ? val.bind(obj) : val;
     }
   });
 }
 
-export const nativeDefaultActionsTestIsTrusted = {
-  name: "nativeDefaultActions(event.isTrusted)",
+function unspoofIsTrusted() {
+  WeakMap.prototype.get = OG;
+}
+
+export const getDefaultActionsTestIsTrusted = {
+  name: "getDefaultActions(event.isTrusted)",
   fun: function (res, usecase, event) {
     const flatPath = usecase().flat(Infinity);
     const target = flatPath[0];
@@ -22,42 +44,32 @@ export const nativeDefaultActionsTestIsTrusted = {
 
     origin.addEventListener(event.type, function (e) {
       const eIsTrusted = spoofIsTrusted(e);
-      const actions = nativeDefaultActions(eIsTrusted);
-      const str = actions.map(defaultActionToString).join(" ");
+      const actions = getDefaultActions(eIsTrusted);
+      unspoofIsTrusted();
+      const str = JSON.stringify(actions, replacer);
+      console.log(str);
       res.push(str);
+      e.preventDefault(); //we don't want these tests to run the default actions.
     });
     target.dispatchEvent(event);
   }
 };
 
-export const nativeDefaultActionsTest = {
-  name: "nativeDefaultActions(event)",
+export const getDefaultActionsTest = {
+  name: "getDefaultActions(event)",
   fun: function (res, usecase, event) {
     const flatPath = usecase().flat(Infinity);
     const target = flatPath[0];
     const origin = flatPath[flatPath.length - 1];
 
     origin.addEventListener(event.type, function (e) {
-      const actions = nativeDefaultActions(e);
-      const str = actions.map(defaultActionToString).join(" ");
+      //to get the dblclick we need to spoof the isTrusted of the click event.
+      const actions = getDefaultActions(e);
+      const str = JSON.stringify(actions, replacer);
+      console.log(str)
       res.push(str);
+      e.preventDefault(); //we don't want these tests to run the default actions.
     });
     target.dispatchEvent(event);
-  }
-};
-
-export const setDefaultActionTest = {
-  name: "setDefault().defaultActions",
-  fun: function (res, usecase, event) {
-    const flatPath = usecase().flat(Infinity);
-    const origin = flatPath[flatPath.length - 1];
-    const target = flatPath[0];
-
-    origin.addEventListener(event.type, function (e) {
-      const actions = e.defaultActions;
-      const str = actions.map(defaultActionToString).join(" ");
-      res.push(str);
-    });
-    target.dispatchEvent(event); //sync dispatch
   }
 };
