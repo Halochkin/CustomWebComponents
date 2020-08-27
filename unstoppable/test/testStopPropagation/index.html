@@ -1,0 +1,99 @@
+<script>
+
+  function nextTick2(cb) {
+    let r;
+    const p = new Promise(function (resolve) {
+      r = resolve;
+    });
+    setTimeout(function () {
+      cb();
+      setTimeout(function () {
+        r();
+      })//todo i need setTimeout(..., 1) for this to work in ff?
+    }); //todo i need 1 for this to work in ff?
+    return p;
+  }
+
+  function setValue(obj, a, b, value) {
+    !obj[a] && (obj[a] = {});
+    !obj[a][b] && (obj[a][b] = {});
+    obj[a][b] = value;
+  }
+
+  function printResults(results) {
+    for (let [testName, testResults] of Object.entries(results)) {
+      const expected = testResults.expected;
+      delete testResults.expected;
+      const native = testResults.NATIVE;
+      for (let [systemName, result] of Object.entries(testResults)) {
+        if (systemName === "NATIVE")
+          testResults[systemName] = result === expected ? 1 : result + " !== " + expected;
+        else
+          testResults[systemName] =
+            (result === expected && result === native) ? null :
+              (result === expected) ? 1 :
+                (result === native) ? undefined :
+                  result + " !== " + expected;
+      }
+    }
+    console.table(results);
+  }
+
+  async function runTests(eventSystems, tests) {
+    const results = {};
+    for (let [system, reset] of eventSystems) {
+      system();
+      for (const {name: testName, fun, expect} of tests) {
+
+        const expected = expect instanceof Function ? expect() : expect;
+        setValue(results, testName, "expected", expected);
+
+        let result = [];
+        fun(result);
+        await nextTick2(() => 1);  //just wait a t1ck, for any queued propagation to complete
+        setValue(results, testName, system.name, result.join(""));
+        await nextTick2(() => 1);  //just wait a t0ck, for any queued tasks of the propagation to complete
+      }
+      reset();
+    }
+    return nextTick2(function () {
+      printResults(results);
+    });
+  }
+</script>
+
+<script type="module">
+  import {upgradeCancelBubble, downgradeCancelBubble} from "../../src/upgradeEvent_capture_cancelBubble.js";
+  import {upgradeAddEventListener, downgradeAddEventListener} from "../../src/runEventListener.js";
+
+  function NATIVE() {
+  }
+
+  const eventSystems = [
+    [NATIVE, NATIVE],
+    [upgradeCancelBubble, downgradeCancelBubble],
+    [upgradeAddEventListener, downgradeAddEventListener]
+  ];
+
+  import {
+    cancelBubbleStopPropagationTests,
+    cancelBubbleStopImmediateTests,
+    cancelBubbleEqualTrueTests
+  } from "./testCancelBubbleUpgrade.js";
+  import {dispatchTwice} from "./testDispatchTwice.js";
+  import {testUnstoppable} from "./testUnstoppable.js";
+  import {testHostNodeTorpedo} from "./testHostNodeTorpedo.js";
+  // import {testStopProp, testStopProp2} from "./testStopPropagation.js";
+
+  (async function () {
+    await runTests(eventSystems, cancelBubbleStopPropagationTests);
+    await runTests(eventSystems, cancelBubbleEqualTrueTests);
+    await runTests(eventSystems, cancelBubbleStopImmediateTests);
+    await runTests(eventSystems, dispatchTwice);
+    await runTests(eventSystems, testUnstoppable);
+    await runTests(eventSystems, testHostNodeTorpedo);
+    // await runTests(eventSystems, testStopProp);
+    // await runTests(eventSystems, testStopProp2);
+  })();
+  //todo. test when stopPropagation called inside shadowDom, both normal and slotted.
+</script>

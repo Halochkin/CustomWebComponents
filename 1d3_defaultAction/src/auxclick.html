@@ -4,15 +4,52 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
+<body style="height: 110vh; width: 110vw; border: 1px solid green;">
 <script>
 
-  window.addEventListener("contextmenu", e => {
-    console.log(e.type)
+
+  window.addEventListener("wheel", e => {
+    let targetHeight = parseInt(window.getComputedStyle(e.target).height);
+    let scrollHeight = document.documentElement.scrollHeight;
+    let scrollTop = document.documentElement.scrollTop;
+
+
+    let scrollTop0, scrollTop1, scrollTop2;
+
+
+    let p = new Promise((res, rej) => {
+      let val = document.documentElement.scrollTop;
+      res(val)
+
+    })
+
+    p.then(data => scrollTop0 = data)
+
+
+    requestAnimationFrame(() => {
+      console.log(window.scrollY);
+      scrollTop1 = document.documentElement.scrollTop;
+    })
+
+    setTimeout(() => {
+      scrollTop2 = document.documentElement.scrollTop;
+      if (targetHeight + scrollTop >= scrollHeight)
+        e.preventDefault();
+    }, 100)
+
+    setTimeout(() => {
+      console.log("native : " + scrollTop,
+        "promise :  " + scrollTop0,
+        "raf : " + scrollTop1,
+        "setTimeout : " + scrollTop2
+      );
+    }, 200)
+
+
   });
-  window.addEventListener("mouseup", e => {
-    console.log(e.type)
-  });
+  // window.addEventListener("scroll", e => {
+  //   console.log(e.type)
+  // });
   window.addEventListener("pointerup", e => {
     console.log(e.type)
   });
