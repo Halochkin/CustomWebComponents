@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body style="height: 110vh; width: 110vw; border: 1px solid green;">
+<body>
+<div style="height: 110vh; display: block; width: 110vw; border: 1px solid green;"></div>
 <script>
 
 
-  window.addEventListener("wheel", e => {
+  document.onclick
+
+  window.addEventListener("click", e => {
+
+
+    document.querySelector("div").animate([{scrollTop: "100px"}], {duration: 200, fill: "forwards"})
+
     let targetHeight = parseInt(window.getComputedStyle(e.target).height);
     let scrollHeight = document.documentElement.scrollHeight;
     let scrollTop = document.documentElement.scrollTop;

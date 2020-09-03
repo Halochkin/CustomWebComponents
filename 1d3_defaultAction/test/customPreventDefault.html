@@ -1,0 +1,64 @@
+<!--<meta charset="UTF-8">-->
+
+<!--<style>-->
+<!--    div:not([open=true]) {-->
+<!--        display: none;-->
+<!--    }-->
+<!--</style>-->
+
+<!--<div open="true">▶-->
+<!--    <span> Chapter 1</span>-->
+<!--    <div> ▶-->
+<!--        <span>Chapter 1.1</span>-->
+<!--        <div> ▶-->
+<!--            <span>Chapter 1.1.1</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+
+
+<!--  let chapters = document.querySelectorAll("div");-->
+
+<!--  for (const chapter of chapters) {-->
+<!--    chapter.addEventListener("click", function (e) {-->
+<!--       // e.stopPropagation();   // prevent bubbling i.e redefine just defined attribute to opposite value-->
+<!--      let spanNode = this.children[1] || this;-->
+<!--      let isOpen = spanNode.getAttribute("open")-->
+<!--      spanNode.setAttribute("open", isOpen==="true" ? false: true);-->
+<!--    });-->
+<!--  }-->
+<!--</script>-->
+
+
+<input type="range">
+
+<script>
+  let x;
+  let y;
+  let rangeWidth;
+
+  document.querySelector("input").addEventListener("mousedown", event => {
+    rangeWidth = event.target.getBoundingClientRect();
+    x = event.clientX - rangeWidth.left;
+    y = event.clientY - rangeWidth.top;
+
+
+    document.querySelector("input").addEventListener("mousemove", e => {
+
+
+      x = e.clientX - rangeWidth.left;
+      y = e.clientY - rangeWidth.top;
+
+
+      // console.log(e.target.value);
+      // console.log(e.target.step);
+      // console.log(e.target.min);
+      // console.log(e.target.max);
+
+    });
+  });
+
+
+</script>

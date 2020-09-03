@@ -52,7 +52,7 @@ export const scrollDefaultAction = {
     scroll.isTrusted = true;
     event.target.dispatchEvent(scroll);
     // todo OR
-    event.target.offsetTop = scrollTop;
+    event.target.animate
   },
 
   lowestWins: true,
