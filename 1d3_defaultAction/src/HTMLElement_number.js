@@ -2,7 +2,6 @@ import {addPostPropagationCallback, removePostPropagationCallback} from "../post
 
 let intervalId;
 
-
 function getArrowDirection(event) {
   const distanceFromLeft = event.x - event.target.offsetLeft;
   const distanceFromTop = event.y - event.target.offsetTop;
