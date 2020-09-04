@@ -32,32 +32,49 @@
 <!--</script>-->
 
 
-<input type="range">
+<input type="number">
 
 <script>
   let x;
   let y;
-  let rangeWidth;
-
-  document.querySelector("input").addEventListener("mousedown", event => {
-    rangeWidth = event.target.getBoundingClientRect();
-    x = event.clientX - rangeWidth.left;
-    y = event.clientY - rangeWidth.top;
 
 
-    document.querySelector("input").addEventListener("mousemove", e => {
+  var re = new RegExp("([-+]?[\\d]+)|([eE])|[\\d]");
 
 
-      x = e.clientX - rangeWidth.left;
-      y = e.clientY - rangeWidth.top;
+  function getFilteredValue(value) {
+    if (!value)
+      return 1;
+    let left = value.split("e")
+    if (left && left["1"])
+      return parseInt(left["0"]) * 10 ** parseInt(left["1"]) + 1;
+    return 1;
+  }
+
+  document.querySelector("input").addEventListener("change", e => {
+    console.log("change");
+    let value = getFilteredValue(e.target.value);
+
+    const distanceFromLeft = e.x - e.target.offsetLeft;
+    const distanceFromTop = e.y - e.target.offsetTop;
+    let width = e.target.getBoundingClientRect().width;
+    let height = e.target.getBoundingClientRect().height;
+    let factorFromLeft = distanceFromLeft / width * 100;
+    let factorFromTop = distanceFromTop / height * 100;
+    if (factorFromLeft < 90)
+      return
+    return factorFromTop < 50 ? "up" : "down";
 
 
-      // console.log(e.target.value);
-      // console.log(e.target.step);
-      // console.log(e.target.min);
-      // console.log(e.target.max);
+  });
 
-    });
+
+  document.querySelector("input").addEventListener("keydown", e => {
+
+
+    console.log(e.key);
+
+
   });
 
 

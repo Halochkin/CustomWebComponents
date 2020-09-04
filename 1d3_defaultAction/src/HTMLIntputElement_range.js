@@ -1,59 +1,108 @@
-function inputProcessEnds(inputElement) {
-  //option.color = orange?? //there is no way to trigger this behavior from js... It is completely hidden in the browser.
+import {addPostPropagationCallback, removePostPropagationCallback} from "../postPropagationCallback.js";
+
+function processInputValue(el, oldValue, newValue, min, max) {
+  newValue < min && (newValue = min);
+  newValue > max && (newValue = max);
+  if (oldValue === newValue)
+    return false;
+  el.value = newValue;
   const input = new InputEvent("input", {bubbles: true, composed: true});
-  inputElement.dispatchEvent(input);
-  const change = new InputEvent("change", {bubbles: true, composed: false});
-  inputElement.dispatchEvent(change);
+  el.dispatchEvent(input);
+  return true;
 }
 
+// https://html.spec.whatwg.org/multipage/input.html#the-step-attribute
 function getConfiguredRangeInput(input) {
-  input.min = parseInt(target.getAttribute("min")) || 0;  // Or I must parse float??
-  input.max = parseInt(target.getAttribute("max")) || 100;
-  input.step = parseFloat(target.getAttribute("step")) || 1;
+  let min = parseInt(input.getAttribute("min")) || 0;  // Or I must parse float??
+  let max = parseInt(input.getAttribute("max")) || 100;
+  let step = parseFloat(input.getAttribute("step")) || 1;
   // negative step value
   if (step <= 0)
     step = 1;
   // wrong values
-  if (input.min > input.max || input.max < input.min || step > input.max)
-    return;
-  input.value = parseInt(target.getAttribute("value")) || input.min + input.max / 2;
-  // todo: do we need to use e
-  if (input.value < input.min)
-    input.value = input.min;
-  if (value > input.max)
-    input.value = input.max;
-  return input;
+  if (min > max)
+    throw new SyntaxError("min value is bigger than max value for an input range.");
+  if (max < min)
+    throw new SyntaxError("max value is smaller than min value for an input range.");
+  if (step > max)
+    throw new SyntaxError("the step value is bigger than the max value for an input range.");
+  return [min, max, step, parseInt(input.value)];
+}
+
+function factorFromLeft(mouseEvent, input) {
+  const distanceFromLeft = mouseEvent.offsetLeft - input.offsetLeft;
+  const width = input.getBoundingClientRect().width;
+  let factorFromLeft = distanceFromLeft / width;
+  if (factorFromLeft < 0)
+    return 0;
+  if (factorFromLeft > 1)
+    return 1;
+  return factorFromLeft;
 }
 
 
-export const clickInputRangeDefaultAction = {
+let valueOnMousedown;
+
+export const mousedownInputRangeDefaultAction = {
   element: HTMLInputElement,
   event: {
     type: "mousedown",
-    isTrusted: true
+    isTrusted: true,
+    button: 0
   },
   stateFilter: function (event, el) {
     return el.type === "range";
   },
-  defaultAction: function inputRangeMousedown(event, el) {
-    //todo here we need to add a statemachine for mousemove and mouseup
+  defaultAction: function inputRangeMousedown(down, input) {
+    const [min, max, step, oldValue] = getConfiguredRangeInput(input);
+    const newValue = (max - min) * factorFromLeft(down, input) + min;
+    processInputValue(input, oldValue, newValue, min, max);
+    valueOnMousedown = oldValue;
 
-    let inputRange = getConfiguredRangeInput(el);
-    let rangeInitialX = event.clientX - event.target.getBoundingClientRect().left;
-    inputRange.addEventListener("mousemove", e => {
-      inputRange.value = e.clientX - rangeInitialX; // alter range by set value property
-      inputProcessEnds(inputRange);
 
-    });
-    // el.addEventListener("mouseup", e => {
-    //   el.value = e.clientX - rangeInitialX; // stop process??
-    // });
+    //todo there is a problem with this type of statemachine.
+    // it doesn't mark the actions taken on mousemove and mouseup as defaultActions lowestWins.
+    // this means that it can come into conflict with other defaultActions higher up in the DOM,
+    // and although it should alert the other default actions about this problem, it doesn't.
+    // To fix this issue, we should add the moveObserver and the upObserver and the focusoutObserver
+    // as dynamic default actions instead. However, this is not so simple either, as the default action would
+    // registered on the window, and not the lower input element, and the lower element will often not exist in the
+    // composed path of the new mousemove and mouseup events.
+    // instead, the postPropagation callbacks call preventDefault() on the move and up events (but not the focusout() event)
+    const moveObserver = function (move) {
+      if (!move.isTrusted)
+        return;
+      move.preventDefault();
+      const [min, max, step, oldValue] = getConfiguredRangeInput(input);
+      const newValue = (max - min) * factorFromLeft(down, input) + min;
+      processInputValue(input, oldValue, newValue, min, max);
+    };
+    const upObserver = function (up) {
+      if (!up.isTrusted || up.button !== 0)
+        return;
+      up.preventDefault();
+      if (parseInt(input.value) !== valueOnMousedown)
+        input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
+
+      removePostPropagationCallback(window, "mousemove", moveObserver);
+      removePostPropagationCallback(window, "mouseup", upObserver);
+      removePostPropagationCallback(window, "focusout", focusoutObserver);
+    };
+    const focusoutObserver = function (focusout) {
+      if (!focusout.isTrusted)
+        return;
+      removePostPropagationCallback(window, "mousemove", moveObserver);
+      removePostPropagationCallback(window, "mouseup", upObserver);
+      removePostPropagationCallback(window, "focusout", focusoutObserver);
+    };
+
+    addPostPropagationCallback(window, "mousemove", moveObserver);
+    addPostPropagationCallback(window, "mouseup", upObserver);
+    addPostPropagationCallback(window, "focusout", focusoutObserver);
   },
   repeat: "lowestWins",
   preventable: true
 };
-
-// https://html.spec.whatwg.org/multipage/input.html#the-step-attribute
 
 export const ArrowLeftInputRangeDefaultAction = {
   element: HTMLInputElement,
@@ -65,10 +114,11 @@ export const ArrowLeftInputRangeDefaultAction = {
   stateFilter: function (event, el) {
     return el.type === "range";
   },
-  defaultAction: function stepDown(event, el) {
-    let inputRange = getConfiguredRangeInput(el);
-    inputRange.value -= inputRange.step;
-    inputProcessEnds(inputRange);
+  defaultAction: function stepDown(event, input) {
+    const [min, max, step, oldValue] = getConfiguredRangeInput(input);
+    const newValue = oldValue - step;
+    const didChange = processInputValue(input, oldValue, newValue, min, max);
+    didChange && input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
   },
   repeat: "lowestWins",
   preventable: true
@@ -84,10 +134,11 @@ export const ArrowRightInputRangeDefaultAction = {
   stateFilter: function (event, el) {
     return el.type === "range";
   },
-  defaultAction: function stepUp(event, el) {
-    let inputRange = getConfiguredRangeInput(el);
-    inputRange.value += inputRange.step;
-    inputProcessEnds(inputRange);
+  defaultAction: function stepUp(event, input) {
+    const [min, max, step, oldValue] = getConfiguredRangeInput(input);
+    const newValue = oldValue + step;
+    const didChange = processInputValue(input, oldValue, newValue, min, max);
+    didChange && input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
   },
   repeat: "lowestWins",
   preventable: true

@@ -90,7 +90,7 @@ export class CssValueTokenizer {
       return null;
     }
     if (token[11])
-      throwSyntaxError("Illegal token: " , token);
+      throwSyntaxError("Illegal token: ", token);
     return token;
   }
 
@@ -129,7 +129,7 @@ export function interpretCssValue(value) {
 
   function calc(name, args) {
     let printOfTheOperatorArgs = "do + 12px - of + all + args";
-    return "calc(" +printOfTheOperatorArgs+ ")";
+    return "calc(" + printOfTheOperatorArgs + ")";
   }
 
   function hash(name, str) {
@@ -139,7 +139,7 @@ export function interpretCssValue(value) {
       return [parseInt(str[0] + str[1], 16), parseInt(str[2] + str[3], 16), parseInt(str[4] + str[5], 16)];
 
     let printOfTheOperatorArgs = "do + 12px - of + all + args";
-    return "calc(" +printOfTheOperatorArgs+ ")";
+    return "calc(" + printOfTheOperatorArgs + ")";
   }
 
   function __defaultInterpretation(name, args) {
@@ -344,7 +344,7 @@ function parsePrimitive(tokens) {
     const nextNext = tokens.next();
     /*Check if it has a valid character length (include #symbol) */
     if (next[0].length === 4 || next[0].length === 5 || next[0].length === 7 || next[0].length === 9)  //todo Max: fixed # colors possible lengths
-    /*Remove first character from the string in the value property to remove #*/
+      /*Remove first character from the string in the value property to remove #*/
       return {color: "#", value: next[0].substr(1)};
     throwSyntaxError("Illegal #color: ", next);
   }
