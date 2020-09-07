@@ -43,7 +43,6 @@ function processInputValue(el, oldValue, newValue, min, max) {
   }, 250);
 }
 
-
 function getFilteredValue(value, min) {
   if (!value)
     return min || 1;
