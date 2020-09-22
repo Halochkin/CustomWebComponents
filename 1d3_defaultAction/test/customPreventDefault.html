@@ -1,81 +1,69 @@
-<!--<meta charset="UTF-8">-->
+<input type="range" min="0" value="8" max="30" step="1">
 
-<!--<style>-->
-<!--    div:not([open=true]) {-->
-<!--        display: none;-->
-<!--    }-->
-<!--</style>-->
-
-<!--<div open="true">▶-->
-<!--    <span> Chapter 1</span>-->
-<!--    <div> ▶-->
-<!--        <span>Chapter 1.1</span>-->
-<!--        <div> ▶-->
-<!--            <span>Chapter 1.1.1</span>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--<script>-->
-
-
-<!--  let chapters = document.querySelectorAll("div");-->
-
-<!--  for (const chapter of chapters) {-->
-<!--    chapter.addEventListener("click", function (e) {-->
-<!--       // e.stopPropagation();   // prevent bubbling i.e redefine just defined attribute to opposite value-->
-<!--      let spanNode = this.children[1] || this;-->
-<!--      let isOpen = spanNode.getAttribute("open")-->
-<!--      spanNode.setAttribute("open", isOpen==="true" ? false: true);-->
-<!--    });-->
-<!--  }-->
-<!--</script>-->
-
-
-<input type="number">
 
 <script>
-  let x;
-  let y;
 
-
-  var re = new RegExp("([-+]?[\\d]+)|([eE])|[\\d]");
-
-
-  function getFilteredValue(value) {
-    if (!value)
-      return 1;
-    let left = value.split("e")
-    if (left && left["1"])
-      return parseInt(left["0"]) * 10 ** parseInt(left["1"]) + 1;
-    return 1;
+  function getConfiguredRangeInput(input) {
+    let min = parseInt(input.getAttribute("min")) || 0;  // Or I must parse float??
+    let max = parseInt(input.getAttribute("max")) || 100;
+    let step = parseFloat(input.getAttribute("step")) || 1;
+    let value = parseFloat(input.getAttribute("value"));
+    // negative step value
+    if (step <= 0)
+      step = 1;
+    // wrong values
+    if (min > max)
+      throw new SyntaxError("min value is bigger than max value for an input range.");
+    if (max < min)
+      throw new SyntaxError("max value is smaller than min value for an input range.");
+    if (step > max)
+      throw new SyntaxError("the step value is bigger than the max value for an input range.");
+    return [min, max, step, parseInt(input.value)];
   }
 
-  document.querySelector("input").addEventListener("change", e => {
-    console.log("change");
-    let value = getFilteredValue(e.target.value);
 
-    const distanceFromLeft = e.x - e.target.offsetLeft;
-    const distanceFromTop = e.y - e.target.offsetTop;
-    let width = e.target.getBoundingClientRect().width;
-    let height = e.target.getBoundingClientRect().height;
-    let factorFromLeft = distanceFromLeft / width * 100;
-    let factorFromTop = distanceFromTop / height * 100;
-    if (factorFromLeft < 90)
-      return
-    return factorFromTop < 50 ? "up" : "down";
+  function factorFromLeft(mouseEvent, input) {
+    const distanceFromLeft = mouseEvent.x - input.offsetLeft;
+    const width = input.getBoundingClientRect().width;
 
 
-  });
+    let factorFromLeft = distanceFromLeft / width;
+    if (factorFromLeft < 0)
+      return 0;
+    if (factorFromLeft > 1)
+      return 1;
+    return factorFromLeft;
+  }
+
+  let input = document.querySelector("input");
 
 
-  document.querySelector("input").addEventListener("keydown", e => {
+  input.addEventListener("pointerdown", e => {
+    input.addEventListener("mousemove", e => {
+
+      const [min, max, step, oldValue] = getConfiguredRangeInput(input);
+
+      let factor = factorFromLeft(e, e.target);
+      const range = max - min;
+      const distanceFromLeft = e.x - input.offsetLeft;
+      const width = input.getBoundingClientRect().width;
+      const newValue1 = (max - min) * factorFromLeft(e, input) + min;
 
 
-    console.log(e.key);
+      let newValue = range * factor;
 
 
-  });
+      let nearest = Math.round(newValue / step) * step;
+
+
+      setTimeout(() => {
+        console.log("custom: ", nearest, " existing", newValue1, "  native:  ", e.target.value);
+
+      }, 10)
+
+
+    })
+  })
 
 
 </script>

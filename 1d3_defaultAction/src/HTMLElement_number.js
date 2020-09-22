@@ -1,31 +1,29 @@
 import {addPostPropagationCallback, removePostPropagationCallback} from "../postPropagationCallback.js";
 
-let intervalId;
-let caretPosition = 0;
-
-function setCaretPosition(elem, pos) {
-  //todo add input type filter here:   text, number ..
-  if (!elem.type || elem.type !== "text" || elem.type !== "number")
-    return;
-  elem.type = "text";
-  if (elem.setSelectionRange) {
-    elem.focus();
-    elem.setSelectionRange(pos, pos);
-  }
-  elem.type = "number";
+function caretLeft(event, input) {
+  input.setSelectionRange(0, 0);
 }
 
-function getArrowDirection(event) {
-  const distanceFromLeft = event.x - event.target.offsetLeft;
-  const distanceFromTop = event.y - event.target.offsetTop;
-  const paddingLeft = parseInt(window.getComputedStyle(event.target).paddingLeft);
-  const paddingTop = parseInt(window.getComputedStyle(event.target).paddingTop);
-  let width = event.target.getBoundingClientRect().width;
-  let height = event.target.getBoundingClientRect().height;
+function caretRight(event, input) {
+  const right = input.value.length;
+  const type = input.type;
+  input.type = "text";
+  if (input.setSelectionRange)
+    input.setSelectionRange(right, right);
+  input.type = type;
+}
+
+function getArrowDirection(event, input) {
+  const distanceFromLeft = event.x - input.offsetLeft;
+  const distanceFromTop = event.y - input.offsetTop;
+  const paddingLeft = parseInt(window.getComputedStyle(input).paddingLeft);
+  const paddingTop = parseInt(window.getComputedStyle(input).paddingTop);
+  let width = input.getBoundingClientRect().width;
+  let height = input.getBoundingClientRect().height;
   let factorFromLeft = distanceFromLeft / (width - paddingLeft * 2) * 100;
   let factorFromTop = distanceFromTop / (height - (paddingTop * 2)) * 100;
   if (factorFromLeft < 90)
-    return
+    return null; //todo make this into a number, so that we can use it for position of the caret.
   return factorFromTop <= 50 ? "up" : "down";
 }
 
@@ -62,14 +60,14 @@ function getFilteredValue(value, min) {
 //todo the statemachine listens only for mousedown and mouseup and focusout.
 
 function getConfiguredNumberInput(input) {
-  let min = parseInt(input.getAttribute("min")) || Number.NEGATIVE_INFINITY;
-  let max = parseInt(input.getAttribute("max")) || Number.POSITIVE_INFINITY;
+  const min = parseFloat(input.getAttribute("min")) || Number.NEGATIVE_INFINITY;
+  const max = parseFloat(input.getAttribute("max")) || Number.POSITIVE_INFINITY;
   let step = parseFloat(input.getAttribute("step")) || 1;
   // negative step value
   if (step <= 0)
     step = 1;
   // convert input values
-  let value = getFilteredValue(input.value, min); // convert "e" into a number and increase/decrease its number on step value
+  const value = getFilteredValue(input.value, min); // convert "e" into a number and increase/decrease its number on step value
   // wrong values
   if (min > max)
     throw new SyntaxError("min value is bigger than max value for an input number.");
@@ -80,106 +78,256 @@ function getConfiguredNumberInput(input) {
   return [min, max, step, value];
 }
 
+let activeStateMachine;
+
+function startStateMachine(input, event, task) {
+  activeStateMachine = {
+    input,
+    task,
+    event,
+    startValue: parseFloat(input.value),
+    timer: setTimeout(runStateMachine, 1000)
+  };
+}
+
+function stopStateMachine() {
+  const [min, max, step, value] = getConfiguredNumberInput(activeStateMachine.input);
+  const didChange = parseFloat(value) !== activeStateMachine.startValue;
+  didChange && activeStateMachine.input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
+  clearTimeout(activeStateMachine.timer);
+  activeStateMachine = undefined;
+}
+
+function runStateMachine() {
+  activeStateMachine.task(activeStateMachine.input);
+  activeStateMachine.timer = setTimeout(runStateMachine, 250);
+}
+
+
+function step(input, upDown) {
+  const [min, max, step, oldValue] = getConfiguredNumberInput(input);
+  let newValue = oldValue + (step * upDown);
+  newValue = Number.isInteger(step) ? parseInt(newValue) : parseFloat(newValue);
+  const didChange = processInputValue(input, oldValue, newValue, min, max);
+  didChange && input.dispatchEvent(new InputEvent("input", {bubbles: true, composed: false}));
+}
+
+function stepUp(event, input) {
+  return step(input, 1);
+}
+
+function stepDown(event, input) {
+  return step(input, -1);
+}
+
+
+//Keyboard actions
+//att. when holding down a key, the OS produces multiple keydown events after a second or so.
+//     These keydown events come from the OS/browser, the default action do not need to replicate them.
+
+let changeValue;
+
+function checkChange(event, input) {
+  const [a, b, c, newValue] = getConfiguredNumberInput(input);
+  if (changeValue === newValue)
+    return;
+  changeValue = undefined;
+  input.dispatchEvent(new InputEvent("change", {composed: true, bubbles: true}));
+}
+
 export const ArrowUpInputNumberDefaultAction = {
   element: HTMLInputElement,
-  event: {
-    type: "keydown",
-    isTrusted: true,
-    key: "ArrowUp"
-  },
+  event: {type: "keydown", isTrusted: true, key: "ArrowUp"},
   stateFilter: function (event, el) {
-    return el.type === "number";
+    return el.type === "number" /*&& !activeStateMachine*/;
   },
-  defaultAction: function stepUp(event, input) {
-    const [min, max, step, oldValue] = getConfiguredNumberInput(input);
-    const key = event.key;
-    if (key !== "ArrowUp")
-      return;
-    setTimeout(function () {
-      const newValue = step % 1 === 0 ? oldValue + step : parseInt(oldValue + step);// by default value increase to integer number (event if default value is a float). It is possible to left it float - define step as a float
-      const didChange = processInputValue(input, oldValue, newValue, min, max);
-      didChange && input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
-    }, 250);
-
-
+  defaultAction: function (event, input) {
+    stepUp(event, input);
+    checkChange(event, input);
   },
   repeat: "lowestWins",
   preventable: true
 };
 
-// todo: finish it
 export const ArrowDownInputNumberDefaultAction = {
   element: HTMLInputElement,
-  event: {
-    type: "keydown",
-    isTrusted: true,
-    key: "ArrowDown"
-  },
+  event: {type: "keydown", isTrusted: true, key: "ArrowDown"},
   stateFilter: function (event, el) {
-    return el.type === "number";
+    return el.type === "number"/* && !activeStateMachine*/;
   },
-  defaultAction: function stepDown(event, input) {
-    const [min, max, step, oldValue] = getConfiguredNumberInput(input);
-    const key = event.key;
-    if (key !== "ArrowDown")
-      return;
-    //If someone hold a button
-    setTimeout(function () {
-      const newValue = step % 1 === 0 ? oldValue - step : parseInt(oldValue - step);
-      const didChange = processInputValue(input, oldValue, newValue, min, max);
-      didChange && input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
-    }, 250);
+  defaultAction: function (event, input) {
+    stepDown(event, input);
+    checkChange(event, input);
   },
   repeat: "lowestWins",
+  preventable: true
+};
+
+export const FocusoutTriggerMousedownChangeInputNumberDefaultAction = {
+  element: HTMLInputElement,
+  event: {type: "focusout", isTrusted: true},
+  stateFilter: function (event, el) {
+    return activeStateMachine /*&& el.type === "number" */;
+  },
+  defaultAction: stopStateMachine,
+  repeat: "once",
   preventable: true
 };
 
 export const ArrowLeftInputNumberDefaultAction = {
   element: HTMLInputElement,
-  event: {
-    type: "keydown",
-    isTrusted: true,
-    key: "ArrowLeft"
-  },
+  event: {type: "keydown", isTrusted: true, key: "ArrowLeft"},
   stateFilter: function (event, el) {
-    return el.type === "number" && el.value;
+    return el.type === "number" && !activeStateMachine;
   },
-  defaultAction: function stepLeft(event, input) {
-    const key = event.key;
-    if (key !== "ArrowLeft")
-      return;
-    caretPosition--;
-    if (caretPosition <= 0)
-      return caretPosition = 0;
-    //todo: do we need to add setTimeout and set Interval here?? If someone would hold a button - the event will fire several times
-    setCaretPosition(input, caretPosition);
-  },
+  defaultAction: caretLeft,
   repeat: "lowestWins",
   preventable: true
 };
 
 export const ArrowRightInputNumberDefaultAction = {
   element: HTMLInputElement,
-  event: {
-    type: "keydown",
-    isTrusted: true,
-    key: "ArrowRight"
-  },
+  event: {type: "keydown", isTrusted: true, key: "ArrowRight"},
   stateFilter: function (event, el) {
-    return el.type === "number" && el.value;
+    return el.type === "number" && !activeStateMachine;
   },
-  defaultAction: function stepRight(event, input) {
-    const key = event.key;
-    if (key !== "ArrowRight")
-      return;
-    caretPosition++;
-    if (caretPosition >= input.value.length)
-      return caretPosition = input.value.length;
-    setCaretPosition(input, caretPosition);
+  defaultAction: caretRight,
+  repeat: "lowestWins",
+  preventable: true
+};
+
+const numberCharacter = /[\dEe+.-]/;
+
+export const NumberKeysInputNumberDefaultAction = {
+  element: HTMLInputElement,
+  event: {type: "keydown", isTrusted: true},
+  stateFilter: function (event, el) {
+    return el.type === "number" && numberCharacter.exec(event.key);
+  },
+  defaultAction: function (event, input) {
+    caretRight(event, input);
+    changeValue = input.value;
+    input.value += event.key;
+    input.dispatchEvent(new InputEvent("input", {bubbles: true, composed: false}));
   },
   repeat: "lowestWins",
   preventable: true
 };
+
+// export const KeyupEndsKeydownStateMachine = {
+//   element: HTMLInputElement,
+//   event: {type: "keyup", isTrusted: true},
+//   stateFilter: function (event, el) {
+//     return activeStateMachine && activeStateMachine.event.type === "keydown" /* && el.type === "number"*/; //note 1
+//   },
+//   defaultAction: stopStateMachine,
+//   repeat: "lowestWins",
+//   preventable: true
+// };
+//todo the keydown and keyup stop of the statemachine should apply to the mousedown buttons too.
+// export const KeydownEndsKeydownStateMachine = {
+//   element: HTMLInputElement,
+//   event: {type: "keydown", isTrusted: true},
+//   stateFilter: function (event, el) {
+//     return activeStateMachine && activeStateMachine.event.type === "keydown" /* && el.type === "number"*/; //note 1
+//   },
+//   defaultAction: stopStateMachine,
+//   repeat: "lowestWins",
+//   preventable: true
+// };
+
+export const FocusoutEndsKeydownStateMachine = {
+  element: HTMLInputElement,
+  event: {type: "focusout", isTrusted: true},
+  // stateFilter: function (event, el) {
+  //   return activeStateMachine /* && el.type === "number"*/; //note 1
+  // },
+  defaultAction: checkChange,
+  repeat: "lowestWins",
+  preventable: true
+};
+
+//STATEMACHINE FOR mousedown on up-button
+export const MousedownStartUpInputNumberDefaultAction = {
+  element: HTMLInputElement,
+  event: {type: "pointerdown", isTrusted: true, button: 0},
+  stateFilter: function (event, el) {
+    return el.type === "number" && !activeStateMachine && getArrowDirection(event, el) === "up";
+  },
+  defaultAction: function (event, input) {
+    event.setPointerCapture(event.pointerId); //note 2.
+    //todo lockFocus()
+    stepUp(input);
+    startStateMachine(input, event, stepUp);
+  },
+  repeat: "lowestWins",
+  preventable: true
+};
+
+export const MouseupEndUpInputNumberDefaultAction = {
+  element: HTMLInputElement,
+  event: {type: "pointerup", isTrusted: true, button: 0},
+  stateFilter: function (event, el) {
+    return activeStateMachine && activeStateMachine.type === "pointerdown" /* && el.type === "number"*/; //note 1
+  },
+  defaultAction: stepEnds,
+  //todo add stopper for focus out()
+  repeat: "lowestWins",
+  preventable: true
+};
+
+
+//STATEMACHINE FOR mousedown on down-button
+export const MousedownStartDownInputNumberDefaultAction = {
+  element: HTMLInputElement,
+  event: {type: "pointerdown", isTrusted: true, button: 0},
+  stateFilter: function (event, el) {
+    return el.type === "number" && !activeStateMachine && getArrowDirection(event, el) === "down";
+  },
+  defaultAction: function (event, input) {
+    event.setPointerCapture(event.pointerId); //note 2.
+    stepDown(input);
+    startStateMachine(input, event, stepDown);
+  },
+  repeat: "lowestWins",
+  preventable: true
+};
+
+export const MouseupEndEndInputNumberDefaultAction = {
+  element: HTMLInputElement,
+  event: {type: "pointerup", isTrusted: true, button: 0},
+  stateFilter: function (event, el) {
+    return activeStateMachine && activeStateMachine.type === "pointerdown" /* && el.type === "number"*/; //note 1
+  },
+  defaultAction: stepEnds,
+  repeat: "lowestWins",
+  preventable: true
+};
+
+export const MousedownUpEndInputNumberDefaultAction = {
+  element: HTMLInputElement,
+  event: {
+    type: "keyup",
+    isTrusted: true,
+    key: "ArrowDown"
+  },
+  stateFilter: function (event, el) {
+    return activeStateMachine && activeStateMachine.id === event.key /* && el.type === "number"*/; //note 1
+  },
+  defaultAction: function stepDownEnd(event, input) {
+    const [min, max, step, value] = getConfiguredNumberInput(input);
+    const didChange = parseFloat(value) !== activeStateMachine.startValue;
+    didChange && input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
+    clearTimeout(activeStateMachine.timer);
+    activeStateMachine = undefined;
+  },
+  repeat: "lowestWins",
+  preventable: true
+};
+
+
+//MOVING CARET POSITION
+
 
 export const KeydownInputNumberDefaultAction = {
   element: HTMLInputElement,
@@ -280,3 +428,22 @@ export const mousedownInputNumberDefaultAction = {
   repeat: "lowestWins",
   preventable: true
 };
+
+const numberChars = /\d\.e\+\-/;
+const numbers = "0123456789e+-";
+
+//todo when you press down on the upper button, you are using a statemachine here too
+//todo the statemachine uses mousedown and then adds a setTimeout that in turn triggers setIntervals
+//the first timer is maybe a second?
+//the ensuing timers are maybe 250ms?
+//todo the statemachine listens only for mousedown and mouseup and focusout.
+
+//note 1:
+//   bizarre edge case is altering the type of the input number while the statemachine runs.
+//   While the statemachine is active, the type should be frozen.
+//   The problems of the dynamic type is just infinite.
+
+//note 2:
+//   dispatch pointercancel?? to mark that the pointer has been taken for a particular gesture??
+//   this one doesn't call preventDefault() on the mouse, so you still get the mouseevents being dispatched.
+//   should a defaultAction capture the pointer?? from js or via a setting??
