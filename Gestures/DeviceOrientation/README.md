@@ -12,7 +12,7 @@ device in three planes. Each minimum deviation of the phone in one of the three 
   > increases toward 180° as the device is tipped forward and decreases toward -180° as the device is tipped 
   backward.
   
- *`gamma` - `y` axis, express in degrees with values ranging from -90 to 90. This represents a left to right motion
+ * `gamma` - `y` axis, express in degrees with values ranging from -90 to 90. This represents a left to right motion
   of the device.
    > The gamma angle is 0° when the device's left and right sides are the same distance from the surface of the Earth,
    >and increases toward 90° as the device is tipped toward the right, and toward -90° as the device is tipped toward
