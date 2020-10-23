@@ -1,0 +1,19 @@
+<input id="myfile" type="file"/>
+
+<script>
+
+
+  var fileInput = document.getElementById('myfile');
+  var fReader = new FileReader();
+
+  fReader.onload = function (e) {
+    console.log(e.target.result); /// <-- this contains an ArrayBuffer
+  }
+
+  fileInput.onchange = function (e) {
+    var file = this.files[0];
+    let lala = fReader.readAsArrayBuffer(file);
+
+    debugger
+  }
+</script>

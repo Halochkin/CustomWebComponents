@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+
+
+  (function () {
+    let signature;
+
+
+    try {
+
+      function getMessageEncoding() {
+        let message = "Some value ";
+        let enc = new TextEncoder();
+        return enc.encode(message);
+      }
+
+
+      async function signMessage(key) {
+
+        let encoded = getMessageEncoding();
+        let signature = await crypto.subtle.sign(
+          "HMAC",
+          key,
+          encoded
+        );
+
+        console.timeEnd("window.crypto.subtle.sign() time : ");
+
+
+        // .then((res) => {
+        // })
+      }
+
+
+      crypto.subtle.generateKey({
+          name: "HMAC",
+          hash: {name: "SHA-512"}
+        },
+        true,
+        ["sign", "verify"]).then(
+        (key) => {
+          console.time("window.crypto.subtle.sign() time : ");
+          signMessage(key);
+        }
+      )
+
+    } catch (e) {
+      console.log(e.stack)
+      return new Response(e.stack, {status: 200})
+    }
+
+
+  })();
+
+
+</script>
+
+
+</body>
+</html>
