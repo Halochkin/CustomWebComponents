@@ -7,7 +7,7 @@ HTTP cookie provide the server with a mechanism for storing and receiving status
 A cookie is a key-value data pair that is stored in the user's browser until a certain period expires. The browser will store this information and pass it to the server with each request as part of the HTTP header. In technical terms, cookies are small text files.  
 
 There are a number of limitations to consider when using cookies. There are no strict limitations on their size and number.
- [RFC 6265](https://tools.ietf.org/html/rfc6265) sets only requirements for the web browser: it must store from 50 cookie values per domain with the size of each, along with attributes from 4096 bytes. The browser may well store more values, but it is safer to keep within guaranteed limits. When creating an application, you should take into account scenarios of unexpected deletion, any modification or addition of new cookie values: the data coming into cookies is not at all safer than data from web forms.
+ RFC 6265 sets only requirements for the web browser: it must store from 50 cookie values per domain with the size of each, along with attributes from 4096 bytes. The browser may well store more values, but it is safer to keep within guaranteed limits. When creating an application, you should take into account scenarios of unexpected deletion, any modification or addition of new cookie values: the data coming into cookies is not at all safer than data from web forms.
 
 A session is created on the server, and cookies are stored on the user's computer. The HTTP protocol cannot determine the connection between two requests from the same user. 
 The session identifier is automatically saved in the user's browser as a cookie, and if the browser does not support cookies, the identifier is automatically added to the page address and all the links on it. This means that when updating a page, the browser itself will send a session identifier to the server, regardless of the user's actions.
@@ -33,9 +33,9 @@ The session identifier is automatically saved in the user's browser as a cookie,
 
  > Session cookies are removed when the client shuts down. Cookies are session cookies if they don't specify the `Expires` or `Max-Age` attributes.
 
-
-## remember me vs no expiration (forget me when browser closes).
-
+## remember me vs forget me
+ 
+#### remember me
 To prevent the user from having to enter his password every day (after the session ends), it is customary to remember that he is authorized in a cookie.
 
 Usually, cookies are set for a certain period (for example, a month) or permanently. In the second case, the user will be logged in (i.e. he will be able to log in without entering his password) until he clicks the 'Logout' link or accesses the site from another browser.
@@ -48,10 +48,13 @@ How can this be implemented correctly? The principle is as follows: a random str
 - When authorising by login and password, we shall write a random line to the user in a cookie and a database. This shall be done only if the user has ticked the 'Remember me' box. Why? Because the user may not be at his computer and therefore does not want another person after him to be able to log in under his cookie login (i.e. without entering the password!).
 Therefore it is always worth giving the user a choice - he wants his browser to remember him in a cookie or not.
 
+#### forget me
+In order to automatically log out a user, after he closes the tab, you need to set the expiration date to a certain date in the past or not to determine it at all.  If a cookie has neither the Max-Age nor the Expires attribute, the user agent will retain the cookie until "the current session is over" (as defined by the user agent).
+
 
 ### References 
 
 * [Sessions and Cookies](https://auth0.com/docs/sessions-and-cookies)
 * [MDN: Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)
+* [RFC 6265](https://tools.ietf.org/html/rfc6265#section-4.1)
 
-All the good links we have in hangouts. All. My texts about session cookie in hangouts, and put it together in an md file.
