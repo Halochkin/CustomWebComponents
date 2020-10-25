@@ -57,4 +57,4 @@ In order to automatically log out a user, after he closes the tab, you need to s
 * [Sessions and Cookies](https://auth0.com/docs/sessions-and-cookies)
 * [MDN: Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)
 * [RFC 6265](https://tools.ietf.org/html/rfc6265#section-4.1)
-
+* [Blog: "Just how many web users really disable cookies or JavaScript?"](https://blog.yell.com/2016/04/just-many-web-users-disable-cookies-javascript/)
