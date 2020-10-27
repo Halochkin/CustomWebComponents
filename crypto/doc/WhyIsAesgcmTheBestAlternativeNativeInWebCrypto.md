@@ -22,7 +22,7 @@ const result = crypto.subtle.encrypt(algorithm, key, data);
 
     This gives you a way to authenticate associated data having to encrypt it. The bit length of `additionalData` must be `≤ 264-1`. The `additionalData` property is optional and may be omitted without the security of the encryption operation.
 
- 2. `iv` — the initialization vector (`Uint8Array`). This must be unique every encryption operation carried out with a given key.Put way: never reuse an IV with the same key. The AES-GCM specification that the IV should be 96 bits long, and typically contains bits a random number generator.
+ 2. `iv` — the initialization vector (`Uint8Array`). This must be unique every encryption operation carried out with a given key.Put way: never reuse an IV with the same key. The AES-GCM specification that the IV should be `96` bits long, and typically contains bits a random number generator.
        > Note that the IV does not have to be secret, unique: so it is OK, for example, to transmit it in the clear the encrypted message.
  3. `name` - A `DOMString`/`UTF-16 String`.
  4. `tag-length` - This determines the size in bits (`Number`) of the authentication generated in the encryption operation and used for authentication the corresponding decryption. It is optional and defaults to 128 if it is not specified.
@@ -37,23 +37,40 @@ const result = crypto.subtle.encrypt(algorithm, key, data);
    ```  
 
 ### 3. How to encrypt data
+// https://www.w3.org/TR/WebCryptoAPI/#dfn-SubtleCrypto-method-encrypt
+
+Modern browsers now support the crypto.subtle API, which provides native encryption and decryption functions (async no less!) using one of these method: AES-CBC, AES-CTR, AES-GCM, or RSA-OAEP.
+
+
 ```javascript
-const result = crypto.subtle.encrypt({name: 'AES-gcm', iv: new Uint8Array(16), additionalData: new Uint8Array(1), tagLength: 130}, key, data);
+const result = crypto.subtle.encrypt({name: 'AES-GCM', iv: new Uint8Array(16), additionalData: new Uint8Array(1), tagLength: 130}, key, data);
 ```
 ### 4. How to decrypt data
 
 ### 5. How to make a key 
-Like this. Describe in detail
-```javascript
-Promise.resolve(null).then(function(result) {
-    var usages = ['encrypt', 'decrypt'];
-    var extractable = false;
-    var algorithm = {name: 'aes-gcm'};
 
-    debug('\nImporting AES-GCM key...');
-    return crypto.subtle.importKey('raw', keyData, algorithm, extractable, usages);
-}).then(function(result) {
-    key = result;
+// https://www.w3.org/TR/WebCryptoAPI/#cryptokey-interface-internal-slots
+
+
+In order to generate a key, `importKey()` is used. As parameters, it takes:
+
+  * `format` - is a string describing the data format of the key to import. To make a secret key, the value "raw" is used. This is an unformatted byte sequence.
+  * `keyData` -  object containing the key in the given format. It turns short strings with length 5 and long strings with length 500 into hash strings always `256` long.
+  * `algorithm` - is a dictionary object defining the type of key to import and providing extra algorithm-specific parameters. Object properties described before.
+  * `extractable` - is a Boolean indicating whether it will be possible to export the key using `SubtleCrypto.exportKey()` or `SubtleCrypto.wrapKey()`.
+  * `keyUsages` -  is an Array indicating a type of operation that may be performed using a key. The recognized key usage values are "encrypt", "decrypt", "sign", "verify", "deriveKey", "deriveBits", "wrapKey" and "unwrapKey".
+
+
+```javascript
+(async function () {
+      var format = 'raw';
+      var keyData = await crypto.subtle.digest('SHA-256', new TextEncoder().encode("secret message"))
+      var algorithm = {name: 'aes-gcm'};
+      var extractable = false;
+      var usages = ['encrypt', 'decrypt'];
+      var key = crypto.subtle.importKey(format, keyData, algorithm, extractable, usages);
+      return key;
+})();
 ```
 ### 6. why is the secret hashed before you make the key
 
