@@ -126,4 +126,6 @@ In June 2003, the U.S. NSA announced that the AES cipher is strong enough to pro
 ### Reference
 * [AES-GCM](https://www.w3.org/TR/WebCryptoAPI/#aes-gcm)
 * [MDN: encrypt()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt)
+* [MDN: decrypt()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/decrypt)
 * [MDN: CryptoKey](https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey)
+* [Mika Luoma-aho: JavaScript Web Cryptography API](https://www.theseus.fi/bitstream/handle/10024/92960/Web_Cryptography_API_Luoma-aho.pdf)
