@@ -1,4 +1,4 @@
-<!--&lt;!&ndash;todo   cryoto.subtle.sign and crypto.subtl.verify methods?&ndash;&gt;-->
+<!--&lt;!&ndash;todo   cryoto.subtle.sign and Web Crypto API.subtl.verify methods?&ndash;&gt;-->
 
 
 <!--<input class="sign-button" type="button" value="Sign">-->
@@ -30,14 +30,14 @@
 
 <!--    async function signMessage(privateKey) {-->
 <!--      let encoded = getMessageEncoding();-->
-<!--      signature = await window.crypto.subtle.sign(-->
+<!--      signature = await window.Web Crypto API.subtle.sign(-->
 <!--        "RSASSA-PKCS1-v1_5",-->
 <!--        privateKey,-->
 <!--        encoded-->
 <!--      );-->
 
 <!--      let buffer = new Uint8Array(signature, 0, 5);-->
-<!--      console.timeEnd("window.crypto.subtle.sign() time");-->
+<!--      console.timeEnd("window.Web Crypto API.subtle.sign() time");-->
 <!--    }-->
 
 <!--    /*-->
@@ -47,17 +47,17 @@
 <!--    */-->
 <!--    async function verifyMessage(publicKey) {-->
 <!--      let encoded = getMessageEncoding();-->
-<!--      let result = await window.crypto.subtle.verify(-->
+<!--      let result = await window.Web Crypto API.subtle.verify(-->
 <!--        "RSASSA-PKCS1-v1_5",-->
 <!--        publicKey,-->
 <!--        signature,-->
 <!--        encoded-->
 <!--      );-->
-<!--      console.timeEnd("window.crypto.subtle.verify() time");-->
+<!--      console.timeEnd("window.Web Crypto API.subtle.verify() time");-->
 
 <!--    }-->
 
-<!--    window.crypto.subtle.generateKey(-->
+<!--    window.Web Crypto API.subtle.generateKey(-->
 <!--      {-->
 <!--        name: "RSASSA-PKCS1-v1_5",-->
 <!--        modulusLength: 2048,-->
@@ -69,13 +69,13 @@
 <!--    ).then((keyPair) => {-->
 <!--      const signButton = document.querySelector(".sign-button");-->
 <!--      signButton.addEventListener("click", () => {-->
-<!--        console.time("window.crypto.subtle.sign() time");-->
+<!--        console.time("window.Web Crypto API.subtle.sign() time");-->
 <!--        signMessage(keyPair.privateKey);-->
 <!--      });-->
 
 <!--      const verifyButton = document.querySelector(" .verify-button");-->
 <!--      verifyButton.addEventListener("click", () => {-->
-<!--        console.time("window.crypto.subtle.verify() time");-->
+<!--        console.time("window.Web Crypto API.subtle.verify() time");-->
 <!--        verifyMessage(keyPair.publicKey);-->
 <!--      });-->
 <!--    });-->
