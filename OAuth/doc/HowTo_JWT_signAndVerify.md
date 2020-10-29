@@ -106,7 +106,6 @@ async function verifyAndExtract(jwt, pubKeys) {
  const verify = await verifyAndExtract(jwt, keys);
 
 ```
-
 ### Reference
 
 *[MDN: importKey()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey)
