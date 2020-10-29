@@ -107,7 +107,6 @@ async function verifyAndExtract(jwt, pubKeys) {
 
 ```
 ### Reference
-
 *[MDN: importKey()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey)
 *[MDN: verify()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/verify)
 *[MDN: sign()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/sign)
