@@ -118,6 +118,14 @@ window.crypto.subtle.encrypt(
 
 ### 2.1 Why is aes-gcm the best alternative native in web crypto?
 
+1. It support encrypt/decrypt.
+2. Synchronic, the package the browser holds should be opaque. No need for public key.
+3. GCM is best as it ensures authenticity and integrity.
+      Authenticity of the data assures that the data in question was created or modified by an authorized party (a key holder). Without authenticity, anyone could present an arbitrary block of data as a valid ciphertext. Though it is overwhelmingly likely that decrypting such a block will result in a garbage plaintext, it can still disrupt the application that is attempting to use the data. This is different from integrity, in that integrity assures you that a given piece of data has not been modified (either by an unauthorized party or by more mundane sources of data corruption such as bad hardware/line noise/cosmic rays/etc).
+4. it is fast. ~ 1ms.
+5. it is natively supported by web crypto.
+F. it is considered safe by experts.
+
   For three variants of AES keys, a complete search requires 2^127, 191 2 or 2^255 operations respectively. Even the smallest of these numbers indicates that the key brute force attack has no practical meaning today. According to the developers' estimates, the cipher is stable against such kinds of cryptoanalysis attacks: 
   * differential cryptanalysis; 
   * linear cryptanalysis; 
@@ -129,4 +137,4 @@ window.crypto.subtle.encrypt(
 * [MDN: encrypt()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt)
 * [MDN: decrypt()](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/decrypt)
 * [MDN: CryptoKey](https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey)
-* [Mika Luoma-aho: JavaScript Web Cryptography API](https://www.theseus.fi/bitstream/handle/10024/92960/Web_Cryptography_API_Luoma-aho.pdf)
+* [Mika Luoma-aho: JavaScript Web Cryptography API](https://www.theseus.fi/bitstream/handle/10024/92960/Web_Cryptography_API_Luoma-aho.pdf) 
