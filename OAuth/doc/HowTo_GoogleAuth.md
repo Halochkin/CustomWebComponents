@@ -13,7 +13,16 @@ In order to start using Google Authentication, it is necessary:
       * `Internal` - In this mode, your app is limited to G Suite users within your organization. You can communicate with your internal users directly about how you'll use their data.
       * `External` - In this mode, your app is available to any user with a Google Account. External apps that request sensitive or restricted user data must first be verified by Google.    
    3. After you have chosen how to configure and register your app, you must enter information about the app, including app name, user support email, application home page etc.
-5. Click on the "Credentials" tab. In the upper part you will see the button "+ Create credentials", point your cursor over it and choose "OAuth client ID" from the list that appears. Select the application type and add the required URIs. After that, the "Client ID" and "Client Secret" will be generated, the values of which will be used for authentication.
+5. Click on the **Credentials** tab. 
+  * In the upper part you will see the button **+ Create credentials**, point your cursor over it and choose **OAuth client ID** from the list that appears. 
+  * In Application type, select **Web application**. 
+  * Enter a **Name** for your application. 
+  * Enter your account’s authorization domain in the **Authorized Javascript origins** field.
+       You can find this in the Authorization Domain section of the Cloudflare Access app. The domain is something like, `https://xyz.cloudflareaccess.com`.
+  * Under **Authorized redirect URIs**, enter your authorization domain and add this to the end of the path:
+     `/cdn-cgi/access/callback` 
+  * Click **Create**.      
+  * After that, the **Client ID** and **Client Secret** will be generated, the values of which will be used for authentication.
 
 ### Cloudflare worker
 
@@ -22,11 +31,11 @@ Cloudflare Workers is a set of scripts running on Cloudflare servers. They are l
  But before executing the woker logic, it is necessary to define global variables and their values. 
   For complete work Google authentification uses the following variables:
    
-   * `GOOGLE_CLIENTID=<CLIENT_ID>.apps.googleusercontent.com`. Your client ID. 
-   * `GOOGLE_CLIENTSECRET=<CLIENT_SECRET>`; Your client Secret.
-   * `GOOGLE_CODE_LINK=https://oauth2.googleapis.com/token`. Google Auth access token.
+   * `GOOGLE_CLIENTID=<CLIENT_ID>.apps.googleusercontent.com` - Your _client ID_. 
+   * `GOOGLE_CLIENTSECRET=<CLIENT_SECRET>` - Your _client Secret_.
+   * `GOOGLE_CODE_LINK=https://oauth2.googleapis.com/token` - Google Auth access token.
    	
-   	 Google Oauth Token. To access the endpoint from your code you need to provide an access token. The access token provided in response to the above call to the token endpoint expires pretty quickly, usually in an hour, so it is not sufficient to just store that and reuse it. The response is JSON that contains an access token like this:
+     To access the endpoint from your code you need to provide an access token. The access token provided in response to the above call to the token endpoint expires pretty quickly, usually in an hour, so it is not sufficient to just store that and reuse it. The response is JSON that contains an access token like this:
      ```json
        {
          "access_token": "1/fFAGRNJru1FTz70BzhT3Zg",
@@ -58,10 +67,10 @@ function hasStateSecretOnce(state) {
 }
 
 function getStateSecret(ttl, stateRegistrySize) {
-   const secret = randomString(12);                             //[3.1.1]
+   const secret = randomString(12);                                                //[3.1.1]
    states.length > stateRegistrySize && states.shift();
    states.push(secret);
-   setTimeout(() => hasStateSecretOnce(secret), ttl);           //[3.1.2]
+   setTimeout(() => hasStateSecretOnce(secret), ttl);                              //[3.1.2]
    return secret;
 }
 
@@ -78,7 +87,7 @@ async function fetchAccessToken(path, data) {
 }
 
 async function googleProcessTokenPackage(code) {
-  const tokenPackage = await fetchAccessToken(                                 //[7]
+  const tokenPackage = await fetchAccessToken(                                     //[7]
     GOOGLE_CODE_LINK, {
       code,
       client_id: GOOGLE_CLIENTID,
@@ -96,11 +105,11 @@ async function googleProcessTokenPackage(code) {
 
 async function handleRequest(req) {
   const url = new URL(req.url);                                       
-  const [ignore, action, data] = url.pathname.split('/');      //[2]
-  if (action === 'login') {                                    //[2.1]
-    let redirect;
-    if (data === 'google') {                                   //[2.2]
-      redirect = makeRedirect(GOOGLE_REDIRECT_1, {             //[3]
+  const [ignore, action, data] = url.pathname.split('/');                          //[2]
+  if (action === 'login') {                                                        //[2.1]
+    let redirect;                    
+    if (data === 'google') {                                                       //[2.2]
+      redirect = makeRedirect(GOOGLE_REDIRECT_1, {                                 //[3]
         state: getStateSecret(STATE_SECRET_TTL_MS, STATE_SECRET_REGISTRY_LENGTH),  //[3.1]
         nonce: randomString(12),                                                   
         client_id: GOOGLE_CLIENTID,                                                
@@ -125,7 +134,7 @@ async function handleRequest(req) {
     return new Response(userText, {status: 201});                                  //[8]
   }
   const mainpage = `hello sunshine GITHUB oauth28 <a href='/login/google'>login google</a>`
-  return new Response(mainpage, {headers: {'Content-Type': 'text/html'}});     //[1]
+  return new Response(mainpage, {headers: {'Content-Type': 'text/html'}});         //[1]
 }
 ```
 
@@ -133,18 +142,18 @@ async function handleRequest(req) {
 2. Each time fetch events are activated, the script checks for values that define actions and data. When the user presses a button:
     1. The variable `action` is defined as `login` and the variable `redirect` is initialized.
     2. `data` variable = `"google"`.
-3. The `redirect' variable gets its value using the `makeRedirect()` function. The `makeRedirect()` function takes two parameters: `userAuthorizationUrl` and `params` object which defines the redirect parameters. Parameters of the redirect include:
+3. The `redirect` variable gets its value using the `makeRedirect()` function. The `makeRedirect()` function takes two parameters: `userAuthorizationUrl` and `params` object which defines the redirect parameters. Parameters of the redirect include:
    1. `state` - defines the state of the secret. Should include the value of the anti-forgery unique session token, as well as any other information needed to recover the context when the user returns to your application, e.g., the starting URL. The value is determined using the `getStateSecret()` function which accepts two parameters: `time to live` and `state registry size. 
      1. The state array is filled with hexString of a random number until the number exceeds the value of `state registry size`.
      2. The state secrets on live in the memory of cf worker until the timeout is reached. When the timeout (ttl) is reached, the state is deleted from the memory;
    2. `nonce` - is a random value generated by your app that enables replay protection when present;
    3. `client_id` - obtain from the API;
    4. `redirect_uri` - HTTP endpoint on your server that will receive the response from Google. The value must exactly match one of the authorized redirect URIs for the OAuth 2.0 client, which you configured in the API Console Credentials page;
-   5. `scope` - basic request should be `openid email`;
+   5. `scope` - basic request should be `"openid email"`;
    6. `response_type` - basic authorization code flow request should be code.
 4. Redirect to the authentication page. It is a form in which the user can choose a Google account with which to log on to the site.
 5. After successful authentication, the URL will be changed. This is a new fetch event which will determine the value of the variable action on the callback. This will only be done if user authentication is successful.  
-6. The new URL should retrieve the "google" property and the `code` parameter. 
+6. The new URL should retrieve the `google` property and the `code` parameter. 
     ```
      https://auth-go-gi.2js-no.workers.dev/callback/github?code=....
     ```
