@@ -16,8 +16,8 @@ In order to add Google social login to a web application it is necessary:
 10. Go back to the **Credentials**" tab.
 11 Click the **Create credentials** button, choose **Create OAuth client ID** from the list.
 12. Select **Web application** as **Application type**. 
-    1. Add a link to your application as a "Authorized JavaScript origins" value. (For example `https://maxworker.maksgalochkin2.workers.dev`).
-    2. As the value "**Authorized redirect URIs**" you need to specify the link that will be opened after successful authentication. (For example https://maxworker.maksgalochkin2.workers.dev/callback).
+    1. Add a link to your application as a "Authorized JavaScript origins" value (for example `https://maxworker.maksgalochkin2.workers.dev`).
+    2. As the value "**Authorized redirect URIs**" you need to specify the link that will be opened after successful authentication (for example `https://maxworker.maksgalochkin2.workers.dev/callback`).
     3. Press the **Save** button. 
 13. API will generate **Client ID** and **Client secret**.
 
@@ -41,10 +41,9 @@ In order to add Google social login to a web application it is necessary:
        }
      ```
    * `GOOGLE_REDIRECT_1=https://accounts.google.com/o/oauth2/v2/auth` - to obtain user authorization. This endpoint handles active session lookup, authenticates the user, and obtains user consent.
-   * `GOOGLE_REDIRECT_2=https://<auth-go-gi.2js-no>.workers.dev/callback/google` - redirect url after successful authentication. Must retaliate against the name of the woker.
-   * `STATE_SECRET_REGISTRY_LENGTH=10000` - state registry size.
-   * `STATE_SECRET_TTL_MS=300000` - time to live.
-3. Inside `handleRequest()` put the code
+   * `GOOGLE_REDIRECT_2=https://<auth-go-gi.2js-no>.workers.dev/callback` - redirect url after successful authentication. Must retaliate against the name of the worker.
+
+5. Inside `handleRequest()` put the code
   ```javascript
   async function handleRequest(request) {
     const url = new URL(request.url);                                                   //[2]
@@ -74,7 +73,7 @@ In order to add Google social login to a web application it is necessary:
       * `responce_uri` should be the HTTP endpoint on your server that will receive the response from Google. The value must exactly match one of the authorized redirect URIs for the OAuth 2.0 client, which you configured in the API Console Credentials page.
       * `scope` basic request should be "openid email".
  
- 6. User redirection.
+ 6. User redirection to login page.
  7. After successful authentication, the user will be redirected back to the web application. The URL will be redirected by the "/callback" parameter.
  8. The response includes a code parameter, a one-time authorization code that your server can exchange for an access token and ID token.
  9. Your server makes this exchange by sending an HTTPS POST request. The POST request is sent to the token endpoint, which you should retrieve from the Discovery document using the token_endpoint metadata value.

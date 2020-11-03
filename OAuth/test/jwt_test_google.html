@@ -134,3 +134,39 @@
 </script>
 </body>
 </html>
+
+
+GITHUB_ACCESS_TOKEN_LINK    https://github.com/login/oauth/access_token
+GITHUB_CLIENTID    0c89d5ed6ca90c245bb6
+GITHUB_CLIENTSECRET    1994dc316b43dc8a58e0cf8f027d93523ccaf85a
+GITHUB_OAUTH_LINK    https://github.com/login/oauth/authorize
+GITHUB_REDIRECT    https://auth-go-gi.2js-no.workers.dev/callback/github
+
+
+async function githubProcessTokenPackage(code, state) {
+const accessTokenPackage = await fetchAccessToken(GITHUB_ACCESS_TOKEN_LINK, {
+code,
+client_id: GITHUB_CLIENTID,
+client_secret: GITHUB_CLIENTSECRET,
+redirect_uri: GITHUB_REDIRECT,
+state
+});
+const data = await accessTokenPackage.text();
+const x = {};
+data.split('&').map(pair => pair.split('=')).forEach(([k, v]) => x[k] = v);
+const accessToken = x['access_token'];
+const user = await fetch('https://api.github.com/user', {
+headers: {
+'Authorization': 'token ' + accessToken,
+'User-Agent': '2js-no',
+'Accept': 'application/vnd.github.v3+json'
+}
+});
+const userData = await user.json();
+return userData.id;
+}
+
+
+else if (data === 'github')
+userText = 'gi' + await githubProcessTokenPackage(code, state); //userText is the github id nr.
+else
