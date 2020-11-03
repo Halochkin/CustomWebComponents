@@ -4,7 +4,7 @@ You can login to third-party applications and services with a Google Account. So
 
 ### API configuration. Creation of "Client ID" and "Client secret code"
 In order to start using Google Authentication, it is necessary:
- 1. Open [GoogleApi] (https://console.developers.google.com/), authenticate and create a new project. 
+ 1. Open [GoogleApi](https://console.developers.google.com/), authenticate and create a new project. 
  2. Select the "Dashboard" tab. Click the "+ENABLE APIS AND SEVICES" button or move to [API Library](https://console.developers.google.com/apis/library?project=sanguine-fx-294214&supportedpurview=project).
 3. In the search bar, type "Google+ API", then click "Enable" button. After that you will be redirected to API settings. 
 4. Go to the "Credentials" tab.
@@ -166,4 +166,5 @@ async function handleRequest(req) {
 2. [Google+ API](https://console.developers.google.com/marketplace/product/google/plus.googleapis.com?q=search&referrer=search&hl=uk&project=spiritual-aloe-294222)
 3. [Cloudflare workers](https://workers.cloudflare.com/)
 4. [MDN: Redirections in HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections)
+5. [State params](https://developers.google.com/identity/protocols/oauth2/openid-connect#state-param)
  
