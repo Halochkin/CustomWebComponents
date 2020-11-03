@@ -1,4 +1,4 @@
-# # HowTo: Google Authorization with Cloudflare workers
+# HowTo: Google Authorization with Cloudflare workers
 
 In order to add Google social login to a web application it is necessary:
 
