@@ -107,8 +107,7 @@ Make a `handleRequest()` function:
        return base64urlStr;
      }
 ```
-    6. Conversion into object.
- 10. Response JWT payload.
+6. Conversion into object.
  
 ## Demo
  Full example here
