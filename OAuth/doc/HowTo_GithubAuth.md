@@ -162,7 +162,6 @@ async function fetchUser(token) {
     });
 }
 
-
 async function githubProcessTokenPackage(code) {
     let bodyString = `code=${encodeURIComponent(code)}&state=${encodeURIComponent(makeRandomString(12))}&client_id=${encodeURIComponent(GITHUB_CLIENT_ID)}&client_secret=${encodeURIComponent(GITHUB_CLIENT_SECRET)}&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URL)}`
     const tokenPackage = await fetchAccessToken(bodyString);
@@ -170,9 +169,13 @@ async function githubProcessTokenPackage(code) {
     const access_token = tokenText.split('&')[0].split("=")[1];
     const user = await fetchUser(access_token);
     const userData = await user.json();
-    return userData;
+    return JSON.stringify({
+        id: userData.id,
+        email: userData.email,
+        fullname: userData.name,
+        provider: userData.url
+    });
 }
-
 
 async function handleRequest(request) {
     const url = new URL(request.url);                                                   
@@ -184,7 +187,7 @@ async function handleRequest(request) {
     if (action === "callback") {
         let code = url.searchParams.get("code")
         let userToken = await githubProcessTokenPackage(code);
-        return new Response(JSON.stringify(userToken));                                 
+        return new Response(userToken);                                 
     }
     const mainpage = `<a href='/login'>login github</a>`;
     return new Response(mainpage, { headers: { 'Content-Type': 'text/html' } });        
