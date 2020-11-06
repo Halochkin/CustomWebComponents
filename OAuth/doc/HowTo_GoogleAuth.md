@@ -1,36 +1,32 @@
 # HowTo: Google Authorization with Cloudflare workers
 
-You can login to third-party applications and services with a Google Account. So you do not have to remember the username and password for each of them.
+In order to add Google social login to a web application it is necessary:
 
-### API configuration. Creation of "Client ID" and "Client secret code"
-In order to start using Google Authentication, it is necessary:
- 1. Open [GoogleApi](https://console.developers.google.com/), authenticate and create a new project. 
- 2. Select the "Dashboard" tab. Click the "+ENABLE APIS AND SEVICES" button or move to [API Library](https://console.developers.google.com/apis/library?project=sanguine-fx-294214&supportedpurview=project).
-3. In the search bar, type "Google+ API", then click "Enable" button. After that you will be redirected to API settings. 
-4. Go to the "Credentials" tab.
-    1. To create an OAuth client ID, it is necessary to specify the product name for the access request window. To do this, click "CONFIGURE CONSENT SCREEN". 
-    2. Choose to configure and register the application and target users. There are two types of registration methods:
-      * `Internal` - In this mode, your app is limited to G Suite users within your organization. You can communicate with your internal users directly about how you'll use their data.
-      * `External` - In this mode, your app is available to any user with a Google Account. External apps that request sensitive or restricted user data must first be verified by Google.    
-   3. After you have chosen how to configure and register your app, you must enter information about the app, including app name, user support email, application home page etc.
-5. Click on the **Credentials** tab. 
-  * In the upper part you will see the button **+ Create credentials**, point your cursor over it and choose **OAuth client ID** from the list that appears. 
-  * In Application type, select **Web application**. 
-  * Enter a **Name** for your application. 
-  * Enter your account’s authorization domain in the **Authorized Javascript origins** field.
-       You can find this in the Authorization Domain section of the Cloudflare Access app. The domain is something like, `https://xyz.cloudflareaccess.com`.
-  * Under **Authorized redirect URIs**, enter your authorization domain and add this to the end of the path:
-     `/cdn-cgi/access/callback` 
-  * Click **Create**.      
-  * After that, the **Client ID** and **Client Secret** will be generated, the values of which will be used for authentication.
+### Google+ API
+
+1. Go to [Google APIs](https://console.developers.google.com/) and login. 
+2. Create a new document.
+3. Go to the **Dashboard** tab.
+4. Press the button **+ENABLE APIS AND SERVICES**.
+5. In the search box, type "**Google + API**".
+6. Open the API and press the **Manage** button. 
+7. In the resulting API menu, go to the **Auth consent screen** tab.
+8. Select **Internal** and click **Create**.
+9. Fill in the required fields.
+10. Go back to the **Credentials**" tab.
+11 Click the **Create credentials** button, choose **Create OAuth client ID** from the list.
+12. Select **Web application** as **Application type**. 
+    1. Add a link to your application as a "Authorized JavaScript origins" value (for example `https://maxworker.maksgalochkin2.workers.dev`).
+    2. As the value "**Authorized redirect URIs**" you need to specify the link that will be opened after successful authentication (for example `https://maxworker.maksgalochkin2.workers.dev/callback`).
+    3. Press the **Save** button. 
+13. API will generate **Client ID** and **Client secret**.
 
 ### Cloudflare worker
 
-Cloudflare Workers is a set of scripts running on Cloudflare servers. They are located in data centers of 90 countries and 193 cities. The platform allows you to run any JavaScript code without having to support the infrastructure.
- 
- But before executing the woker logic, it is necessary to define global variables and their values. 
-  For complete work Google authentification uses the following variables:
-   
+1. Open [Cloudflare dashboard] (https://dash.cloudflare.com/) and go to the **"Workers"** tab using the menu on the right side of the page.
+2. Create a new worker.
+3. Go to the **Settings** tab.
+4. Define global variables 
    * `GOOGLE_CLIENTID=<CLIENT_ID>.apps.googleusercontent.com` - Your _client ID_. 
    * `GOOGLE_CLIENTSECRET=<CLIENT_SECRET>` - Your _client Secret_.
    * `GOOGLE_CODE_LINK=https://oauth2.googleapis.com/token` - Google Auth access token.
@@ -45,126 +41,157 @@ Cloudflare Workers is a set of scripts running on Cloudflare servers. They are l
        }
      ```
    * `GOOGLE_REDIRECT_1=https://accounts.google.com/o/oauth2/v2/auth` - to obtain user authorization. This endpoint handles active session lookup, authenticates the user, and obtains user consent.
-   * `GOOGLE_REDIRECT_2=https://<auth-go-gi.2js-no>.workers.dev/callback/google` - redirect url after successful authentication. Must retaliate against the name of the woker.
-   * `STATE_SECRET_REGISTRY_LENGTH=10000` - state registry size.
-   * `STATE_SECRET_TTL_MS=300000` - time to live.
+   * `GOOGLE_REDIRECT_2=https://<auth-go-gi.2js-no>.workers.dev/callback` - redirect url after successful authentication. Must retaliate against the name of the worker.
 
-Take a look at an example:
-
-```javascript
-addEventListener('fetch', e => e.respondWith(handleRequest(e.request)));
-
-const states = [];   
-
-function randomString(length) {
-  const iv = crypto.getRandomValues(new Uint8Array(length));
-  return Array.from(iv).map(b => ('00' + b.toString(16)).slice(-2)).join('');
-}
-
-function hasStateSecretOnce(state) {
-  const index = states.indexOf(state);
-  return index >= 0 ? states.splice(index, 1) : false;
-}
-
-function getStateSecret(ttl, stateRegistrySize) {
-   const secret = randomString(12);                                                //[3.1.1]
-   states.length > stateRegistrySize && states.shift();
-   states.push(secret);
-   setTimeout(() => hasStateSecretOnce(secret), ttl);                              //[3.1.2]
-   return secret;
-}
-
-function makeRedirect(path, params) {
-  return path + '?' + Object.entries(params).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
-}
-
-async function fetchAccessToken(path, data) {
-  return await fetch(path, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: Object.entries(data).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&')
-  });
-}
-
-async function googleProcessTokenPackage(code) {
-  const tokenPackage = await fetchAccessToken(                                     //[7]
-    GOOGLE_CODE_LINK, {
-      code,
-      client_id: GOOGLE_CLIENTID,
-      client_secret: GOOGLE_CLIENTSECRET,
-      redirect_uri: GOOGLE_REDIRECT_2,
-      grant_type: 'authorization_code'
+5. Inside `handleRequest()` put the code
+  ```javascript
+  async function handleRequest(request) {
+    const url = new URL(request.url);                                                   //[2]
+    const [empty, action] = url.pathname.split('/');                                    //[3]
+    if (action === "login") {                                                           //[4]
+      let redirect = GOOGLE_REDIRECT_1 + `?state=${encodeURIComponent(makeRandomString(12))}&client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}&nonce=${encodeURIComponent(makeRandomString(12))}&response_type=${encodeURIComponent("code")}&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_2)}&scope=${encodeURIComponent("openid email")}&`; //[5]
+      return Response.redirect(redirect);                                               //[6]
     }
-  );
-  const jwt = await tokenPackage.json();
-  const [header, payloadB64url, signature] = jwt.id_token.split('.');
-  const payloadText = atob(fromBase64url(payloadB64url));
-  const payload = JSON.parse(payloadText);
-  return payload.sub;
-}
-
-async function handleRequest(req) {
-  const url = new URL(req.url);                                       
-  const [ignore, action, data] = url.pathname.split('/');                          //[2]
-  if (action === 'login') {                                                        //[2.1]
-    let redirect;                    
-    if (data === 'google') {                                                       //[2.2]
-      redirect = makeRedirect(GOOGLE_REDIRECT_1, {                                 //[3]
-        state: getStateSecret(STATE_SECRET_TTL_MS, STATE_SECRET_REGISTRY_LENGTH),  //[3.1]
-        nonce: randomString(12),                                                   
-        client_id: GOOGLE_CLIENTID,                                                
-        redirect_uri: GOOGLE_REDIRECT_2,                                           
-        scope: 'openid email',                                                     
-        response_type: 'code',                                                     //[3.6]
-      });
-    } else
-      return new Response('error1');
-    return Response.redirect(redirect);                                            //[4]
+    if (action === "callback") {                                                        //[7]
+      const code = url.searchParams.get('code');                                        //[8]
+      let userInfo = await googleProcessTokenPackage(code);                             //[9]
+      return new Response(JSON.stringify(userInfo));                                    //[10]
+    }
+    const mainpage = `<a href='/login'>login google</a>`;
+    return new Response(mainpage, { headers: { 'Content-Type': 'text/html' } });        //[1]
   }
-  if (action === 'callback') {                                                     //[5]
-    const state = url.searchParams.get('state');
-    if (!hasStateSecretOnce(state))
-      return new Response('Error 667: state timed out');
-    const code = url.searchParams.get('code');
-    let userText;
-    if (data === 'google')                                                         //[6]
-      userText = 'go' + await googleProcessTokenPackage(code);                     
-    else
-      return new Response('error2');
-    return new Response(userText, {status: 201});                                  //[8]
-  }
-  const mainpage = `hello sunshine GITHUB oauth28 <a href='/login/google'>login google</a>`
-  return new Response(mainpage, {headers: {'Content-Type': 'text/html'}});         //[1]
-}
-```
-
-1. When you first load a simple HTML that has a simple button for authentication. When you click on the button an additional path `/login/google` will be added to the url.
-2. Each time fetch events are activated, the script checks for values that define actions and data. When the user presses a button:
-    1. The variable `action` is defined as `login` and the variable `redirect` is initialized.
-    2. `data` variable = `"google"`.
-3. The `redirect` variable gets its value using the `makeRedirect()` function. The `makeRedirect()` function takes two parameters: `userAuthorizationUrl` and `params` object which defines the redirect parameters. Parameters of the redirect include:
-   1. `state` - defines the state of the secret. Should include the value of the anti-forgery unique session token, as well as any other information needed to recover the context when the user returns to your application, e.g., the starting URL. The value is determined using the `getStateSecret()` function which accepts two parameters: `time to live` and `state registry size. 
-     1. The state array is filled with hexString of a random number until the number exceeds the value of `state registry size`.
-     2. The state secrets on live in the memory of cf worker until the timeout is reached. When the timeout (ttl) is reached, the state is deleted from the memory;
-   2. `nonce` - is a random value generated by your app that enables replay protection when present;
-   3. `client_id` - obtain from the API;
-   4. `redirect_uri` - HTTP endpoint on your server that will receive the response from Google. The value must exactly match one of the authorized redirect URIs for the OAuth 2.0 client, which you configured in the API Console Credentials page;
-   5. `scope` - basic request should be `"openid email"`;
-   6. `response_type` - basic authorization code flow request should be code.
-4. Redirect to the authentication page. It is a form in which the user can choose a Google account with which to log on to the site.
-5. After successful authentication, the URL will be changed. This is a new fetch event which will determine the value of the variable action on the callback. This will only be done if user authentication is successful.  
-6. The new URL should retrieve the `google` property and the `code` parameter. 
-    ```
-     https://auth-go-gi.2js-no.workers.dev/callback/github?code=....
-    ```
-    The `googleProcessTokenPackage()` function will define the token package using the `fetchAccessToken()` function.
-7. The `fetchAccessToken()` function allows to get `JWT` using POST request and define `header`, `payload` (in Base64url format) and `signature`.
-8. If the code execution is successful, the server will return `payloadText` of JWT.
-
-### Reference
-1. [Google APIs](https://console.developers.google.com/)
-2. [Google+ API](https://console.developers.google.com/marketplace/product/google/plus.googleapis.com?q=search&referrer=search&hl=uk&project=spiritual-aloe-294222)
-3. [Cloudflare workers](https://workers.cloudflare.com/)
-4. [MDN: Redirections in HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections)
-5. [State params](https://developers.google.com/identity/protocols/oauth2/openid-connect#state-param)
+  ```
+ 1. Render _Login_ button if user is not logged in.
+ 2. Getting the URL values. 
+ 3. Defining a command that defines the following behavior of an application. The first argument is ignored, only `action` is used.
+ 4. Clicking on the button will add "/login" to the url.
+ 5. After clicking on the button for authentication (Login), the user must be redirected to the login form provided by the API. For successful authentication the browser must make a request by passing some parameters using the URL:
+   
+      * `state`  should include the value of the anti-forgery unique session token, as well as any other information needed to recover the context when the user returns to your application, e.g., the starting URL.  
+      * `client_id`  credential generated client ID value.        
+      * `nonce` random value generated by your app that enables replay protection when present.
+      * `responce_uri` should be the HTTP endpoint on your server that will receive the response from Google. The value must exactly match one of the authorized redirect URIs for the OAuth 2.0 client, which you configured in the API Console Credentials page.
+      * `scope` basic request should be "openid email".
  
+ 6. User redirection to login page.
+ 7. After successful authentication, the user will be redirected back to the web application. The URL will be redirected by the "/callback" parameter.
+ 8. The response includes a code parameter, a one-time authorization code that your server can exchange for an access token and ID token.
+ 9. Your server makes this exchange by sending an HTTPS POST request. The POST request is sent to the token endpoint, which you should retrieve from the Discovery document using the token_endpoint metadata value.
+ 
+ ## Process Access Token
+  
+```javascript
+    async function googleProcessTokenPackage(code) {
+      const bodyString = `code=${encodeURIComponent(code)}&client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}&client_secret=${encodeURIComponent(GOOGLE_CLIENT_SECRET)}&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_2)}&grant_type=authorization_code`;                                                        //[1]
+      const tokenPackage = await fetchAccessToken(bodyString);                //[2]
+      const jwt = await tokenPackage.json();                                  //[3]
+      const [header, payloadB64url, signature] = jwt.id_token.split('.');     //[4]
+      const payloadText = atob(fromBase64url(payloadB64url));                 //[5]
+      const payload = JSON.parse(payloadText);                                //[6]
+      return JSON.stringify({                                                 //[7]
+          id: payload.sub,
+          email: payload.email,
+          fullname: (payload.given_name + payload.family_name),
+          provider: payload.iss
+      });
+    }
+```
+    1. POST request is used to get JWT. The request must include the following parameters in the POST body:
+       * `code` the authorization code that is returned from the initial request.
+       *` client_id`	the **client ID** that you obtain from the API Console Credentials page.
+       * `client_secret`	the **client secret** that you obtain from the API Console Credentials page.
+       * `redirect_uri` an authorized **redirect URI** for the given client_id specified in the API Console Credentials page.
+       * `grant_type` this field must contain a  string value of "authorization_code".
+    2. Executing a request. 
+       ```javascript
+        async function fetchAccessToken(data) {
+          return await fetch(GOOGLE_CODE_LINK, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: data
+          });
+        }
+       ```
+    3. The `json()` method of the Body mixin takes a response and reads it to completion. The result of execution is JWT.
+    4. Getting a header, payload u signature with JWT.
+    5. Decoding a string from base64url.
+       ```javascript
+        function fromBase64url(base64urlStr) {
+          base64urlStr = base64urlStr.replace(/-/g, '+').replace(/_/g, '/');
+          if (base64urlStr.length % 4 === 2)
+            return base64urlStr + '==';
+          if (base64urlStr.length % 4 === 3)
+            return base64urlStr + '=';
+          return base64urlStr;
+        }
+       ```
+    6. Conversion into object.
+ 10. Response JWT payload.
+ 
+ ### Example
+ Full example here
+ ```javascript
+ addEventListener("fetch", event => {
+   event.respondWith(handleRequest(event.request))
+ })
+ 
+ function makeRandomString(length) {
+   const iv = crypto.getRandomValues(new Uint8Array(length));
+   return Array.from(iv).map(b => ('00' + b.toString(16)).slice(-2)).join('');
+ }
+ 
+ function fromBase64url(base64urlStr) {
+   base64urlStr = base64urlStr.replace(/-/g, '+').replace(/_/g, '/');
+   if (base64urlStr.length % 4 === 2)
+     return base64urlStr + '==';
+   if (base64urlStr.length % 4 === 3)
+     return base64urlStr + '=';
+   return base64urlStr;
+ }
+ 
+ async function fetchAccessToken(data) {
+   return await fetch(GOOGLE_CODE_LINK, {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+     body: data
+   });
+ }
+ 
+async function googleProcessTokenPackage(code) {
+    const bodyString = `code=${encodeURIComponent(code)}&client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}&client_secret=${encodeURIComponent(GOOGLE_CLIENT_SECRET)}&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_2)}&grant_type=authorization_code`
+    const tokenPackage = await fetchAccessToken(bodyString);
+    const jwt = await tokenPackage.json();
+    const [header, payloadB64url, signature] = jwt.id_token.split('.');
+    const payloadText = atob(fromBase64url(payloadB64url));
+    const payload = JSON.parse(payloadText);
+    return JSON.stringify({
+        id: payload.sub,
+        email: payload.email,
+        fullname: (payload.given_name + payload.family_name),
+        provider: payload.iss
+    });
+}
+ 
+ async function handleRequest(request) {
+   const url = new URL(request.url);
+   const [empty, action] = url.pathname.split('/');
+   if (action === "login") {
+     let redirect = GOOGLE_REDIRECT_1 + `?state=${encodeURIComponent(makeRandomString(12))}&client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}&nonce=${encodeURIComponent(makeRandomString(24))}&response_type=${encodeURIComponent("code")}&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_2)}&scope=${encodeURIComponent("openid email profile")}&`;
+     return Response.redirect(redirect);
+   }
+   if (action === "callback") {
+     const code = url.searchParams.get('code');
+     let userInfo = await googleProcessTokenPackage(code);
+     return new Response(JSON.stringify(userInfo));
+   }
+   const mainpage = `<a href='/login'>login google</a>`;
+   return new Response(mainpage, { headers: { 'Content-Type': 'text/html' } });
+ }
+ ```
+ ### Reference
+ 
+ * [OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
+ * [MDN: .json()](https://developer.mozilla.org/en-US/docs/Web/API/Body/json)
+ * [Base64](https://en.wikipedia.org/wiki/Base64)
+ * [Google APIs](https://console.developers.google.com/)
+ * [Live demo](https://maxworker.maksgalochkin2.workers.dev/)
