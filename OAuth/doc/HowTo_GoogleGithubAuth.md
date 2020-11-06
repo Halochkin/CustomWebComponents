@@ -338,6 +338,7 @@ async function handleRequest(req) {
 addEventListener('fetch', e => e.respondWith(handleRequest(e.request)));
 ```
 
+
 ## Reference
  * [OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
  * [MDN: .json()](https://developer.mozilla.org/en-US/docs/Web/API/Body/json)
