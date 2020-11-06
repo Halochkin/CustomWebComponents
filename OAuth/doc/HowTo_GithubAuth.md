@@ -67,7 +67,6 @@ Make a `handleRequest()` function:
          return new Response(mainpage, { headers: { 'Content-Type': 'text/html' } });                              //[1]
      }
 ```
-
 1. Render _Login_ button if user is not logged in.
 2. Getting the URL values. 
 3. Defining a command that defines the following behavior of an application. The first argument is ignored, only `action` is used.
@@ -81,7 +80,7 @@ Make a `handleRequest()` function:
 7. After successful authentication, the user will be redirected back to the web application. The URL will be redirected by the "/callback" parameter.
 8. The response includes a `code` parameter, a one-time authorization code that your server can exchange for an access token and ID token.
 9. Your server makes this exchange by sending an HTTPS POST request. The POST request is sent to the token endpoint, which you should retrieve from the Discovery document using the token_endpoint metadata value.
-
+ ## Process Access Token
 ```javascript
           async function githubProcessTokenPackage(code) {
               let bodyString = `code=${encodeURIComponent(code)}&state=${encodeURIComponent(makeRandomString(12))}&client_id=${encodeURIComponent(GITHUB_CLIENT_ID)}&client_secret=${encodeURIComponent(GITHUB_CLIENT_SECRET)}&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URL)}`                                                                                           //[1]
