@@ -61,6 +61,7 @@ In order to add Google social login to a web application it is necessary:
     return new Response(mainpage, { headers: { 'Content-Type': 'text/html' } });        //[1]
   }
   ```
+
  1. Render _Login_ button if user is not logged in.
  2. Getting the URL values. 
  3. Defining a command that defines the following behavior of an application. The first argument is ignored, only `action` is used.

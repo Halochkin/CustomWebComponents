@@ -13,9 +13,7 @@ vs.
 1. Github only returns an access token from the code callback, so you must go an extra roundtrip to the github user api in order to get the name and id of the github user.
 
 2. Google returns the user info as a JWT token. This means that we must deconstruct the JSON data of the JWT in order to read the sub (user id) and first name and last name.
-
 vs.
-
 2. Github returns the user data as plain JSON. This means that we don't need to do much decoding of the user data in order to read user id and user name.
 
 
