@@ -113,9 +113,7 @@ async function fetchAccessToken(data) {
  ```
 
 3. The `text()` method takes a response stream and reads it to completion.  
-
 4. To get information about the user you should use the value of the access_token property. Since the object is returned as a string, it is necessary to get its value.
-
 5. GET request to get a user.
 ```javascript
                 async function fetchUser(token) {
