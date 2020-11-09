@@ -97,13 +97,14 @@ In order to add Google social login to a web application it is necessary:
       });
     }
 ```
-    1. POST request is used to get JWT. The request must include the following parameters in the POST body:
+
+   1. POST request is used to get JWT. The request must include the following parameters in the POST body:
        * `code` the authorization code that is returned from the initial request.
        *` client_id`	the **client ID** that you obtain from the API Console Credentials page.
        * `client_secret`	the **client secret** that you obtain from the API Console Credentials page.
        * `redirect_uri` an authorized **redirect URI** for the given client_id specified in the API Console Credentials page.
        * `grant_type` this field must contain a  string value of "authorization_code".
-    2. Executing a request. 
+   2. Executing a request. 
        ```javascript
         async function fetchAccessToken(data) {
           return await fetch(GOOGLE_CODE_LINK, {
@@ -113,9 +114,9 @@ In order to add Google social login to a web application it is necessary:
           });
         }
        ```
-    3. The `json()` method of the Body mixin takes a response and reads it to completion. The result of execution is JWT.
-    4. Getting a header, payload u signature with JWT.
-    5. Decoding a string from base64url.
+   3. The `json()` method of the Body mixin takes a response and reads it to completion. The result of execution is JWT.
+   4. Getting a header, payload u signature with JWT.
+   5. Decoding a string from base64url.
        ```javascript
         function fromBase64url(base64urlStr) {
           base64urlStr = base64urlStr.replace(/-/g, '+').replace(/_/g, '/');
@@ -126,7 +127,7 @@ In order to add Google social login to a web application it is necessary:
           return base64urlStr;
         }
        ```
-    6. Conversion into object.
+   6. Conversion into object.
  10. Response JWT payload.
  
  ### Example

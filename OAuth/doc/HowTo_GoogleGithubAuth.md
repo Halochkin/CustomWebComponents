@@ -3,7 +3,7 @@
 Often the user has accounts in several social networks, so most web applications offer several login options. Authorization through social networks increases the loyalty of users who do not have to register. An additional advantage for the owner will be access to users' personal data, which can be used for marketing purposes. In this article we will consider Google and Github authentication. 
 
 ## Create and configure Google/Github App. Create worker (Cloudflare).
-Before you start, create and configure both [Google](./HowTo_GoogleAuth.md) and [Github](./HowTo_GithubAuth.md) application. Create new common worker and define global variables.
+Before you start, create and configure both [Google](HowTo_GoogleAuth.md) and [Github](HowTo_GithubAuth.md) application. Create new common worker and define global variables.
 
 ## Code the worker
 
@@ -337,7 +337,6 @@ async function handleRequest(req) {
 
 addEventListener('fetch', e => e.respondWith(handleRequest(e.request)));
 ```
-
 ## Reference
  * [OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
  * [MDN: .json()](https://developer.mozilla.org/en-US/docs/Web/API/Body/json)
