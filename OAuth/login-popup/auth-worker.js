@@ -61,7 +61,7 @@ async function handleRequest(req) {
       `<script>window.opener.postMessage('login-2js-no', ${MAIN_DOMAIN});window.close();</script>`, {
         status: 201,
         headers: {
-          'Set-Cookie': `userid_2js.no=${session} domain=2js.no secure httpOnly expiration-date ;`//todo
+          'Set-Cookie': `userid_2js.no=${session}; domain=2js.no secure httpOnly expiration-date ;`//todo
         }
       });
   } catch (err) {

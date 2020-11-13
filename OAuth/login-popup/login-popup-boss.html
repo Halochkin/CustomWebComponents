@@ -4,6 +4,7 @@
     }
 </style>
 <h1>hello sunshine</h1>
+<a href="sdssds/loin/google">dsdsdsd</a>
 <script>
   window.addEventListener('message', e => console.log(e)); //printing the message
 
@@ -11,6 +12,17 @@
   let loginWindowUrl;
   const loginWindowName = "_blank";
   const loginWindowFeatures = "resizable,scrollbars,status,opener";
+
+
+  const href = document.querySelector("a")
+
+
+  href.addEventListener("click", e => {
+    e.preventDefault();
+    debugger;
+    let event = e;
+  })
+
 
   function openRequestedSinglePopup(event) {
     const size = {
@@ -33,7 +45,7 @@
   }
 
   function popupLink(href, title, content) {
-    return `<a href="${href}"  onclick="openRequestedSinglePopup(event)" title="${title}">${content}</a>`;
+    return `<a href="${href}"  onclick="openRequestedSinglePopup()" title="${title}">${content}</a>`;
   }
 
   document.body.innerHTML += popupLink('login-popup-one.html', 'one', 'this is one') + popupLink('login-popup-two.html', 'twwwo', 'this is two');

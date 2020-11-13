@@ -39,7 +39,7 @@ vs.
    * `GITHUB_CLIENT_ID`
    * `GITHUB_CLIENT_SECRET`
    * `GITHUB_LINK1_LOGIN: https://github.com/login/oauth/authorize` to obtain user authorization, handle active session lookup, authenticates the user, and obtains user consent.
-   * `GITHUB_LINK2_CALLBACK https://github-auth.maksgalochkin2.workers.dev/callback` redirect url after successful authentication. Must retaliate against the name of the worker.
+   * `GITHUB_LINK2_CALLBACK https://github-auth.maksgalochkin2.workers.dev/callback` redirect url after successful authentication. 
    * `GITHUB_LINK3_ACCESS_TOKEN	https://github.com/login/oauth/access_token` Github access token. 
    * `GITHUB_LINK4_USER_API	https://api.github.com/user` Github API from where we get the JSON data about user. 
    

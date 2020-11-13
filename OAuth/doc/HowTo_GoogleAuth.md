@@ -114,7 +114,7 @@ In order to add Google social login to a web application it is necessary:
           });
         }
        ```
-   3. The `json()` method of the Body mixin takes a response and reads it to completion. The result of execution is JWT.
+   3. The `json()` takes a response and reads it to completion. The result of execution is JWT.
    4. Getting a header, payload u signature with JWT.
    5. Decoding a string from base64url.
        ```javascript
