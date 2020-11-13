@@ -131,7 +131,7 @@ async function getEncryptedData(data) {
 ```
  The function accepts data to be encrypted. To encrypt the data with AESGCM cipher, you need to create Uint8Array initialization vector (iv). `iv` — A random or pseudo-random sequence of characters that is added to an encryption key to improve its security. Must be unique every encryption operation carried out with a given key. Put way: never reuse an IV with the same key. Don't re-use initialization vectors. It is necessary to generate a new iv every time your encrypt. Recommended to use 12 bytes length. Initialization vector does not require encryption and is usually transmitted together with the cryptographic key. So result of function execution will be a string which contain iv and encrypted data divided by `.`.
  To encrypt data use:
-  *`SECRET` (secret key which we define as global variable)
+  * `SECRET` (secret key which we define as global variable)
   * `iv`
   * `data` data to be encrypted.
    
