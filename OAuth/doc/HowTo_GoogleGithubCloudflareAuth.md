@@ -7,9 +7,11 @@ Cloudflare uses CDN as an infrastructure to load your site faster. Hosting techn
 
 
 ## Create and configure Google/Github App. Create worker (Cloudflare).
+
 Before you start, create and configure both [Google](HowTo_GoogleAuth.md) and [Github](HowTo_GithubAuth.md) application. Create new common worker and define global variables.
 
 ### Configure worker
+
 1. Open [Cloudflare dashboard] (https://dash.cloudflare.com/) and go to the **"Workers"** tab using the menu on the right side of the page.
 2. Create a new worker.
 3. Go to the **Settings** tab.
@@ -26,6 +28,16 @@ Before you start, create and configure both [Google](HowTo_GoogleAuth.md) and [G
   * `GOOGLE_REDIRECT_2	https://<Your worker domain>.workers.dev/callback/google` Redirect url after successful Google authentication.
   * `SECRET	klasjdfoqjpwoekfj!askdfj` Cypher key.
   * `STATE_SECRET_TTL_MS	300000` State secret relevance time.
+  
+## Pure functions
+ 
+ * `toBase64url(bas64str): base64urlString`: converts a base64 string into a basee64url string [HowTo: base64url](./HowTo_base64url).
+ * `toBase64url(bas64str): base64urlString`: converts a base64 string into a basee64url string [HowTo: base64url](./HowTo_base64url).
+ * `toBase64url(bas64str): base64urlString`: converts a base64 string into a basee64url string [HowTo: base64url](./HowTo_base64url).
+ * `toBase64url(bas64str): base64urlString`: converts a base64 string into a basee64url string [HowTo: base64url](./HowTo_base64url).
+ * `toBase64url(bas64str): base64urlString`: converts a base64 string into a basee64url string [HowTo: base64url](./HowTo_base64url).
+ * `processGithub(...): askdjfl`: takes the access token returned from github auth, and fetches the user info from api.github.com. [HowTo: auth with github](./HowTo_authGithub).
+
 ## Code the worker
 
 Make a `handleRequest()` function:
