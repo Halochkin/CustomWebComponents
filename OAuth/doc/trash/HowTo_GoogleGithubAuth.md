@@ -3,7 +3,7 @@
 Often the user has accounts in several social networks, so most web applications offer several login options. Authorization through social networks increases the loyalty of users who do not have to register. An additional advantage for the owner will be access to users' personal data, which can be used for marketing purposes. In this article we will consider Google and Github authentication. 
 
 ## Create and configure Google/Github App. Create worker (Cloudflare).
-Before you start, create and configure both [Google](HowTo_GoogleAuth.md) and [Github](HowTo_GithubAuth.md) application. Create new common worker and define global variables.
+Before you start, create and configure both [Google](../HowTo_GoogleAuth.md) and [Github](../HowTo_GithubAuth.md) application. Create new common worker and define global variables.
 
 ## Code the worker
 
@@ -141,7 +141,7 @@ async function checkStateSecret(data, password) {
 ```
   
 9. The response includes a `code` parameter, a one-time authorization code that your server can exchange for an access token and ID token.
-10. Processing of request. Read how to process [Google](HowTo_GoogleAuth.md#process-access-token) and [Github](HowTo_GithubAuth.md#process-access-token) request.
+10. Processing of request. Read how to process [Google](../HowTo_GoogleAuth.md#process-access-token) and [Github](../HowTo_GithubAuth.md#process-access-token) request.
 
  ### Example
  Full example here
