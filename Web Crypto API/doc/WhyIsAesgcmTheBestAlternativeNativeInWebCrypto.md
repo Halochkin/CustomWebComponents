@@ -3,8 +3,7 @@
 ### 1. What is  AES-GCM 
 `AES-GCM` is an authenticated encryption mode that uses the AES block cipher in counter mode with a polynomial MAC based on Galois field multiplication.
   
- AES stands for `Advanced Encryption Standard` and is a symmetric block encryption algorithm. Symmetric encryption means that the key used for encryption and decryption is identical, as opposed to asymmetric encryption where there are two keys; a private key and a public key. The public key is used to encrypt data, and only someone with the private key can read the encrypted data. The block size of AES is 128 bits. This means that the algorithms work in chunks of 128 bits.
-  >AES only includes three flavors of Rijndael: AES-128, AES-192, and AES-256. The difference between these flavors is the size of the key and the number of rounds used, but–and this is often overlooked–not the block size.
+ AES stands for `Advanced Encryption Standard` and is a symmetric block encryption algorithm. Symmetric encryption means that the key used for encryption and decryption is identical. The public key is used to encrypt data, and only someone with the private key can read the encrypted data. 
 
 This algorithm converts one 128-bit block into another using a secret key that is needed for this conversion. A second conversion with the same secret key is used to decrypt the resulting 128-bit block. 
 The block size is always 128 bits. The size of the key is also fixed. To encrypt any text with any password, you can do this:

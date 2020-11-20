@@ -2,7 +2,7 @@
 
 ## Why Cloudflare?
 
-CloudFlare "accelerates" the work of the site by caching your site in its CDNs around the world. If you look at the map of CloudFlare servers distribution on their main page, you will see that more than 100 Cloudflare data centers are located around the world. Thus, a huge part of Internet users is almost in direct peering with them, so their CDN system is quite effective and allows you to "speed up" the work of your site, located, for example, in Ukraine, for users from, for example, Australia. 
+CloudFlare "accelerates" the work of the site by caching your site in its CDNs around the world. If you look at the map of CloudFlare servers distribution on their main page, you will see that more than 100 Cloudflare data centers locate around the world. Thus, a huge part of Internet users is almost in direct peering with them, so their CDN system is quite effective and allows you to "speed up" the work of your site, located, for example, in Ukraine, for users from, for example, Australia. 
 Cloudflare uses CDN as an infrastructure to load your site faster. Hosting technologies of Cloudflare instantly optimize content. Reduces traffic consumption by 60% and 65% reduces the load on the server.
 
 
@@ -25,7 +25,7 @@ async function handleRequest(req) {
   if (action === "login") {
     let redirect;
     rememberUser = !!(rememberMe && rememberMe === "rememberMe");     //depending on the value will be determined max-age of cookies
-    if (data === 'github') {                                          //[6]
+    if (data === 'github') {                                         
       redirect = makeRedirect(GITHUB_OAUTH_LINK, {
         state: encryptedState,
         client_id: GITHUB_CLIENTID,
@@ -61,14 +61,13 @@ async function handleRequest(req) {
     
     const encryptedData = await getEncryptedData(JSON.stringify(userText.result)); // encrypt userText object
 
-    return new Response(popup(userText.result, 'https://' + myDomain), {         //set encryptedData as sessionID cookie value
+    return new Response(popup(userText.result, 'https://' + myDomain), { //set encryptedData as sessionID cookie value
       status: 201, headers: {
         'content-type': 'text/html',                                
         'Set-Cookie': `sessionID=${encryptedData}; HttpOnly; SameSite=Strict; Path=/; Domain=${myDomain};` + (rememberUser ? `Max-Age=10000;` : ``) //depending on the value of rememberUser we define cookies Max-Age 
       }
     });
   }
-
 
    // Remove cookie and response with login form if user log out
   if (action === 'logout') {
@@ -320,11 +319,10 @@ async function githubProcessTokenPackage(code, state) {
   };
 }
 
-
 function mainpage(command, value, popupOrigin) {
   const login = `<a href='/login/google'>login google</a><br>
-                   <a href='/login/github'>login github</a><br>
-                  RememberMe: <input type='checkbox'/><hr>`
+                 <a href='/login/github'>login github</a><br>
+                 RememberMe: <input type='checkbox'/><hr>`
   const logout = `<span>Hello ${value}</span><a href="/logout">logout</a>`
 
   const script = `<script>
@@ -422,8 +420,6 @@ async function handleRequest(req) {
 
   if (action === 'callback') {
     const stateParam = url.searchParams.get('state');
-    // return new Response(stateParam)
-
     let decryptedStateParam = await decryptData(stateParam, SECRET);
     if (!await checkStateSecret(decryptedStateParam))
       return new Response("Wrong code param");

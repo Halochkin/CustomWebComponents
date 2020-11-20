@@ -49,5 +49,5 @@ alert("");
 4. Opens a new pop-up window with defined parameters. These parameters are the height, width, margin left/top and the different settings responsible for the window's interaction with the user.
 5. Focusing on the window, moving it to the foreground.
 
-### Reference
-*[MDN: pop-up features](https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Toolbar_and_UI_parts_features)
+## Reference
+* [MDN: pop-up features](https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Toolbar_and_UI_parts_features)

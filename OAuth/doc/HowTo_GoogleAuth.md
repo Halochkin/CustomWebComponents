@@ -307,6 +307,7 @@ async function handleRequest(request) {
 }
  ```
  ### Reference
+ 
  * [Cloudflare demo](https://dash.cloudflare.com/a6df9be02f0ec82fea09296ccf4d316d/workers/edit/maxworker)
  * [Live demo](https://maxworker.maksgalochkin2.workers.dev)
  * [OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
