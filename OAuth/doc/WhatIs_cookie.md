@@ -1,6 +1,5 @@
-#  HowTo: session cookie in a pair of Cloudflare worker
+#  WhatIs: cookie
 
-> A session is a group of interactions between a user and an application that take place within a given timeframe.
 
 HTTP cookie provide the server with a mechanism for storing and receiving status information in the client application system. This mechanism allows web applications to store information about selected elements, user preferences, registration information and keeping a user in the same place on a web page if they lose their Internet connection, or to store simple site display settings.
 
@@ -38,7 +37,7 @@ The session identifier is automatically saved in the user's browser as a cookie,
 #### remember me
 To prevent the user from having to enter his password every day (after the session ends), it is customary to remember that he is authorized in a cookie.
 
-Usually, cookies are set for a certain period (for example, a month) or permanently. In the second case, the user will be logged in (i.e. he will be able to log in without entering his password) until he clicks the 'Logout' link or accesses the site from another browser.
+Usually, cookies set for a certain period (for example, a month) or permanently. In the second case, the user will be logged in (i.e. he will be able to log in without entering his password) until he clicks the 'Logout' link or accesses the site from another browser.
 
 How can this be implemented correctly? The principle is as follows: a random string should be written into the user's cookie and simultaneously into the database.
 - The first thing we do when entering the site is to check if the session is running. If it is running, the user is authorized. If it is not, then we look at the cookie and look there for a note about authorization.
@@ -49,7 +48,7 @@ How can this be implemented correctly? The principle is as follows: a random str
 Therefore it is always worth giving the user a choice - he wants his browser to remember him in a cookie or not.
 
 #### forget me
-In order to automatically log out a user, after he closes the tab, you need to set the expiration date to a certain date in the past or not to determine it at all.  If a cookie has neither the Max-Age nor the Expires attribute, the user agent will retain the cookie until "the current session is over" (as defined by the user agent).
+In order to automatically log out a user, after he closes the tab, you need to set the expiration date to a certain date in the past or not to determine it at all.  If a cookie has neither the `Max-Age` nor the Expires attribute, the user agent will retain the cookie until "the current session is over" (as defined by the user agent).
 
 
 ### References 

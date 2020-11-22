@@ -151,10 +151,6 @@ function makeRedirect(path, params) {
  ### Example
  Full example here
  ```javascript
- 
-
-addEventListener('fetch', e => e.respondWith(handleRequest(e.request)));
-
 const STATE_PARAM_TTL = 3 * 60;
 
 function randomString(length) {
@@ -305,6 +301,8 @@ async function handleRequest(request) {
     const mainpage = `<a href='/login'>login google</a>`;
     return new Response(mainpage, { headers: { 'Content-Type': 'text/html' } });
 }
+
+addEventListener('fetch', e => e.respondWith(handleRequest(e.request)));
  ```
  ### Reference
  

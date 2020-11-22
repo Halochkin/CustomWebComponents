@@ -446,7 +446,7 @@ async function handleRequest(req) {
     return new Response(mainpage("logout", "", 'https://' + myDomain), {
       status: 201,
       headers: {
-        'Content-Type': 'text/html',
+        'Content-Type': 'text/html',    /// set Max-Age to -1 to remove cookie
         'Set-Cookie': `sessionID=undefined; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=-1; Domain=${myDomain}; `
       }
     });
