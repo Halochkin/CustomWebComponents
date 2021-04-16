@@ -6,12 +6,6 @@ When `false` is returned, cancelable `"invalid"` event fired for each invalid ch
 
 > `.reportValidity()` differs from `.checkValidity()` in that it causes an automatic pop-up error message.
 
- 
- 
-```html
-
- 
-```
 
 According to spec, when `reportValidity()` invoked, it runs next report validity steps:
 
@@ -24,10 +18,6 @@ According to spec, when `reportValidity()` invoked, it runs next report validity
     3. Return false.
 
 2. Return true.
-
-
-
-
 
 
 ### Form submission algorithm
