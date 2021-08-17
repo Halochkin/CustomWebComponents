@@ -7,12 +7,15 @@ device in three planes. Each minimum deviation of the phone in one of the three 
    > and increases as the device is rotated toward the left.
    <p><img src="./img/alpha.png" style="text-align:center"/></p>
  
+ 
  * `beta` - `x` axis, express in degrees with values ranging from -180 to 180. This represents a front to back 
     motion of the device.
   > The beta angle is 0° when the device's top and bottom are the same distance from the Earth's surface, and 
   > increases toward 180° as the device is tipped forward and decreases toward -180° as the device is tipped 
   backward.
    <p><img src="./img/beta.png" style="text-align:center"/></p>
+   
+   
  * `gamma` - `y` axis, express in degrees with values ranging from -90 to 90. This represents a left to right motion
   of the device.
    > The gamma angle is 0° when the device's left and right sides are the same distance from the surface of the Earth,
